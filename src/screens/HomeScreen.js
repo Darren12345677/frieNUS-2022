@@ -24,8 +24,8 @@ import {
 import { db } from '../firebase';
 import { Task } from '../components';
 
-const INPUT_PLACEHOLDER = 'Enter your task and hit Add';
-const THEME = '#407BFF';
+const INPUT_PLACEHOLDER = 'Enter your modules';
+const THEME = 'blueviolet';
 
 const { width } = Dimensions.get('window');
 
@@ -102,7 +102,7 @@ const HomeScreen = () => {
         >
             <SafeAreaView style={styles.container}>
                 <View style={styles.contentContainer}>
-                    <Text style={styles.headerText}>Your Tasks 👋🏻</Text>
+                    <Text style={styles.headerText}>Your Profile 😁❤️🍆</Text>
                     <View style={styles.listContainer}>
                         <FlatList
                             data={taskList}

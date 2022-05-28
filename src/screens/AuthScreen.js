@@ -95,10 +95,10 @@ const AuthScreen = () => {
         >
             <View style={styles.container}>
                 <Text style={[styles.welcomeText, styles.boldText]}>
-                    {`Welcome back to your\nTodo List!`}
+                    {`Welcome to frieNUS!`}
                 </Text>
                 <Text style={[styles.authText, styles.boldText]}>
-                    {isLogin ? 'You are logging in!' : 'You are signing up!'}
+                    {isLogin ? 'Login!' : 'Sign up!'}
                 </Text>
                 <AuthTextInput
                     value={email}
@@ -129,18 +129,19 @@ export default AuthScreen;
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#EBECF0',
+        backgroundColor: 'aqua',
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
     boldText: {
-        fontWeight: '400',
+        fontWeight: '700',
     },
     welcomeText: {
         fontSize: 32,
         textAlign: 'center',
         marginBottom: 20,
+        color: 'blueviolet',
     },
     authText: {
         fontSize: 20,
