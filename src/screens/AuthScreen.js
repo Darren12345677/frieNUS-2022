@@ -1,6 +1,7 @@
 import {
     StyleSheet,
     View,
+    Image,
     Text,
     ToastAndroid,
     Keyboard,
@@ -17,6 +18,8 @@ import { AuthTextInput, AuthPressable } from '../components';
 import { auth } from '../firebase';
 
 const AuthScreen = () => {
+
+    const versionType = 'Version 1.0';
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -94,8 +97,12 @@ const AuthScreen = () => {
             behavior={Platform.OS === 'ios' ? 'padding' : null}
         >
             <View style={styles.container}>
+                <View style = {styles.version}>
+                    <Text>{versionType}</Text>
+                </View>
                 <Text style={[styles.welcomeText, styles.boldText]}>
-                    {`Welcome to frieNUS!`}
+                    {`Welcome to `}
+                    <Text style = {[styles.frienus]}>frieNUS!</Text>
                 </Text>
                 <Text style={[styles.authText, styles.boldText]}>
                     {isLogin ? 'Login!' : 'Sign up!'}
@@ -129,7 +136,7 @@ export default AuthScreen;
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'aqua',
+        backgroundColor: '#FAF9F6',
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -141,10 +148,19 @@ const styles = StyleSheet.create({
         fontSize: 32,
         textAlign: 'center',
         marginBottom: 20,
-        color: 'blueviolet',
+        color: 'black',
+        fontFamily: 'Avenir',
     },
     authText: {
         fontSize: 20,
         marginBottom: 10,
+    },
+    version: {
+        position: 'absolute',
+        bottom: 20,
+        right: 10,
+    },
+    frienus: {
+        color: 'orange',
     },
 });

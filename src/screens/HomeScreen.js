@@ -24,8 +24,8 @@ import {
 import { auth, db } from '../firebase';
 import { Task } from '../components';
 
-const INPUT_PLACEHOLDER = 'Enter your modules';
-const THEME = 'blueviolet';
+const INPUT_PLACEHOLDER = 'Add your module codes here';
+const THEME = 'lightgrey';
 
 const { width } = Dimensions.get('window');
 
@@ -103,7 +103,25 @@ const HomeScreen = () => {
         >
             <SafeAreaView style={styles.container}>
                 <View style={styles.contentContainer}>
-                    <Text style={styles.headerText}>Your Profile 😁❤️🍆</Text>
+
+                    <View style={styles.formContainer}>
+                        <TextInput
+                            onChangeText={setTask}
+                            value={task}
+                            selectionColor={THEME}
+                            placeholder={INPUT_PLACEHOLDER}
+                            style={styles.taskInput}
+                        />
+                        <Pressable
+                            onPress={onSubmitHandler}
+                            android_ripple={{ color: 'white' }}
+                            style={styles.button}
+                        >
+                            <Text style={styles.buttonText}>+</Text>
+                        </Pressable>
+                    </View>
+
+
                     <View style={styles.listContainer}>
                         <FlatList
                             data={taskList}
@@ -119,22 +137,10 @@ const HomeScreen = () => {
                         />
                     </View>
                 </View>
-                <View style={styles.formContainer}>
-                    <TextInput
-                        onChangeText={setTask}
-                        value={task}
-                        selectionColor={THEME}
-                        placeholder={INPUT_PLACEHOLDER}
-                        style={styles.taskInput}
-                    />
-                    <Pressable
-                        onPress={onSubmitHandler}
-                        android_ripple={{ color: 'white' }}
-                        style={styles.button}
-                    >
-                        <Text style={styles.buttonText}>Add</Text>
-                    </Pressable>
-                </View>
+
+
+
+                
             </SafeAreaView>
         </KeyboardAvoidingView>
     );
@@ -145,7 +151,6 @@ export default HomeScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FAF9F6',
     },
     contentContainer: {
         flex: 1,
@@ -167,28 +172,29 @@ const styles = StyleSheet.create({
         color: THEME,
     },
     formContainer: {
-        position: 'absolute',
-        bottom: 0,
+        flex: 0.075,
         flexDirection: 'row',
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-        backgroundColor: '#FAF9F6',
+        marginHorizontal: 14,
+        marginTop: 8,
     },
     taskInput: {
-        width: width * 0.7,
+        position: 'absolute',
+        width: 340,
         borderWidth: 2,
         borderRadius: 5,
-        borderColor: '#E0D4B0',
+        borderColor: 'lightgrey',
         paddingVertical: 10,
         paddingHorizontal: 12,
         marginRight: 8,
+        backgroundColor: 'white',
     },
     button: {
-        width: width * 0.22,
-        paddingVertical: 10,
-        paddingHorizontal: 6,
-        backgroundColor: THEME,
-        borderRadius: 5,
+        position: 'absolute',
+        right: 0,
+        width: 40,
+        height: 40,
+        backgroundColor: "#0073e6",
+        borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
     },

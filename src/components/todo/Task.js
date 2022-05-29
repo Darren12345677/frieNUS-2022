@@ -7,15 +7,19 @@ const Task = (props) => {
 
     const DeleteIcon = () => (
         <TouchableOpacity onPress={() => onDelete(data.id)}>
-            <MaterialIcons name="delete" size={28} color="#407BFF" />
+            <MaterialIcons name="delete" size={28} color="#407BFF"/>
         </TouchableOpacity>
     );
 
     return (
         <View style={[styles.container, styles.containerShadow]}>
-            <Text style={styles.taskText}>{data.desc}</Text>
-            <DeleteIcon />
+        <View style = {[styles.header]} />
+            <View style = {[styles.contents]}>
+                <Text style={styles.taskText}>{data.desc}</Text>
+                <DeleteIcon />
+            </View>
         </View>
+        
     );
 };
 
@@ -24,14 +28,24 @@ export default Task;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#E0D4B0',
-        flexDirection: 'row',
+        backgroundColor: 'aliceblue',
+        flexDirection: 'column',
         marginHorizontal: 14,
         marginVertical: 10,
-        paddingVertical: 10,
-        paddingHorizontal: 6,
         alignItems: 'center',
         borderRadius: 4,
+    },
+    header: {
+        flex: 1,
+        backgroundColor: "darkorange",
+        width: "100%",
+        height: 3,
+    },
+    contents: {
+        flex: 1,
+        flexDirection: 'row',
+        paddingHorizontal: 6,
+        paddingTop: 5,
     },
     containerShadow: {
         shadowColor: '#171717',
@@ -44,6 +58,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         flex: 1,
         flexWrap: 'wrap',
-        marginRight: 10,
+        flexDirection: 'row',
+        fontFamily: 'Arial',
     },
 });

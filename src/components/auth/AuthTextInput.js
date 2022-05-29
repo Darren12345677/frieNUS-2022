@@ -1,7 +1,7 @@
 import { StyleSheet, TextInput } from 'react-native';
 import React from 'react';
 
-const THEME = '#3F3F3F';
+const THEME = 'lightgrey';
 
 const AuthTextInput = props => {
     const { secureTextEntry, keyboardType, placeholder, value, textHandler } =

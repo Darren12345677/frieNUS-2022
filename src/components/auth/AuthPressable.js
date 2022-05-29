@@ -19,7 +19,7 @@ export default AuthPressable;
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: 'blueviolet',
+        backgroundColor: '#0073e6',
         marginVertical: 5,
         paddingVertical: 10,
         width: '80%',
