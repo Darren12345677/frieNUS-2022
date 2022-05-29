@@ -21,7 +21,7 @@ import {
     deleteDoc,
 } from 'firebase/firestore';
 
-import { db } from '../firebase';
+import { auth, db } from '../firebase';
 import { Task } from '../components';
 
 const INPUT_PLACEHOLDER = 'Enter your modules';
@@ -32,12 +32,13 @@ const { width } = Dimensions.get('window');
 const HomeScreen = () => {
     const [task, setTask] = useState('');
     const [taskList, setTaskList] = useState([]);
+    const currUser = auth.currentUser.uid;
 
     useEffect(() => {
         // Expensive operation. Consider your app's design on when to invoke this.
         // Could use Redux to help on first application load.
-        const taskQuery = query(collection(db, 'tasks'));
-
+        const taskQuery = query(collection(db, currUser));
+        
         const unsubscribe = onSnapshot(taskQuery, (snapshot) => {
             const tasks = [];
 
@@ -64,7 +65,7 @@ const HomeScreen = () => {
         }
 
         try {
-            const taskRef = await addDoc(collection(db, 'tasks'), {
+            const taskRef = await addDoc(collection(db, currUser), {
                 desc: task,
                 completed: false,
             });
@@ -80,7 +81,7 @@ const HomeScreen = () => {
 
     const onDeleteHandler = async (id) => {
         try {
-            await deleteDoc(doc(db, 'tasks', id));
+            await deleteDoc(doc(db, currUser, id));
 
             console.log('onDeleteHandler success', id);
             showRes('Successfully deleted task!');
