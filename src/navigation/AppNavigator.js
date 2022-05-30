@@ -59,6 +59,7 @@ const AppNavigator = () => {
                     headerStyle: {
                         backgroundColor: '#0073e6',
                     },
+                    headerTitleAlign: 'center',
                     headerLeft: () => <FrieNUSLogo />}}
                 component={AuthScreen}
             />
@@ -89,6 +90,7 @@ const AppNavigator = () => {
                     headerStyle: {
                         backgroundColor: '#0073e6',
                     },
+                    headerTitleAlign: 'center',
                     headerRight: () => <LogoutIcon />,
                     headerLeft: () => <FrieNUSLogo />,
                 }}

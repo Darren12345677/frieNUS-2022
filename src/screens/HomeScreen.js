@@ -22,7 +22,7 @@ import {
 } from 'firebase/firestore';
 
 import { auth, db } from '../firebase';
-import { Task } from '../components';
+import { Module } from '../components';
 
 const INPUT_PLACEHOLDER = 'Add your module codes here';
 const THEME = 'lightgrey';
@@ -30,23 +30,23 @@ const THEME = 'lightgrey';
 const { width } = Dimensions.get('window');
 
 const HomeScreen = () => {
-    const [task, setTask] = useState('');
-    const [taskList, setTaskList] = useState([]);
+    const [module, setModule] = useState('');
+    const [moduleList, setModuleList] = useState([]);
     const currUser = auth.currentUser.uid;
 
     useEffect(() => {
         // Expensive operation. Consider your app's design on when to invoke this.
         // Could use Redux to help on first application load.
-        const taskQuery = query(collection(db, currUser));
+        const moduleQuery = query(collection(db, currUser));
         
-        const unsubscribe = onSnapshot(taskQuery, (snapshot) => {
-            const tasks = [];
+        const unsubscribe = onSnapshot(moduleQuery, (snapshot) => {
+            const modules = [];
 
             snapshot.forEach((doc) => {
-                tasks.push({ id: doc.id, ...doc.data() });
+                modules.push({ id: doc.id, ...doc.data() });
             });
 
-            setTaskList([...tasks]);
+            setModuleList([...modules]);
         });
 
         return unsubscribe;
@@ -59,23 +59,23 @@ const HomeScreen = () => {
     // https://firebase.google.com/docs/firestore/manage-data/add-data#web-version-9
     // https://firebase.google.com/docs/firestore/manage-data/add-data#web-version-9_7
     const onSubmitHandler = async () => {
-        if (task.length === 0) {
-            showRes('Task description cannot be empty!');
+        if (module.length === 0) {
+            showRes('Module description cannot be empty!');
             return;
         }
 
         try {
-            const taskRef = await addDoc(collection(db, currUser), {
-                desc: task,
+            const moduleRef = await addDoc(collection(db, currUser), {
+                desc: module,
                 completed: false,
             });
 
-            console.log('onSubmitHandler success', taskRef.id);
-            showRes('Successfully added task!');
+            console.log('onSubmitHandler success', moduleRef.id);
+            showRes('Successfully added module!');
             clearForm();
         } catch (err) {
             console.log('onSubmitHandler failure', err);
-            showRes('Failed to add task!');
+            showRes('Failed to add module!');
         }
     };
 
@@ -84,15 +84,15 @@ const HomeScreen = () => {
             await deleteDoc(doc(db, currUser, id));
 
             console.log('onDeleteHandler success', id);
-            showRes('Successfully deleted task!');
+            showRes('Successfully deleted module!');
         } catch (err) {
             console.log('onDeleteHandler failure', err);
-            showRes('Failed to delete task!');
+            showRes('Failed to delete module!');
         }
     };
 
     const clearForm = () => {
-        setTask('');
+        setModule('');
         Keyboard.dismiss();
     };
 
@@ -106,11 +106,11 @@ const HomeScreen = () => {
 
                     <View style={styles.formContainer}>
                         <TextInput
-                            onChangeText={setTask}
-                            value={task}
+                            onChangeText={setModule}
+                            value={module}
                             selectionColor={THEME}
                             placeholder={INPUT_PLACEHOLDER}
-                            style={styles.taskInput}
+                            style={styles.moduleInput}
                         />
                         <Pressable
                             onPress={onSubmitHandler}
@@ -124,9 +124,9 @@ const HomeScreen = () => {
 
                     <View style={styles.listContainer}>
                         <FlatList
-                            data={taskList}
+                            data={moduleList}
                             renderItem={({ item, index }) => (
-                                <Task
+                                <Module
                                     data={item}
                                     key={index}
                                     onDelete={onDeleteHandler}
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 14,
         marginTop: 8,
     },
-    taskInput: {
+    moduleInput: {
         position: 'absolute',
         width: 340,
         borderWidth: 2,
