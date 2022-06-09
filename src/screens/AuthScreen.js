@@ -19,7 +19,7 @@ import { auth } from '../firebase';
 
 const AuthScreen = () => {
 
-    const versionType = 'Version 1.0';
+    const versionType = 'Version 1.0.1';
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
