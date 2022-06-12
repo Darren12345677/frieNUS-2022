@@ -2,7 +2,6 @@ import {
     StyleSheet,
     View,
     Image,
-    Text,
     ToastAndroid,
     Keyboard,
     KeyboardAvoidingView,
@@ -17,9 +16,18 @@ import {
 import { AuthTextInput, AuthPressable } from '../components';
 import { auth } from '../firebase';
 
-const AuthScreen = () => {
+import { Layout, Icon, Text } from '@ui-kitten/components';
 
-    const versionType = 'Version 1.0.1';
+const FacebookIcon = (props) => (
+    <Icon name='facebook' {...props} />
+);
+
+const FacebookIconOutline = (props) => (
+    <Icon name='facebook-outline' {...props} />
+);
+
+const AuthScreen = () => {
+    const versionType = 'Version 1.0.2.Test';
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -96,15 +104,15 @@ const AuthScreen = () => {
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : null}
         >
-            <View style={styles.container}>
+            <Layout style={[styles.container]} level='1'>
                 <View style = {styles.version}>
-                    <Text>{versionType}</Text>
+                    <Text appearance='hint'>{versionType}</Text>
                 </View>
-                <Text style={[styles.welcomeText, styles.boldText]}>
+                <Text category='h1' style={[styles.boldText, styles.welcomeText]}>
                     {`Welcome to `}
-                    <Text style = {[styles.frienus]}>frieNUS!</Text>
+                    <Text category='h1' style = {[styles.frienus]}>frieNUS!</Text>
                 </Text>
-                <Text style={[styles.authText, styles.boldText]}>
+                <Text category='h5' style={[styles.authText, styles.boldText]}>
                     {isLogin ? 'Login!' : 'Sign up!'}
                 </Text>
                 <AuthTextInput
@@ -127,7 +135,7 @@ const AuthScreen = () => {
                     onPressHandler={() => setIsLogin(!isLogin)}
                     title={`Switch to ${isLogin ? 'Sign Up' : 'Login'}`}
                 />
-            </View>
+            </Layout>
         </KeyboardAvoidingView>
     );
 };
@@ -136,7 +144,6 @@ export default AuthScreen;
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#FAF9F6',
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -145,15 +152,12 @@ const styles = StyleSheet.create({
         fontWeight: '700',
     },
     welcomeText: {
-        fontSize: 32,
         textAlign: 'center',
         marginBottom: 20,
-        color: 'black',
         fontFamily: 'Avenir',
     },
     authText: {
-        fontSize: 20,
-        marginBottom: 10,
+        marginBottom: 20,
     },
     version: {
         position: 'absolute',
@@ -161,6 +165,7 @@ const styles = StyleSheet.create({
         right: 10,
     },
     frienus: {
+        fontSize: 32,
         color: 'orange',
     },
 });
