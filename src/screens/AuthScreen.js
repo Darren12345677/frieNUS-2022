@@ -1,11 +1,13 @@
 import {
     StyleSheet,
     View,
+    Text,
     Image,
     ToastAndroid,
     Keyboard,
     KeyboardAvoidingView,
     Platform,
+    TouchableOpacity,
 } from 'react-native';
 import React, { useState } from 'react';
 import {
@@ -16,7 +18,7 @@ import {
 import { AuthTextInput, AuthPressable } from '../components';
 import { auth } from '../firebase';
 
-import { Layout, Icon, Text } from '@ui-kitten/components';
+import { Button, Divider, Layout, TopNavigation, List } from '@ui-kitten/components';
 
 const FacebookIcon = (props) => (
     <Icon name='facebook' {...props} />
@@ -99,11 +101,23 @@ const AuthScreen = () => {
         Keyboard.dismiss();
     };
 
+    const FrieNUSLogo = () => {
+        return(
+            <TouchableOpacity>
+                <Image source={require('../assets/logofrienus.png')} style={styles.logo} />
+            </TouchableOpacity>);
+    };
+
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : null}
         >
+            <TopNavigation 
+                title='Authentication' 
+                alignment='center'
+                />
+            <Divider/>
             <Layout style={[styles.container]} level='1'>
                 <View style = {styles.version}>
                     <Text appearance='hint'>{versionType}</Text>

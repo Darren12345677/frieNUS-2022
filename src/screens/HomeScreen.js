@@ -1,6 +1,5 @@
 import {
     StyleSheet,
-    Text,
     View,
     SafeAreaView,
     TextInput,
@@ -10,6 +9,8 @@ import {
     FlatList,
     ToastAndroid,
     Keyboard,
+    TouchableOpacity,
+    Image,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import {
@@ -21,8 +22,22 @@ import {
     deleteDoc,
 } from 'firebase/firestore';
 
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { MaterialIcons } from '@expo/vector-icons';
 import { auth, db } from '../firebase';
 import { Module } from '../components';
+import { 
+    Avatar, 
+    Icon, 
+    Text, 
+    Button, 
+    Divider, 
+    Layout, 
+    TopNavigation, 
+    List, 
+    ListItem, 
+} from '@ui-kitten/components';
+
 
 const INPUT_PLACEHOLDER = 'Add your module codes here';
 const THEME = 'lightgrey';
@@ -69,7 +84,6 @@ const HomeScreen = () => {
                 desc: module,
                 completed: false,
             });
-
             console.log('onSubmitHandler success', moduleRef.id);
             showRes('Successfully added module!');
             clearForm();
@@ -96,14 +110,50 @@ const HomeScreen = () => {
         Keyboard.dismiss();
     };
 
-    return (
-        <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : null}
-        >
-            <SafeAreaView style={styles.container}>
-                <View style={styles.contentContainer}>
+    const logoutHandler = () => {
+        signOut(auth).then(() => {
+            setIsAuth(false);
+        });
+    };
 
+    const LogoutIcon = () => (
+        <TouchableOpacity onPress={logoutHandler}>
+            <MaterialIcons name="logout" size={28} color="#6696ff" />
+        </TouchableOpacity>
+    );
+
+    const FrieNUSLogo = () => {
+        return(
+            <TouchableOpacity>
+                <Image source={require('../assets/logofrienus.png')} style={styles.logo} />
+            </TouchableOpacity>);
+    };
+
+    // const renderTitle = (props) => (
+    //     <View style={styles.titleContainer}>
+    //       <Avatar
+    //         style={styles.logo}
+    //         shape='square'
+    //         size='large'
+    //         source={require('../assets/logofrienus.png')}
+    //       />
+    //     </View>
+    //   );
+
+    return (
+    <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
+    >
+        <SafeAreaView style={styles.container}>
+            <TopNavigation 
+                title='Profile'
+                alignment = 'center'
+                accessoryRight = {LogoutIcon}
+                appearance = 'control'
+                />
+            <Divider/>
+                <View style={styles.contentContainer}>
                     <View style={styles.formContainer}>
                         <TextInput
                             onChangeText={setModule}
@@ -121,9 +171,8 @@ const HomeScreen = () => {
                         </Pressable>
                     </View>
 
-
                     <View style={styles.listContainer}>
-                        <FlatList
+                        <List
                             data={moduleList}
                             renderItem={({ item, index }) => (
                                 <Module
@@ -137,12 +186,8 @@ const HomeScreen = () => {
                         />
                     </View>
                 </View>
-
-
-
-                
-            </SafeAreaView>
-        </KeyboardAvoidingView>
+        </SafeAreaView>
+     </KeyboardAvoidingView>
     );
 };
 
@@ -158,7 +203,7 @@ const styles = StyleSheet.create({
     },
     listContainer: {
         flex: 1,
-        paddingBottom: 70, // Fix: Temporary workaround
+        paddingBottom: 0, // Fix: Temporary workaround
     },
     list: {
         overflow: 'scroll',
@@ -200,5 +245,13 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: 'white',
+    },
+    titleContainer: {
+        flexDirection: 'row', 
+        alignItems: 'center',
+        flexWrap: 'wrap',
+    }, 
+    logo: {
+        margin: 8,
     },
 });

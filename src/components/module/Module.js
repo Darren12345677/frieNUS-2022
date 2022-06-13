@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Button, Icon } from '@ui-kitten/components';
+
 
 const Module = (props) => {
     const { data, onDelete } = props;
