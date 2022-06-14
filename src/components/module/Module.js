@@ -1,27 +1,36 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import React from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Button, Icon } from '@ui-kitten/components';
+import { Text, Layout, Button, Icon } from '@ui-kitten/components';
 
 
 const Module = (props) => {
     const { data, onDelete } = props;
 
-    const DeleteIcon = () => (
-        <TouchableOpacity onPress={() => onDelete(data.id)}>
-            <MaterialIcons name="delete" size={28} color="#407BFF"/>
-        </TouchableOpacity>
+    const renderTrashIcon = (props) => {
+        return <Icon {...props} name='trash-2' pack='eva'/>
+    }
+
+    const DeleteIcon = (props) => (
+        <Button 
+          onPress={() => onDelete(data.id)} 
+          accessoryLeft={renderTrashIcon} 
+          size='medium'
+          appearance='ghost'
+          status='basic'
+          style={{paddingTop:0, paddingBottom:10, paddingRight:5}}>
+        </Button>
     );
 
     return (
-        <View style={[styles.container, styles.containerShadow]}>
-        <View style = {[styles.header]} />
-            <View style = {[styles.contents]}>
-                <Text style={styles.taskText}>{data.desc}</Text>
+        <Layout style={[styles.container, styles.containerShadow]}>
+            <Layout style = {[styles.header]} />
+            <Layout level='2' style = {[styles.contents]}>
+                <Text style={[styles.taskText, {lineHeight: Platform.OS === 'ios' ? 30 : 20}]}>
+                    {data.desc}
+                </Text>
                 <DeleteIcon />
-            </View>
-        </View>
-        
+            </Layout>
+        </Layout>
     );
 };
 

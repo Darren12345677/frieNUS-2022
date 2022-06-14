@@ -1,20 +1,6 @@
-import { View, StyleSheet, Pressable } from 'react-native';
+import { StyleSheet } from 'react-native';
 import React from 'react';
 import { Text, Button } from '@ui-kitten/components';
-
-/* const AuthPressable = props => {
-    const { onPressHandler, title } = props;
-
-    return (
-        <Pressable
-            style={styles.button}
-            onPress={onPressHandler}
-            android_ripple={{ color: '#FFF' }}
-        >
-            <Text style={styles.text}>{title}</Text>
-        </Pressable>
-    );
-}; */
 
 const AuthPressable = (props) => {
   const { onPressHandler, title } = props;

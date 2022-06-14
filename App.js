@@ -4,7 +4,10 @@ import { LogBox } from 'react-native';
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
 import { default as theme } from './fixed-theme.json';
+
+
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
+import { CustomIconPack } from './src/assets/CustomIconPack'
 
 import AppNavigator from './src/navigation/AppNavigator';
 import { store } from './src/store/store';
@@ -17,10 +20,10 @@ console.log("App start");
 export default App = () => {
     return (
         <>
-            <IconRegistry icons={EvaIconsPack} />
+            <IconRegistry icons={[EvaIconsPack, CustomIconPack]} />
             <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme}}>
-                    <AppNavigator />
-                    <StatusBar style='auto' />
+                <AppNavigator />
+                <StatusBar style='auto' />
             </ApplicationProvider>
         </>
     );

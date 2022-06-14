@@ -1,26 +1,8 @@
-import { TouchableWithoutFeedback, StyleSheet, TextInput } from 'react-native';
+import { TouchableWithoutFeedback, StyleSheet } from 'react-native';
 import React from 'react';
-import { Input, Icon, Text } from '@ui-kitten/components';
+import { Input, Icon } from '@ui-kitten/components';
 
 const THEME = 'lightgrey';
-
-/*
-const AuthTextInput = props => {
-    const { secureTextEntry, keyboardType, placeholder, value, textHandler } =
-        props;
-
-    return (
-        <TextInput
-            style={styles.textInput}
-            secureTextEntry={secureTextEntry}
-            placeholder={placeholder}
-            keyboardType={keyboardType}
-            value={value}
-            onChangeText={textHandler}
-            selectionColor={THEME}
-        />
-    );
-}; */
 
  const AuthTextInput = props => {
 
@@ -36,7 +18,7 @@ const AuthTextInput = props => {
     const renderIcon = (props) => {
         return (
             <TouchableWithoutFeedback onPress={toggleSecureEntry}>
-                <Icon {...props} name={secureTextEntry ? 'eye-off' : 'eye'}/>
+                <Icon {...props} name={secureTextEntry ? 'eye-off' : 'eye' } pack='eva'/>
             </TouchableWithoutFeedback>
         )
     }

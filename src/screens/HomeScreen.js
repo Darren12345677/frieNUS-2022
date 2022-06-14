@@ -1,16 +1,10 @@
 import {
     StyleSheet,
-    View,
     SafeAreaView,
-    TextInput,
     KeyboardAvoidingView,
-    Pressable,
-    Dimensions,
-    FlatList,
-    ToastAndroid,
     Keyboard,
     TouchableOpacity,
-    Image,
+    Alert,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import {
@@ -22,27 +16,22 @@ import {
     deleteDoc,
 } from 'firebase/firestore';
 
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 import { MaterialIcons } from '@expo/vector-icons';
 import { auth, db } from '../firebase';
 import { Module } from '../components';
 import { 
-    Avatar, 
-    Icon, 
-    Text, 
-    Button, 
     Divider, 
     Layout, 
     TopNavigation, 
     List, 
-    ListItem, 
+    Icon,
+    Button,
+    Input,
 } from '@ui-kitten/components';
 
 
 const INPUT_PLACEHOLDER = 'Add your module codes here';
-const THEME = 'lightgrey';
-
-const { width } = Dimensions.get('window');
 
 const HomeScreen = () => {
     const [module, setModule] = useState('');
@@ -68,7 +57,10 @@ const HomeScreen = () => {
     }, [onSubmitHandler]);
 
     const showRes = (text) => {
-        ToastAndroid.show(text, ToastAndroid.SHORT);
+        console.log(text);
+        Alert.alert(
+            text,"",[{text:"Dismiss", onPress: () => console.log("Dismissed")}]
+        )
     };
 
     // https://firebase.google.com/docs/firestore/manage-data/add-data#web-version-9
@@ -84,6 +76,7 @@ const HomeScreen = () => {
                 desc: module,
                 completed: false,
             });
+
             console.log('onSubmitHandler success', moduleRef.id);
             showRes('Successfully added module!');
             clearForm();
@@ -96,7 +89,6 @@ const HomeScreen = () => {
     const onDeleteHandler = async (id) => {
         try {
             await deleteDoc(doc(db, currUser, id));
-
             console.log('onDeleteHandler success', id);
             showRes('Successfully deleted module!');
         } catch (err) {
@@ -110,8 +102,20 @@ const HomeScreen = () => {
         Keyboard.dismiss();
     };
 
+    const successfulLogoutAlert = () => {
+        console.log("Successful Logout")
+        Alert.alert(
+            "Logged out!",
+            //This empty argument is for the captions. Otherwise app will crash when msg is displayed.
+            "",
+            [{ text:"Dismiss", onPress: () => console.log("Dismissed")} ]
+        )
+    };
+
     const logoutHandler = () => {
         signOut(auth).then(() => {
+            //This alert must be done before the hook or else it will not display
+            successfulLogoutAlert();
             setIsAuth(false);
         });
     };
@@ -122,56 +126,46 @@ const HomeScreen = () => {
         </TouchableOpacity>
     );
 
-    const FrieNUSLogo = () => {
-        return(
-            <TouchableOpacity>
-                <Image source={require('../assets/logofrienus.png')} style={styles.logo} />
-            </TouchableOpacity>);
-    };
-
-    // const renderTitle = (props) => (
-    //     <View style={styles.titleContainer}>
-    //       <Avatar
-    //         style={styles.logo}
-    //         shape='square'
-    //         size='large'
-    //         source={require('../assets/logofrienus.png')}
-    //       />
-    //     </View>
-    //   );
+    const addIcon = (props) => {
+        return (
+        <Icon name='plus-circle' pack='eva' {...props}/>
+        );
+    }
 
     return (
-    <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : null}
-    >
-        <SafeAreaView style={styles.container}>
-            <TopNavigation 
-                title='Profile'
-                alignment = 'center'
-                accessoryRight = {LogoutIcon}
-                appearance = 'control'
-                />
-            <Divider/>
-                <View style={styles.contentContainer}>
-                    <View style={styles.formContainer}>
-                        <TextInput
+        <SafeAreaView style={{flex:1}}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? null : null}
+            >
+                <TopNavigation 
+                    title='Profile'
+                    alignment='start'
+                    accessoryRight={LogoutIcon}
+                    accessoryLeft={<Icon name='frienus' pack='customAssets' style={{marginLeft:5}} />}
+                    style={{flex:0.025}}
+                    />
+                <Divider/>
+                <Layout level='1' style={[styles.content]}>
+                    <Layout level='2' style={styles.inputContainer}>
+                        <Input
                             onChangeText={setModule}
                             value={module}
-                            selectionColor={THEME}
                             placeholder={INPUT_PLACEHOLDER}
                             style={styles.moduleInput}
-                        />
-                        <Pressable
+                            status='basic'
+                        /> 
+                        <Button
                             onPress={onSubmitHandler}
-                            android_ripple={{ color: 'white' }}
                             style={styles.button}
+                            accessoryLeft={addIcon}
+                            size='giant'
+                            status='primary'
+                            appearance='ghost'
                         >
-                            <Text style={styles.buttonText}>+</Text>
-                        </Pressable>
-                    </View>
-
-                    <View style={styles.listContainer}>
+                        </Button>
+                    </Layout>
+                    <Layout style={styles.listContainer}>
                         <List
                             data={moduleList}
                             renderItem={({ item, index }) => (
@@ -183,75 +177,47 @@ const HomeScreen = () => {
                             )}
                             style={styles.list}
                             showsVerticalScrollIndicator={false}
+                            ItemSeparatorComponent={Divider}
                         />
-                    </View>
-                </View>
+                    </Layout>
+                </Layout>
+            </KeyboardAvoidingView>
         </SafeAreaView>
-     </KeyboardAvoidingView>
     );
 };
 
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    contentContainer: {
-        flex: 1,
-        backgroundColor: '#FAF9F6',
+    content: {
+        flex: 10,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        flexDirection: 'column',
+        //backgroundColor: 'red',
     },
     listContainer: {
-        flex: 1,
-        paddingBottom: 0, // Fix: Temporary workaround
+        // backgroundColor:'red',
+        flex: 10,
+        width: '100%',
     },
     list: {
         overflow: 'scroll',
     },
-    headerText: {
-        fontWeight: 'bold',
-        fontSize: 32,
-        marginLeft: 14,
-        marginTop: 14,
-        marginBottom: 10,
-        color: THEME,
-    },
-    formContainer: {
-        flex: 0.075,
+    inputContainer: {
+        // backgroundColor:'black',
+        flex: 1,
+        width:'100%',
         flexDirection: 'row',
-        marginHorizontal: 14,
-        marginTop: 8,
+        justifyContent:'flex-start',
+        alignItems:'center',
     },
     moduleInput: {
-        position: 'absolute',
-        width: 340,
-        borderWidth: 2,
-        borderRadius: 5,
-        borderColor: 'lightgrey',
-        paddingVertical: 10,
-        paddingHorizontal: 12,
-        marginRight: 8,
-        backgroundColor: 'white',
+        flex: 10,
+        marginLeft: 16,
     },
     button: {
-        position: 'absolute',
-        right: 0,
-        width: 40,
-        height: 40,
-        backgroundColor: "#0073e6",
-        borderRadius: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: 'white',
-    },
-    titleContainer: {
-        flexDirection: 'row', 
-        alignItems: 'center',
-        flexWrap: 'wrap',
-    }, 
-    logo: {
-        margin: 8,
+        flex: 0.25,
+        marginHorizontal: 10,
     },
 });
