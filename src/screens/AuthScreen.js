@@ -15,15 +15,10 @@ import {
 import { AuthTextInput, AuthPressable } from '../components';
 import { auth } from '../firebase';
 
-import { Text, Icon, Divider, Layout, TopNavigation, Avatar } from '@ui-kitten/components';
-
-
-const frienusIcon = (props) => (
-    <Icon name='frienus' pack='customAssets' style={{marginLeft:5}} {...props} />
-);
+import { Text, Icon, Divider, Layout, TopNavigation } from '@ui-kitten/components';
 
 const AuthScreen = () => {
-    const versionType = 'Version 1.0.3.Test';
+    const versionType = 'Version 1.0.3';
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -68,7 +63,7 @@ const AuthScreen = () => {
             missingFieldsAlert("login");
             return;
         }
-
+        
         await signInWithEmailAndPassword(auth, email, password)
             .then((userCredentials) => {
                 const user = userCredentials.user;
@@ -122,7 +117,7 @@ const AuthScreen = () => {
                 <TopNavigation 
                     title='Authentication'
                     alignment='start'
-                    accessoryLeft={frienusIcon}
+                    accessoryLeft={<Icon name='frienus' pack='customAssets' style={{marginLeft:5, width:60, height:60}} />}
                     style={{flex:0.025}}
                 />
                 <Divider/>

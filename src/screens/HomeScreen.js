@@ -142,7 +142,7 @@ const HomeScreen = () => {
                     title='Profile'
                     alignment='start'
                     accessoryRight={LogoutIcon}
-                    accessoryLeft={<Icon name='frienus' pack='customAssets' style={{marginLeft:5}} />}
+                    accessoryLeft={<Icon name='frienus' pack='customAssets' style={{marginLeft:5, width:60, height:60}} />}
                     style={{flex:0.025}}
                     />
                 <Divider/>
