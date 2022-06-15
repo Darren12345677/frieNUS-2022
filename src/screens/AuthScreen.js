@@ -1,12 +1,10 @@
 import {
     StyleSheet,
-    View,
-    Image,
-    Text,
-    ToastAndroid,
     Keyboard,
     KeyboardAvoidingView,
     Platform,
+    Alert,
+    SafeAreaView,
 } from 'react-native';
 import React, { useState } from 'react';
 import {
@@ -17,71 +15,90 @@ import {
 import { AuthTextInput, AuthPressable } from '../components';
 import { auth } from '../firebase';
 
-const AuthScreen = () => {
+import { Text, Icon, Divider, Layout, TopNavigation } from '@ui-kitten/components';
 
-    const versionType = 'Version 1.0.1';
+const AuthScreen = () => {
+    const versionType = 'Version 1.0.3';
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const signUpToast = () => {
-        ToastAndroid.show(
-            'Sign Up successfully completed!',
-            ToastAndroid.SHORT
-        );
+    const successfulLoginAlert = () => {
+        console.log("Successful Login")
+        Alert.alert(
+            "Login successful!",
+            //This empty argument is for the captions. Otherwise app will crash when msg is displayed.
+            "",
+            [{ text:"Dismiss", onPress: () => console.log("Dismissed")} ]
+        )
     };
 
-    const missingFieldsToast = () => {
-        ToastAndroid.show(
-            'Missing fields, please try again!',
-            ToastAndroid.SHORT
-        );
+    const signUpAlert = () => {
+        console.log("Successful Sign Up")
+        Alert.alert(
+            "Sign up successfully completed!",
+            //This empty argument is for the captions. Otherwise app will crash when msg is displayed.
+            "",
+            [{ text:"Dismiss", onPress: () => console.log("Dismissed")} ]
+        )
     };
+
+    const missingFieldsAlert = (type) => {
+        console.log("Missing Fields for " + type)
+        Alert.alert(
+            "Missing fields for " + type + ", please try again!",
+            //This empty argument is for the captions. Otherwise app will crash when msg is displayed.
+            "",
+            [{ text:"Dismiss", onPress: () => console.log("Dismissed")}]
+        )
+    };
+
+    const errorAlert = (errorCode, errorMsg) => {
+        Alert.alert(errorCode, errorMsg, 
+        [{ text:"Dismiss", onPress: () => console.log("Dismissed")}])
+    }
 
     const loginHandler = async () => {
         if (email.length === 0 || password.length === 0) {
-            missingFieldsToast();
+            missingFieldsAlert("login");
             return;
         }
-
+        
         await signInWithEmailAndPassword(auth, email, password)
             .then((userCredentials) => {
                 const user = userCredentials.user;
-
                 // To show the user object returned
                 console.log(user);
-
                 restoreForm();
+                successfulLoginAlert();
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-
                 console.error('[loginHandler]', errorCode, errorMessage);
+                errorAlert(errorCode, errorMessage);
             });
     };
 
     const signUpHandler = async () => {
         if (email.length === 0 || password.length === 0) {
-            missingFieldsToast();
+            missingFieldsAlert("sign up");
             return;
         }
 
         await createUserWithEmailAndPassword(auth, email, password)
             .then((userCredentials) => {
                 const user = userCredentials.user;
-
                 // To show the user object returned
                 console.log(user);
-
                 restoreForm();
-                signUpToast();
+                signUpAlert();
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-
                 console.error('[signUpHandler]', errorCode, errorMessage);
+                errorAlert(errorCode, errorMessage);
             });
     };
 
@@ -92,75 +109,80 @@ const AuthScreen = () => {
     };
 
     return (
-        <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : null}
-        >
-            <View style={styles.container}>
-                <View style = {styles.version}>
-                    <Text>{versionType}</Text>
-                </View>
-                <Text style={[styles.welcomeText, styles.boldText]}>
-                    {`Welcome to `}
-                    <Text style = {[styles.frienus]}>frieNUS!</Text>
-                </Text>
-                <Text style={[styles.authText, styles.boldText]}>
-                    {isLogin ? 'Login!' : 'Sign up!'}
-                </Text>
-                <AuthTextInput
-                    value={email}
-                    placeholder="Your Email"
-                    textHandler={setEmail}
-                    keyboardType="email-address"
+        <SafeAreaView style={{flex:1}}>
+          <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? null : null}
+            >
+                <TopNavigation 
+                    title='Authentication'
+                    alignment='start'
+                    accessoryLeft={<Icon name='frienus' pack='customAssets' style={{marginLeft:5, width:60, height:60}} />}
+                    style={{flex:0.025}}
                 />
-                <AuthTextInput
-                    value={password}
-                    placeholder="Your Password"
-                    textHandler={setPassword}
-                    secureTextEntry
-                />
-                <AuthPressable
-                    onPressHandler={isLogin ? loginHandler : signUpHandler}
-                    title={'Proceed'}
-                />
-                <AuthPressable
-                    onPressHandler={() => setIsLogin(!isLogin)}
-                    title={`Switch to ${isLogin ? 'Sign Up' : 'Login'}`}
-                />
-            </View>
-        </KeyboardAvoidingView>
+                <Divider/>
+                <Layout style={[styles.content]}>
+                    <Text category='h2' style={[styles.welcomeText]}>
+                        {`Welcome to `}
+                        <Text category='h1' style = {{color:'orange'}}>frieNUS!</Text>
+                    </Text>
+                    <Text status='basic' category='h5' style={[styles.authText]}>
+                        {isLogin ? 'Login!' : 'Sign up!'}
+                    </Text>
+                    <AuthTextInput
+                        value={email}
+                        placeholder="Your Email"
+                        textHandler={setEmail}
+                        keyboardType="email-address"
+                    />
+                    <AuthTextInput
+                        value={password}
+                        placeholder="Your Password"
+                        textHandler={setPassword}
+                        secureTextEntry
+                    />
+                    <AuthPressable
+                        onPressHandler={isLogin ? loginHandler : signUpHandler}
+                        title={'Proceed'}
+                    />
+                    <AuthPressable
+                        onPressHandler={() => setIsLogin(!isLogin)}
+                        title={`Switch to ${isLogin ? 'Sign Up' : 'Login'}`}
+                    />
+                    <Text style = {styles.version} appearance='hint'>{versionType}</Text>
+                </Layout>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 };
 
 export default AuthScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: '#FAF9F6',
-        flex: 1,
-        justifyContent: 'center',
+    content: {
+        // backgroundColor:'red',
+        flex: 10,
+        justifyContent: 'flex-start',
         alignItems: 'center',
-    },
-    boldText: {
-        fontWeight: '700',
+        flexDirection: 'column',
     },
     welcomeText: {
-        fontSize: 32,
         textAlign: 'center',
         marginBottom: 20,
-        color: 'black',
+        marginTop: '10%',
         fontFamily: 'Avenir',
     },
     authText: {
-        fontSize: 20,
-        marginBottom: 10,
+        marginBottom: 30,
+        fontSize: 30,
     },
     version: {
         position: 'absolute',
         bottom: 20,
         right: 10,
     },
-    frienus: {
-        color: 'orange',
-    },
+    logo: {
+        width: 50,
+        resizeMode: 'contain',
+    }
 });
