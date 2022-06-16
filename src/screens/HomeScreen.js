@@ -143,7 +143,7 @@ const HomeScreen = () => {
                     alignment='start'
                     accessoryRight={LogoutIcon}
                     accessoryLeft={<Icon name='frienus' pack='customAssets' style={{marginLeft:5, width:60, height:60}} />}
-                    style={{flex:0.025}}
+                    style={{height:'8%'}}
                     />
                 <Divider/>
                 <Layout level='1' style={[styles.content]}>

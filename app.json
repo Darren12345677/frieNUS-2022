@@ -3,7 +3,7 @@
     "name": "frieNUS",
     "slug": "orbital-frienus",
     "description": "Welcome to frieNUS!",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "light",
