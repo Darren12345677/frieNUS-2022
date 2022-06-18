@@ -5,28 +5,53 @@ import {
     List, 
     Icon,
 } from '@ui-kitten/components';
-import React, { useState } from "react";
+import {
+    addDoc,
+    onSnapshot,
+    query,
+    collection,
+    doc,
+    deleteDoc,
+} from 'firebase/firestore';
+import { auth, db } from '../firebase';
+import React, { useState, useEffect } from "react";
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet,} from "react-native";
 import { SearchBar } from "react-native-elements";
 import { UserResult, DATA } from '../components';
 
 
-const SearchScreen = (datas) => {
+const SearchScreen = () => {
 
     // db.listCollections().then(collections => {
     //     for (let collection of collections) {
     //         console.log('Found collection with id: ${collection.id}');
     //     }
     // });
-    
 
-	const [data, setData] = useState(DATA);
+	const [data, setData] = useState([]);
 	const [searchValue, setSearchValue] = useState("");
-	const arrayHolder = DATA;
+    const [arrayHolder, setArrayHolder] = useState([])
+
+    useEffect(() => {
+        // Expensive operation. Consider your app's design on when to invoke this.
+        // Could use Redux to help on first application load.
+        const userQuery = query(collection(db, 'Users'));
+        
+        const TT = onSnapshot(userQuery, (snapshot) => {
+            const userList = []
+            snapshot.forEach((doc) => {
+                userList.push({ id: doc.id, ...doc.data() });
+            });
+            setArrayHolder([...userList]);
+            setData([...userList]);
+        });
+
+        return TT;
+    }, [setSearchValue]);
 
 	const searchFunction = (text) => {
 		const updatedData = arrayHolder.filter((item) => {
-		  const item_data = `${item.title.toUpperCase()})`;
+		  const item_data = `${item.id.toUpperCase()})`;
 		  const text_data = text.toUpperCase();
 		  return item_data.indexOf(text_data) > -1;
 		});
@@ -59,7 +84,7 @@ const SearchScreen = (datas) => {
                         <List
                         data={data}
                         renderItem={({ item }) => (
-                            <UserResult title={item.title} />
+                            <UserResult title={item.id} />
                         )}
                         // renderItem={renderUserResult}
                         keyExtractor={(item) => item.id}

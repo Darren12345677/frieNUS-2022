@@ -12,8 +12,18 @@ import {
     signInWithEmailAndPassword,
 } from 'firebase/auth';
 
+import {
+    addDoc,
+    onSnapshot,
+    query,
+    collection,
+    doc,
+    deleteDoc,
+    setDoc, 
+} from 'firebase/firestore';
+
 import { AuthTextInput, AuthPressable } from '../components';
-import { auth } from '../firebase';
+import { db, auth } from '../firebase';
 
 import { Text, Icon, Divider, Layout, TopNavigation } from '@ui-kitten/components';
 import * as data from '../../app.json'
@@ -94,6 +104,7 @@ const AuthScreen = () => {
                 console.log(user);
                 restoreForm();
                 signUpAlert();
+                createUser(user);
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -102,6 +113,10 @@ const AuthScreen = () => {
                 errorAlert(errorCode, errorMessage);
             });
     };
+
+    const createUser = (user) => {
+        return  setDoc(doc(db, 'Users', user.uid), JSON.parse(JSON.stringify(user)))
+    }
 
     const restoreForm = () => {
         setEmail('');

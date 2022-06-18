@@ -34,5 +34,13 @@ const app = initializeApp(firebaseConfig);
 
 const auth = getAuth();
 const db = getFirestore(app);
+// const functions = require("firebase-functions");
+
+// exports.newUser = functions.auth.user().onCreate((user) => {
+//     return db
+//     .collection("user")
+//     .doc(user.uid)
+//     .create(JSON.parse(JSON.stringify(user)))
+// })
 
 export { auth, db };

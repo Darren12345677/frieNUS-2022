@@ -41,7 +41,7 @@ const HomeScreen = () => {
     useEffect(() => {
         // Expensive operation. Consider your app's design on when to invoke this.
         // Could use Redux to help on first application load.
-        const moduleQuery = query(collection(db, currUser));
+        const moduleQuery = query(collection(db, 'Users/' + currUser + '/Modules'));
         
         const unsubscribe = onSnapshot(moduleQuery, (snapshot) => {
             const modules = [];
@@ -72,7 +72,7 @@ const HomeScreen = () => {
         }
 
         try {
-            const moduleRef = await addDoc(collection(db, currUser), {
+            const moduleRef = await addDoc(collection(db, 'Users/' + currUser + '/Modules'), {
                 desc: module,
                 completed: false,
             });
@@ -88,7 +88,7 @@ const HomeScreen = () => {
 
     const onDeleteHandler = async (id) => {
         try {
-            await deleteDoc(doc(db, currUser, id));
+            await deleteDoc(doc(db, 'Users/' + currUser + '/Modules', id));
             console.log('onDeleteHandler success', id);
             showRes('Successfully deleted module!');
         } catch (err) {
