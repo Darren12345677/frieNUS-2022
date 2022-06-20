@@ -13,12 +13,7 @@ import {
 } from 'firebase/auth';
 
 import {
-    addDoc,
-    onSnapshot,
-    query,
-    collection,
     doc,
-    deleteDoc,
     setDoc, 
 } from 'firebase/firestore';
 
@@ -115,7 +110,15 @@ const AuthScreen = () => {
     };
 
     const createUser = (user) => {
-        return  setDoc(doc(db, 'Users', user.uid), JSON.parse(JSON.stringify(user)))
+        console.log("This is the user");
+        return setDoc(doc(db, 'Users', user.uid), 
+            //JSON.parse(JSON.stringify(user))
+            {
+                "displayName" : user.uid,
+                "id" : user.uid, 
+                "email" : user.email,
+            }
+        )
     }
 
     const restoreForm = () => {

@@ -6,27 +6,18 @@ import {
     Icon,
 } from '@ui-kitten/components';
 import {
-    addDoc,
     onSnapshot,
     query,
     collection,
-    doc,
-    deleteDoc,
 } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { db } from '../firebase';
 import React, { useState, useEffect } from "react";
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet,} from "react-native";
 import { SearchBar } from "react-native-elements";
-import { UserResult, DATA } from '../components';
+import { UserResult, DATA, LogoutButton } from '../components';
 
 
 const SearchScreen = () => {
-
-    // db.listCollections().then(collections => {
-    //     for (let collection of collections) {
-    //         console.log('Found collection with id: ${collection.id}');
-    //     }
-    // });
 
 	const [data, setData] = useState([]);
 	const [searchValue, setSearchValue] = useState("");
@@ -55,10 +46,12 @@ const SearchScreen = () => {
 		  const text_data = text.toUpperCase();
 		  return item_data.indexOf(text_data) > -1;
 		});
+        //console.log("Search Function called");
 		setData(updatedData);
+        //console.log(updatedData);
 		setSearchValue(text);
 	  };
-
+      
 	return (
         <SafeAreaView style={{flex:1}}>
             <KeyboardAvoidingView style={{flex:1}}>
@@ -66,6 +59,7 @@ const SearchScreen = () => {
                     title='Search'
                     alignment='start'
                     accessoryLeft={<Icon name='frienus' pack='customAssets' style={{marginLeft:5, height:60, width:60}} />}
+                    accessoryRight={LogoutButton}
                     style={{height:'8%'}}
                 />
                 <Divider/>
@@ -83,9 +77,17 @@ const SearchScreen = () => {
                     <Layout style={styles.listContainer}>
                         <List
                         data={data}
-                        renderItem={({ item }) => (
-                            <UserResult title={item.id} />
-                        )}
+                        renderItem={({ item }) => {
+                                return (
+                                    <UserResult 
+                                        title={item.id} 
+                                        data={item}
+                                    />
+                                )
+                            }
+                            }
+
+
                         // renderItem={renderUserResult}
                         keyExtractor={(item) => item.id}
                         ItemSeparatorComponent={Divider}
