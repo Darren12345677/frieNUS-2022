@@ -13,7 +13,7 @@ import {
     ModuleScreen,
 } from '../screens';
 import { KeyboardAvoidingView, SafeAreaView,} from "react-native";
-import { LogoutButton, UserResult } from '../components';
+import { LogoutButton, UserResult, ConnectButton } from '../components';
 import { auth, db } from '../firebase';
 import {
     doc,
@@ -24,6 +24,8 @@ import {
     getDocs,
 } from 'firebase/firestore';
 import { useEffect } from 'react';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+
 
 const ProfileScreen= () => {
     const [displayNameField, setDisplayNameField] = React.useState("");
@@ -31,7 +33,7 @@ const ProfileScreen= () => {
     const [idField, setIdField] = React.useState("");
     const [connectListStr, setConnectListStr] = React.useState("");
 
-    useEffect(() => {
+    useFocusEffect(() => {
         const currUser = auth.currentUser;
         const userDoc = doc(db, 'Users/' + currUser.uid);
         getDoc(userDoc).then(result => {
@@ -40,7 +42,6 @@ const ProfileScreen= () => {
             setEmailField(result.get('email'));
             setIdField(result.get('id'));
         })
-
         const collectionConnectedUsersRef = collection(db, 'Users/' + currUser.uid + '/ConnectedUsers');
         const loadConnected =  async () => {
             const connectList = [];
@@ -52,8 +53,11 @@ const ProfileScreen= () => {
             setConnectListStr(connectList.toString());
         };
         loadConnected();
-    })
 
+    }, [])
+
+
+    const navigation = useNavigation();
     
     return (
         <SafeAreaView style={{flex:1}}>
@@ -68,7 +72,7 @@ const ProfileScreen= () => {
             <Divider/>
             <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text category='h1'>Profile</Text>
-            <Button onPress={() => ModuleScreen}>
+            <Button onPress={() => navigation.navigate('Module List')}>
                 BUTTON
             </Button>
             <Text>This is your current uid: {idField}</Text>

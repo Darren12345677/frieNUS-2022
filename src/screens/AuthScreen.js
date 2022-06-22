@@ -15,6 +15,8 @@ import {
 import {
     doc,
     setDoc, 
+    addDoc,
+    collection,
 } from 'firebase/firestore';
 
 import { AuthTextInput, AuthPressable } from '../components';
@@ -111,10 +113,6 @@ const AuthScreen = () => {
 
     const createUser = (user) => {
         console.log("This is the user");
-
-
-
-
         setDoc(doc(db, 'Users', user.uid), 
             //JSON.parse(JSON.stringify(user))
             {

@@ -12,13 +12,14 @@ import {
 import { auth, db } from '../../firebase';
 import { ConnectButton } from '../../components';
 import { useEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 
 const UserResult = ({userFields}) => {
     const idField = userFields.id;
     const [visible, setVisible] = React.useState(false);
     const [finalStr, setStr] = React.useState("");
 
-    useEffect(() => {
+    useFocusEffect(() => {
         const colRef = collection(db, 'Users/' + idField + '/Modules');
         const getModules = async () => {
             const modsList = [];

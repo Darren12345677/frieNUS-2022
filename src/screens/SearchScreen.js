@@ -16,7 +16,6 @@ import { KeyboardAvoidingView, SafeAreaView, StyleSheet,} from "react-native";
 import { SearchBar } from "react-native-elements";
 import { UserResult, DATA, LogoutButton } from '../components';
 
-
 const SearchScreen = () => {
 
 	const [data, setData] = useState([]);
