@@ -30,7 +30,7 @@ const ProfileScreen= () => {
     useEffect(() => {
         const currUser = auth.currentUser;
         const userDoc = doc(db, 'Users/' + currUser.uid);
-        const docSnap = getDoc(userDoc).then(result => {
+        getDoc(userDoc).then(result => {
             console.log("This is the currentUser id: " + currUser.uid);
             setDisplayNameField(result.get('displayName'));
             setEmailField(result.get('email'));

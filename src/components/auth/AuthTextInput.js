@@ -4,9 +4,8 @@ import { Input, Icon } from '@ui-kitten/components';
 
 const THEME = 'lightgrey';
 
- const AuthTextInput = props => {
+ const AuthTextInput = (props) => {
 
-    
     const [secureTextEntry, setSecureTextEntry] = React.useState(false);
 
     const { placeholder, keyboardType, value, textHandler } = props;

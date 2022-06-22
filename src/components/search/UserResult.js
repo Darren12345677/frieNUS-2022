@@ -4,38 +4,42 @@ import { Text, Button, Card, Layout, Modal, Divider } from '@ui-kitten/component
 import {
     collection,
     getDocs,
+    addDoc,
+    setDoc,
+    getDoc,
+    doc,
 } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { auth, db } from '../../firebase';
+import { ConnectButton } from '../../components';
 import { useEffect } from 'react';
 
-const UserResult = ({title, data}) => {
-    const currUser = title;
+const UserResult = ({userFields}) => {
+    const idField = userFields.id;
     const [visible, setVisible] = React.useState(false);
     const [finalStr, setStr] = React.useState("");
 
     useEffect(() => {
-        const colRef = collection(db, 'Users/' + currUser + '/Modules');
+        const colRef = collection(db, 'Users/' + idField + '/Modules');
         const getModules = async () => {
             const modsList = [];
             await (await getDocs(colRef)).forEach((doc) => {
                 const moduleCode = doc.get('desc');
                 modsList.push(moduleCode);
             })
-            setStr(modsList.toString());
-
-            // Oddity
-            // if (modsList.length === 0) {
-            //     console.log("modsList Length is " + modsList.length);
-            //     setStr("Empty"); //Don't undo this as the whole app will lag
-            // }
+            
+            if (modsList.length === 0) {
+                console.log("modsList Length is " + modsList.length);
+                setStr("Empty");
+            } else {
+                setStr(modsList.toString());
+            }
         }
         getModules();
-    })
+    }, [])
     
-
     return (
         <Button onPress={() => setVisible(true)} status='primary' appearance='outline' style={styles.rect}>
-            <Text status='primary'>User: {title}</Text>
+            <Text status='primary'>User: {idField}</Text>
             <Modal visible={visible}>
                 <Card disabled={true}>
                     <Text style={[styles.modalText]}>These are the modules they are taking:</Text>
@@ -43,7 +47,7 @@ const UserResult = ({title, data}) => {
                         <Text style={[styles.modalText]}>{finalStr}</Text>
                     </Layout>
                     <Divider/>
-                    <Button>Connect</Button>
+                    <ConnectButton userId={idField}/>
                     <Divider/>
                     <Button onPress={() => setVisible(false)}>
                         Dismiss

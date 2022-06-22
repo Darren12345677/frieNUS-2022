@@ -78,17 +78,8 @@ const SearchScreen = () => {
                         <List
                         data={data}
                         renderItem={({ item }) => {
-                                return (
-                                    <UserResult 
-                                        title={item.id} 
-                                        data={item}
-                                    />
-                                )
-                            }
-                            }
-
-
-                        // renderItem={renderUserResult}
+                                return (<UserResult userFields={item} />)
+                            }}
                         keyExtractor={(item) => item.id}
                         ItemSeparatorComponent={Divider}
                         />
