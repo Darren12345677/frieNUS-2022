@@ -19,6 +19,9 @@ import {
     doc,
     getDoc,
     setDoc,
+    collection,
+    query,
+    getDocs,
 } from 'firebase/firestore';
 import { useEffect } from 'react';
 
@@ -26,6 +29,7 @@ const ProfileScreen= () => {
     const [displayNameField, setDisplayNameField] = React.useState("");
     const [emailField, setEmailField] = React.useState("");
     const [idField, setIdField] = React.useState("");
+    const [connectListStr, setConnectListStr] = React.useState("");
 
     useEffect(() => {
         const currUser = auth.currentUser;
@@ -36,6 +40,18 @@ const ProfileScreen= () => {
             setEmailField(result.get('email'));
             setIdField(result.get('id'));
         })
+
+        const collectionConnectedUsersRef = collection(db, 'Users/' + currUser.uid + '/ConnectedUsers');
+        const loadConnected =  async () => {
+            const connectList = [];
+            const qSnapshot = getDocs(collectionConnectedUsersRef);
+            (await qSnapshot).forEach((doc) => {
+                // console.log("Connected user!");
+                connectList.push(doc.get('id'));
+            })
+            setConnectListStr(connectList.toString());
+        };
+        loadConnected();
     })
 
     
@@ -58,6 +74,7 @@ const ProfileScreen= () => {
             <Text>This is your current uid: {idField}</Text>
             <Text>Your email is now: {emailField} </Text>
             <Text>Your display name is: {displayNameField} </Text>
+            <Text>These are the users you have connected with: {connectListStr} </Text> 
             </Layout>
         </KeyboardAvoidingView>
         </SafeAreaView>

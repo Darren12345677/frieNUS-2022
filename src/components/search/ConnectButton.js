@@ -14,11 +14,20 @@ import { useEffect } from 'react';
 
 
 const ConnectButton = ({userId}) => {
+    const authUserSnapshot = getDoc(doc(db, "Users/" + auth.currentUser.uid));
+
     const connectHandler = async () => {
-        getDoc(doc(db, "Users/" + auth.currentUser.uid)).then(result => {
+        authUserSnapshot.then(result => {
             const authUserDisplayName = result.get("displayName");
             const displayStr = authUserDisplayName === userId ? "yourself" : userId;
             console.log("You connected with " + displayStr);
+            console.log(auth.currentUser.uid);
+            setDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectedUsers/' + userId), 
+            {
+                id: userId,
+            }).then(res => {
+                console.log("Added");
+            })
         })
     }
 

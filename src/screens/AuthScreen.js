@@ -111,7 +111,11 @@ const AuthScreen = () => {
 
     const createUser = (user) => {
         console.log("This is the user");
-        return setDoc(doc(db, 'Users', user.uid), 
+
+
+
+
+        setDoc(doc(db, 'Users', user.uid), 
             //JSON.parse(JSON.stringify(user))
             {
                 "displayName" : user.uid,
