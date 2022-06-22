@@ -12,13 +12,19 @@ import {
     signInWithEmailAndPassword,
 } from 'firebase/auth';
 
+import {
+    doc,
+    setDoc, 
+} from 'firebase/firestore';
+
 import { AuthTextInput, AuthPressable } from '../components';
-import { auth } from '../firebase';
+import { db, auth } from '../firebase';
 
 import { Text, Icon, Divider, Layout, TopNavigation } from '@ui-kitten/components';
+import * as data from '../../app.json'
 
 const AuthScreen = () => {
-    const versionType = 'Version 1.0.3';
+    const version = data.expo.version;
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -93,6 +99,7 @@ const AuthScreen = () => {
                 console.log(user);
                 restoreForm();
                 signUpAlert();
+                createUser(user);
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -101,6 +108,18 @@ const AuthScreen = () => {
                 errorAlert(errorCode, errorMessage);
             });
     };
+
+    const createUser = (user) => {
+        console.log("This is the user");
+        return setDoc(doc(db, 'Users', user.uid), 
+            //JSON.parse(JSON.stringify(user))
+            {
+                "displayName" : user.uid,
+                "id" : user.uid, 
+                "email" : user.email,
+            }
+        )
+    }
 
     const restoreForm = () => {
         setEmail('');
@@ -149,7 +168,7 @@ const AuthScreen = () => {
                         onPressHandler={() => setIsLogin(!isLogin)}
                         title={`Switch to ${isLogin ? 'Sign Up' : 'Login'}`}
                     />
-                    <Text style = {styles.version} appearance='hint'>{versionType}</Text>
+                    <Text style = {styles.version} appearance='hint'>Version {version}</Text>
                 </Layout>
             </KeyboardAvoidingView>
         </SafeAreaView>

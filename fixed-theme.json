@@ -10,9 +10,9 @@
 
 
   "background-basic-color-1": "$color-basic-100",
-  "background-basic-color-2": "$color-basic-200",
-  "background-basic-color-3": "$color-basic-300",
-  "background-basic-color-4": "$color-basic-400",
+  "background-basic-color-2": "$color-basic-300",
+  "background-basic-color-3": "$color-basic-500",
+  "background-basic-color-4": "$color-basic-700",
   "border-basic-color-1": "$color-basic-100",
   "border-basic-color-2": "$color-basic-200",
   "border-basic-color-3": "$color-basic-300",

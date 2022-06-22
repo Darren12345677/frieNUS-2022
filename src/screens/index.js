@@ -1,7 +1,4 @@
-// 14 May
-
-// 21 May
 export { default as AuthScreen } from './AuthScreen';
-export { default as HomeScreen } from './HomeScreen';
-export { default as SearchScreen} from './SearchScreen';
-
+export { default as ModuleScreen } from './ModuleScreen';
+export { default as SearchScreen } from './SearchScreen';
+export { default as ProfileScreen } from './ProfileScreen';

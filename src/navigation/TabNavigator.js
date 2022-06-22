@@ -4,8 +4,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BottomNavigation, BottomNavigationTab, Icon } from '@ui-kitten/components';
 
 import {
-    HomeScreen,
+    ModuleScreen,
     SearchScreen,
+    ProfileScreen,
 } from '../screens';
 
 const TabNavigator = () => {
@@ -17,6 +18,7 @@ const TabNavigator = () => {
         onSelect={index => navigation.navigate(state.routeNames[index])}>
         <BottomNavigationTab title='Profile' icon={<Icon name='people-outline'/>} />
         <BottomNavigationTab title='Search' icon={<Icon name='search-outline'/>} />
+        <BottomNavigationTab title='Modules' icon={<Icon name='book-outline'/>} />
     </BottomNavigation>
     );
     
@@ -24,8 +26,9 @@ const TabNavigator = () => {
         <Navigator 
         tabBar={props => <BottomTabBar {...props} />}
         screenOptions = {{headerShown: false}}>
-            <Screen name ='Home' component = {HomeScreen}/>
+            <Screen name ='Profile' component = {ProfileScreen}/>
             <Screen name='Search' component= {SearchScreen}/>
+            <Screen name='Module List' component= {ModuleScreen}/>
         </Navigator>
     );
 }
