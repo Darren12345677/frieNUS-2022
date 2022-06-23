@@ -27,7 +27,7 @@ import { useEffect } from 'react';
 import { useNavigation, useFocusEffect, useNavigationParam } from '@react-navigation/native';
 
 
-const UserProfileScreen= (navigation, route) => {
+const UserProfileScreen= ({navigation, route}) => {
     const [displayNameField, setDisplayNameField] = React.useState("");
     const [emailField, setEmailField] = React.useState("");
     const [connectListStr, setConnectListStr] = React.useState("");
