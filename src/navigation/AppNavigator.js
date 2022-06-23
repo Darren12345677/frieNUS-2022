@@ -6,7 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { auth } from '../firebase';
 import {
-    AuthScreen,
+    AuthScreen, ProfileScreen,
 } from '../screens';
 
 import {

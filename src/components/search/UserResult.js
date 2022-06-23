@@ -12,7 +12,7 @@ import {
 import { auth, db } from '../../firebase';
 import { ConnectButton } from '../../components';
 import { useEffect } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 const UserResult = ({userFields}) => {
     const idField = userFields.id;
@@ -36,10 +36,12 @@ const UserResult = ({userFields}) => {
             }
         }
         getModules();
-    }, [])
+    })
+
+    const navigation = useNavigation();
     
     return (
-        <Button onPress={() => setVisible(true)} status='primary' appearance='outline' style={styles.rect}>
+        <Button onPress={() => navigation.navigate('Module List', {currUser: idField})} status='primary' appearance='outline' style={styles.rect}>
             <Text status='primary'>User: {idField}</Text>
             <Modal visible={visible}>
                 <Card disabled={true}>
@@ -47,9 +49,6 @@ const UserResult = ({userFields}) => {
                     <Layout level='2'>
                         <Text style={[styles.modalText]}>{finalStr}</Text>
                     </Layout>
-                    <Divider/>
-                    <ConnectButton userId={idField}/>
-                    <Divider/>
                     <Button onPress={() => setVisible(false)}>
                         Dismiss
                     </Button>

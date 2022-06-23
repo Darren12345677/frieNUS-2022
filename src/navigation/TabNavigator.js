@@ -7,11 +7,12 @@ import {
     ModuleScreen,
     SearchScreen,
     ProfileScreen,
+    UserProfileScreen,
 } from '../screens';
+import { auth, db } from '../firebase';
 
 const TabNavigator = () => {
     const { Navigator, Screen } = createBottomTabNavigator();
-
     const BottomTabBar = ({ navigation, state }) => (
     <BottomNavigation
         selectedIndex={state.index}
@@ -29,6 +30,10 @@ const TabNavigator = () => {
             <Screen name ='Profile' component = {ProfileScreen}/>
             <Screen name='Search' component= {SearchScreen}/>
             <Screen name='Module List' component= {ModuleScreen}/>
+            <Screen 
+            name='User Profile' 
+            component= {UserProfileScreen}
+            />
         </Navigator>
     );
 }

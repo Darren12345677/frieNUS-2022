@@ -8,9 +8,10 @@ import {
     Button,
     Input,
     Text,
-    BottomNavigation, 
-    BottomNavigationTab,
 } from '@ui-kitten/components';
+import {
+    ModuleScreen,
+} from '../screens';
 import { KeyboardAvoidingView, SafeAreaView,} from "react-native";
 import { LogoutButton, UserResult, ConnectButton } from '../components';
 import { auth, db } from '../firebase';
@@ -22,33 +23,23 @@ import {
     query,
     getDocs,
 } from 'firebase/firestore';
-import {
-    ModuleScreen,
-    SearchScreen,
-    UserProfileScreen,
-} from '../screens';
 import { useEffect } from 'react';
-import { useNavigation, useFocusEffect, NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { TabNavigator } from '../navigation';
+import { useNavigation, useFocusEffect, useNavigationParam } from '@react-navigation/native';
 
 
-const ProfileScreen= () => {
+const UserProfileScreen= ({navigation, route}) => {
     const [displayNameField, setDisplayNameField] = React.useState("");
     const [emailField, setEmailField] = React.useState("");
-    const [idField, setIdField] = React.useState("");
     const [connectListStr, setConnectListStr] = React.useState("");
 
     useFocusEffect(() => {
-        const currUser = auth.currentUser;
-        const userDoc = doc(db, 'Users/' + currUser.uid);
+        const userDoc = doc(db, 'Users/' + route.params.userID);
         getDoc(userDoc).then(result => {
-            console.log("This is the currentUser id: " + currUser.uid);
+            console.log("This is the currentUser id: " + route.params.userID);
             setDisplayNameField(result.get('displayName'));
             setEmailField(result.get('email'));
-            setIdField(result.get('id'));
         })
-        const collectionConnectedUsersRef = collection(db, 'Users/' + currUser.uid + '/ConnectedUsers');
+        const collectionConnectedUsersRef = collection(db, 'Users/' + route.params.userID + '/ConnectedUsers');
         const loadConnected =  async () => {
             const connectList = [];
             const qSnapshot = getDocs(collectionConnectedUsersRef);
@@ -60,7 +51,7 @@ const ProfileScreen= () => {
         };
         loadConnected();
     })
-
+    
     return (
         <SafeAreaView style={{flex:1}}>
         <KeyboardAvoidingView style={{flex:1}}>
@@ -73,8 +64,11 @@ const ProfileScreen= () => {
             />
             <Divider/>
             <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text category='h1'>Profile</Text>
-            <Text>This is your current uid: {idField}</Text>
+            <Text category='h1'>Profile2</Text>
+            <Divider/>
+                <ConnectButton userId={route.params.userID}/>
+            <Divider/>
+            <Text>This is your current uid: {route.params.userID}</Text>
             <Text>Your email is now: {emailField} </Text>
             <Text>Your display name is: {displayNameField} </Text>
             <Text>These are the users you have connected with: {connectListStr} </Text> 
@@ -84,4 +78,4 @@ const ProfileScreen= () => {
     )
 }
 
-export default ProfileScreen;
+export default UserProfileScreen;
