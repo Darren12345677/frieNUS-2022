@@ -48,10 +48,10 @@ const ProfileScreen= () => {
             setEmailField(result.get('email'));
             setIdField(result.get('id'));
         })
-        const collectionConnectedUsersRef = collection(db, 'Users/' + currUser.uid + '/ConnectedUsers');
+        const collectionPendingConnectsRef = collection(db, 'Users/' + currUser.uid + '/PendingConnects');
         const loadConnected =  async () => {
             const connectList = [];
-            const qSnapshot = getDocs(collectionConnectedUsersRef);
+            const qSnapshot = getDocs(collectionPendingConnectsRef);
             (await qSnapshot).forEach((doc) => {
                 // console.log("Connected user!");
                 connectList.push(doc.get('id'));

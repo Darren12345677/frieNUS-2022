@@ -49,9 +49,7 @@ const SearchScreen = () => {
 		  const text_data = text.toUpperCase();
 		  return item_data.indexOf(text_data) > -1;
 		});
-        //console.log("Search Function called");
 		setData(updatedData);
-        //console.log(updatedData);
 		setSearchValue(text);
 	  };
       
@@ -86,7 +84,8 @@ const SearchScreen = () => {
                             return (
                                 <Button 
                                 onPress = {() => navigation.navigate('User Profile', 
-                                {userID: item.id})}>
+                                {userID: item.id})}
+                                appearance='outline'>
                                 <Text>User ID: {item.id}</Text>
                                 </Button>
                                 )

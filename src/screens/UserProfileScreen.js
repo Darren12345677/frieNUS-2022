@@ -8,48 +8,92 @@ import {
     Button,
     Input,
     Text,
+    Card,
 } from '@ui-kitten/components';
-import {
-    ModuleScreen,
-} from '../screens';
 import { KeyboardAvoidingView, SafeAreaView,} from "react-native";
-import { LogoutButton, UserResult, ConnectButton } from '../components';
+import { LogoutButton, ConnectButton } from '../components';
 import { auth, db } from '../firebase';
 import {
     doc,
     getDoc,
-    setDoc,
     collection,
-    query,
     getDocs,
 } from 'firebase/firestore';
-import { useEffect } from 'react';
-import { useNavigation, useFocusEffect, useNavigationParam } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
+import { StyleSheet } from 'react-native';
 
 
 const UserProfileScreen= ({navigation, route}) => {
+    const idField = route.params.userID
+    const isYourself = idField === auth.currentUser.uid;
     const [displayNameField, setDisplayNameField] = React.useState("");
     const [emailField, setEmailField] = React.useState("");
     const [connectListStr, setConnectListStr] = React.useState("");
+    const [modules, setModules] = React.useState("");
+    const [friends, setFriends] = React.useState("");
+
 
     useFocusEffect(() => {
-        const userDoc = doc(db, 'Users/' + route.params.userID);
+        const userDoc = doc(db, 'Users/' + idField);
+
         getDoc(userDoc).then(result => {
-            console.log("This is the currentUser id: " + route.params.userID);
+            console.log("This is the currentUser id: " + idField);
             setDisplayNameField(result.get('displayName'));
             setEmailField(result.get('email'));
         })
-        const collectionConnectedUsersRef = collection(db, 'Users/' + route.params.userID + '/ConnectedUsers');
-        const loadConnected =  async () => {
+        const collectionPendingConnectsRef = collection(db, 'Users/' + idField + '/PendingConnects');
+        
+        const getPendingConnects =  async () => {
             const connectList = [];
-            const qSnapshot = getDocs(collectionConnectedUsersRef);
-            (await qSnapshot).forEach((doc) => {
+            const qSnapshot = getDocs(collectionPendingConnectsRef);
+            await ((await qSnapshot)).forEach((doc) => {
                 // console.log("Connected user!");
                 connectList.push(doc.get('id'));
             })
-            setConnectListStr(connectList.toString());
+
+            if (connectList.length === 0) {
+                console.log("No connected users");
+                setConnectListStr("No connected users");
+            } else {
+                setConnectListStr(connectList.toString());
+            }
         };
-        loadConnected();
+
+        const colRef = collection(db, 'Users/' + idField + '/Modules');
+        const getModules = async () => {
+            const modsList = [];
+            await (await getDocs(colRef)).forEach((doc) => {
+                const moduleCode = doc.get('desc');
+                modsList.push(moduleCode);
+            })
+            
+            if (modsList.length === 0) {
+                console.log("modsList Length is " + modsList.length);
+                setModules("Empty");
+            } else {
+                setModules(modsList.toString());
+            }
+        }
+
+        const friendsRef = collection(db, 'Users/' + idField + '/Friends');
+        const getFriends = async () => {
+            const friendList = [];
+            await (await getDocs(friendsRef)).forEach((doc => {
+                const friendId = doc.get('id');
+                friendList.push(friendId);
+            }))
+
+            if (friendList.length === 0) {
+                console.log("No friends");
+                setFriends("No friends");
+            } else {
+                setFriends(friendList.toString());
+            }
+        }
+
+        getModules();
+        getPendingConnects();
+        getFriends();
     })
     
     return (
@@ -63,15 +107,32 @@ const UserProfileScreen= ({navigation, route}) => {
                 style={{height:'8%'}}
             />
             <Divider/>
-            <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text category='h1'>Profile2</Text>
-            <Divider/>
-                <ConnectButton userId={route.params.userID}/>
-            <Divider/>
-            <Text>This is your current uid: {route.params.userID}</Text>
-            <Text>Your email is now: {emailField} </Text>
-            <Text>Your display name is: {displayNameField} </Text>
-            <Text>These are the users you have connected with: {connectListStr} </Text> 
+            <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center',}}>
+                <Text category='h1' style={[styles.singleLineText]}>{isYourself ? "This is your public profile" : "Searched Profile"}</Text>
+                <Divider/>
+                <Card status='primary' style={{flex: 1, width:'100%',}}>
+                    <Layout>
+                        <Text category='s1'style={[styles.singleLineText]}>ID: {idField}</Text>
+                    </Layout>
+                    <Layout>
+                        <Text category='s1'style={[styles.singleLineText]}>Email: {emailField} </Text>
+                    </Layout>
+                    <Layout>
+                        <Text category='s1'style={[styles.singleLineText]}>Name: {displayNameField} </Text>
+                    </Layout>
+                </Card>
+                <Card status='info' style={{flex:4, width:'100%',}}>
+                    <Layout>
+                        <Text category='s2'style={[styles.manyLineText]}>These are the users they have connected with: {connectListStr} </Text> 
+                    </Layout>
+                    <Layout>
+                        <Text category='s2'style={[styles.manyLineText]}>These are the modules they are taking: {modules}</Text>
+                    </Layout>
+                    <Layout>
+                        <Text category='s2'style={[styles.manyLineText]}>These are their friends: {friends}</Text>
+                    </Layout>
+                </Card>
+                <Layout style={{flex:1, alignItems:'center', justifyContent:'center'}}><ConnectButton isYourself={isYourself} userId={idField}/></Layout>
             </Layout>
         </KeyboardAvoidingView>
         </SafeAreaView>
@@ -79,3 +140,12 @@ const UserProfileScreen= ({navigation, route}) => {
 }
 
 export default UserProfileScreen;
+
+const styles = StyleSheet.create({
+    singleLineText: {
+        textAlign: 'center',
+    },
+    manyLineText: {
+        textAlign: 'left',
+    }
+})
