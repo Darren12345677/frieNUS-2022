@@ -112,7 +112,7 @@ const ModuleScreen = () => {
                 behavior={Platform.OS === 'ios' ? null : null}
             >
                 <TopNavigation 
-                    title='Your Modules'
+                    title='Modules'
                     alignment='start'
                     accessoryRight={LogoutButton}
                     accessoryLeft={<Icon name='frienus' pack='customAssets' style={{marginLeft:5, width:60, height:60}} />}

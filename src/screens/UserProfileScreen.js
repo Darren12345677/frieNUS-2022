@@ -90,7 +90,6 @@ const UserProfileScreen= ({navigation, route}) => {
                 setFriends(friendList.toString());
             }
         }
-
         getModules();
         getPendingConnects();
         getFriends();
@@ -132,7 +131,9 @@ const UserProfileScreen= ({navigation, route}) => {
                         <Text category='s2'style={[styles.manyLineText]}>These are their friends: {friends}</Text>
                     </Layout>
                 </Card>
-                <Layout style={{flex:1, alignItems:'center', justifyContent:'center'}}><ConnectButton isYourself={isYourself} userId={idField}/></Layout>
+                <Layout style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+                    <ConnectButton isYourself={isYourself} userId={idField}/>
+                </Layout>
             </Layout>
         </KeyboardAvoidingView>
         </SafeAreaView>

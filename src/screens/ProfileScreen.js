@@ -77,7 +77,7 @@ const ProfileScreen= () => {
             <Text>This is your current uid: {idField}</Text>
             <Text>Your email is now: {emailField} </Text>
             <Text>Your display name is: {displayNameField} </Text>
-            <Text>These are the users you have connected with: {connectListStr} </Text> 
+            <Text>These are the users you have requested to connected with: {connectListStr} </Text> 
             </Layout>
         </KeyboardAvoidingView>
         </SafeAreaView>

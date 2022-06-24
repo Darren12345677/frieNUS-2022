@@ -8,6 +8,7 @@ import {
     setDoc,
     getDoc,
     doc,
+    deleteDoc,
 } from 'firebase/firestore';
 import { auth, db } from '../../firebase';
 import { useEffect } from 'react';
@@ -46,13 +47,18 @@ const ConnectButton = ({isYourself, userId}) => {
                 setDoc(doc(db, 'Users/'+ userId + '/Friends/' + auth.currentUser.uid), {
                     id: auth.currentUser.uid,
                 })
+                deleteDoc(doc(db, "Users/" + userId + "/PendingConnects/" + auth.currentUser.uid))
+                deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/PendingConnects/' + userId))
+                deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + userId))
                 console.log("We have found friends!");
             } else {
+                setDoc(doc(db, 'Users/' + userId + '/ConnectNotif/' + auth.currentUser.uid),
+                {
+                    id: auth.currentUser.uid,
+                })
                 console.log("These 2 are not friends :(");
             }
         })
-
-        
     }
 
     return (<Button disabled={isYourself} onPress={connectHandler}>Connect</Button>);
