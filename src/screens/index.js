@@ -5,3 +5,4 @@ export { default as ProfileScreen } from './ProfileScreen';
 export { default as UserProfileScreen } from './UserProfileScreen';
 export { default as NotificationScreen } from './NotificationScreen';
 export { default as ChatScreen } from './ChatScreen';
+export { default as FriendScreen } from './FriendScreen';

@@ -22,11 +22,6 @@ import {
     query,
     getDocs,
 } from 'firebase/firestore';
-import {
-    ModuleScreen,
-    SearchScreen,
-    UserProfileScreen,
-} from '../screens';
 import { useEffect } from 'react';
 import { useNavigation, useFocusEffect, NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -61,6 +56,8 @@ const ProfileScreen= () => {
         loadConnected();
     })
 
+    const navigation = useNavigation();
+
     return (
         <SafeAreaView style={{flex:1}}>
         <KeyboardAvoidingView style={{flex:1}}>
@@ -74,6 +71,9 @@ const ProfileScreen= () => {
             <Divider/>
             <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text category='h1'>Profile</Text>
+            <Button onPress={() => navigation.navigate('Friends')}>
+                <Text>Friends</Text>                
+            </Button>
             <Text>This is your current uid: {idField}</Text>
             <Text>Your email is now: {emailField} </Text>
             <Text>Your display name is: {displayNameField} </Text>

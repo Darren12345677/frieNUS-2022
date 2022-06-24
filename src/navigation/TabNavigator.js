@@ -10,6 +10,7 @@ import {
     UserProfileScreen,
     NotificationScreen,
     ChatScreen, 
+    FriendScreen,
 } from '../screens';
 import { auth, db } from '../firebase';
 
@@ -40,6 +41,7 @@ const TabNavigator = () => {
             name='User Profile' 
             component= {UserProfileScreen}
             />
+            <Screen name='Friends' component= {FriendScreen}/>
         </Navigator>
     );
 }

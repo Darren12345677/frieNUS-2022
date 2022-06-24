@@ -35,13 +35,6 @@ const NotificationScreen = () => {
                 // console.log("Connected user!");
                 notifList.push(doc.get('id'));
             })
-
-            if (notifList.length === 0) {
-                console.log("No Notifications");
-                //setConnectListStr("No Notifications");
-            } else {
-                //setConnectListStr(notifList.toString());
-            }
             setNotifListStr([...notifList]);
         }
         getNotifications();
