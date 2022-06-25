@@ -35,7 +35,6 @@ const AppNavigator = () => {
                 }
             }
         );
-
         // Clean up mechanism
         // React performs clean up when component unmounts. In our case,
         // app stops running.

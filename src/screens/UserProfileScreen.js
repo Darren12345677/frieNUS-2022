@@ -90,6 +90,7 @@ const UserProfileScreen= ({navigation, route}) => {
                 setFriends(friendList.toString());
             }
         }
+        console.log("UserProfile");
         getModules();
         getPendingConnects();
         getFriends();

@@ -13,11 +13,14 @@ import {
 } from 'firebase/firestore';
 import { auth, db } from '../../firebase';
 import ConnectButton from './ConnectButton';
+import NotificationScreen, * as NotifScreen from '../../screens/NotificationScreen';
 
-const UserResult = ({userFields}) => {
+
+const UserResult = ({keyId, userFields}) => {
     const idField = userFields;
     const [visible, setVisible] = React.useState(false);
     const [finalStr, setStr] = React.useState("");
+    const [status, setStatus] = React.useState("primary");
 
     useFocusEffect(() => {
         const colRef = collection(db, 'Users/' + idField + '/Modules');
@@ -28,38 +31,42 @@ const UserResult = ({userFields}) => {
                 modsList.push(moduleCode);
             })
             
-            if (modsList.length === 0) {
-                console.log("modsList Length is " + modsList.length);
-                setStr("Empty");
-            } else {
-                setStr(modsList.toString());
-            }
+            setStr("hello");
+            // if (modsList.length === 0) {
+            //     console.log("modsList Length is " + modsList.length);
+            //     setStr("Empty");
+            // } else {
+            //     setStr(modsList.toString());
+            // }
         }
         getModules();
     })
 
     const acceptHandler = async () => {
-        setVisible(false)
-        setDoc(doc(db, 'Users/'+ auth.currentUser.uid + '/Friends/' + idField), {
+        await setDoc(doc(db, 'Users/'+ auth.currentUser.uid + '/Friends/' + idField), {
             id: idField,
         })
-        setDoc(doc(db, 'Users/'+ idField + '/Friends/' + auth.currentUser.uid), {
+        await setDoc(doc(db, 'Users/'+ idField + '/Friends/' + auth.currentUser.uid), {
             id: auth.currentUser.uid,
         })
-        deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid))
-        deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField))
+        await deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid))
+        await deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField))
+        setVisible(false)
+        setStatus('success');
+        console.log("accepted and turned invisible!");
     }
 
     const declineHandler = async () => {
+        await (deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid)));
+        await (deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField)));
         setVisible(false)
-        deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid))
-        deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField))
+        console.log("declined and turned invisible");
     }
 
     const navigation = useNavigation();
     
     return (
-        <Button onPress={() => setVisible(true)} status='primary' appearance='outline' style={styles.rect}>
+        <Button onPress={() => setVisible(true)} status={status} appearance='outline' style={styles.rect}>
             <Text status='primary'>User: {idField}</Text>
             <Modal visible={visible}>
                 <Card disabled={true}>

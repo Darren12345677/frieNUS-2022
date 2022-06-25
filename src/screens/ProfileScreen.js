@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 import { 
     Divider, 
     Layout, 
@@ -48,7 +48,6 @@ const ProfileScreen= () => {
             const connectList = [];
             const qSnapshot = getDocs(collectionPendingConnectsRef);
             (await qSnapshot).forEach((doc) => {
-                // console.log("Connected user!");
                 connectList.push(doc.get('id'));
             })
             setConnectListStr(connectList.toString());

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 import { 
     Divider, 
     Layout, 
@@ -24,29 +24,60 @@ import {
     doc,
     deleteDoc,
 } from 'firebase/firestore';
+import { useEffect } from 'react';
 
 const FriendScreen = () => {
     const [friendList, setFriendList] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
-    useFocusEffect(() => {
-        const currUserFriends = collection(db, 'Users/' + auth.currentUser.uid + '/Friends');
-        const getFriends = async () => {
-            const friends = [];
-            await (await getDocs(currUserFriends)).forEach((doc => {
-                const friendId = doc.get('id')
-                friends.push(friendId);
-            }))
-            setFriendList([...friends]);
-        }
-        getFriends();
-    })
+
+    useFocusEffect(
+        React.useCallback(() => {
+            let isActive = true;
+            const currUserFriends = collection(db, 'Users/' + auth.currentUser.uid + '/Friends');
+
+            const getFriends = async () => {
+                try {
+                    const friends = [];
+                    await (await getDocs(currUserFriends)).forEach((doc => {
+                        const friendId = doc.get('id')
+                        friends.push(friendId);
+                    }))
+                    if (isActive) {
+                        setFriendList([...friends]);
+                    }
+                } catch (e) {
+                    console.log("Error in useFocusEffect for FriendScreen");
+                    console.log(e);
+                }
+            }
+
+            getFriends();
+            console.log("got friends");
+
+            return () => {
+                isActive = false;
+            }
+        }, [JSON.stringify(friendList), disconnectHandler])
+    )
+        // const currUserFriends = collection(db, 'Users/' + auth.currentUser.uid + '/Friends');
+        // const getFriends = async () => {
+        //     const friends = [];
+        //     await (await getDocs(currUserFriends)).forEach((doc => {
+        //         const friendId = doc.get('id')
+        //         friends.push(friendId);
+        //     }))
+        //     setFriendList([...friends]);s
+        // }
+        // getFriends();
+        // console.log("got friends");
 
     const navigation = useNavigation();
 
     const disconnectHandler = async (idField) => {
-        setVisible(false)
         deleteDoc(doc(db, "Users/" + idField + "/Friends/" + auth.currentUser.uid))
         deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/Friends/' + idField))
+        setVisible(false)
+        console.log("disconnected");
     }
 
     return (
@@ -61,6 +92,7 @@ const FriendScreen = () => {
                 />
                 <Divider/>
                 <Layout style={styles.listContainer}>
+                    <Text>Hello</Text>
                         <List
                         data={friendList}
                         renderItem={({ item }) => {
@@ -88,7 +120,7 @@ const FriendScreen = () => {
                                     </Card>
                                 </Modal>
                             </Button>
-                                )
+                        )
                         }}
                         keyExtractor={(item) => item.id}
                         ItemSeparatorComponent={Divider}
@@ -120,7 +152,7 @@ const styles = StyleSheet.create({
         textAlign: 'left',
     },
     listContainer: {
-        backgroundColor:'red',
+        // backgroundColor:'red',
         flex: 1,
         width:'100%',
     }
