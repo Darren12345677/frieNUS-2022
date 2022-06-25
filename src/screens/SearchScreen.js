@@ -32,6 +32,7 @@ const SearchScreen = () => {
         const userQuery = query(collection(db, 'Users'));
         
         const TT = onSnapshot(userQuery, (snapshot) => {
+            console.log("Listening");
             const userList = []
             snapshot.forEach((doc) => {
                 userList.push({ id: doc.id, ...doc.data() });

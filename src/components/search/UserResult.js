@@ -16,11 +16,10 @@ import ConnectButton from './ConnectButton';
 import NotificationScreen, * as NotifScreen from '../../screens/NotificationScreen';
 
 
-const UserResult = ({keyId, userFields}) => {
+const UserResult = ({keyId, userFields, setter}) => {
     const idField = userFields;
     const [visible, setVisible] = React.useState(false);
     const [finalStr, setStr] = React.useState("");
-    const [status, setStatus] = React.useState("primary");
 
     useFocusEffect(() => {
         const colRef = collection(db, 'Users/' + idField + '/Modules');
@@ -30,14 +29,6 @@ const UserResult = ({keyId, userFields}) => {
                 const moduleCode = doc.get('desc');
                 modsList.push(moduleCode);
             })
-            
-            setStr("hello");
-            // if (modsList.length === 0) {
-            //     console.log("modsList Length is " + modsList.length);
-            //     setStr("Empty");
-            // } else {
-            //     setStr(modsList.toString());
-            // }
         }
         getModules();
     })
@@ -52,7 +43,7 @@ const UserResult = ({keyId, userFields}) => {
         await deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid))
         await deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField))
         setVisible(false)
-        setStatus('success');
+        setter([]);
         console.log("accepted and turned invisible!");
     }
 
@@ -60,17 +51,18 @@ const UserResult = ({keyId, userFields}) => {
         await (deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid)));
         await (deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField)));
         setVisible(false)
+        setter([]);
         console.log("declined and turned invisible");
     }
 
     const navigation = useNavigation();
     
     return (
-        <Button onPress={() => setVisible(true)} status={status} appearance='outline' style={styles.rect}>
+        <Button onPress={() => setVisible(true)} status='primary' appearance='outline' style={styles.rect}>
             <Text status='primary'>User: {idField}</Text>
             <Modal visible={visible}>
                 <Card disabled={true}>
-                    <Text style={[styles.modalText]}>These are the modules they are taking:</Text>
+                    <Text style={[styles.modalText]}>These are the modules they are taking: "FILL UP HERE"</Text>
                     <Layout level='2'>
                         <Text style={[styles.modalText]}>{finalStr}</Text>
                         <Button 

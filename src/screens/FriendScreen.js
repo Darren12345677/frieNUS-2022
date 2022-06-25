@@ -29,12 +29,12 @@ import { useEffect } from 'react';
 const FriendScreen = () => {
     const [friendList, setFriendList] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
+    const [refresh, setRefresh] = React.useState([]);
 
     useFocusEffect(
         React.useCallback(() => {
             let isActive = true;
             const currUserFriends = collection(db, 'Users/' + auth.currentUser.uid + '/Friends');
-
             const getFriends = async () => {
                 try {
                     const friends = [];
@@ -50,33 +50,21 @@ const FriendScreen = () => {
                     console.log(e);
                 }
             }
-
             getFriends();
             console.log("got friends");
-
             return () => {
                 isActive = false;
             }
-        }, [JSON.stringify(friendList), disconnectHandler])
+        }, [refresh])
     )
-        // const currUserFriends = collection(db, 'Users/' + auth.currentUser.uid + '/Friends');
-        // const getFriends = async () => {
-        //     const friends = [];
-        //     await (await getDocs(currUserFriends)).forEach((doc => {
-        //         const friendId = doc.get('id')
-        //         friends.push(friendId);
-        //     }))
-        //     setFriendList([...friends]);s
-        // }
-        // getFriends();
-        // console.log("got friends");
 
     const navigation = useNavigation();
 
     const disconnectHandler = async (idField) => {
-        deleteDoc(doc(db, "Users/" + idField + "/Friends/" + auth.currentUser.uid))
-        deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/Friends/' + idField))
+        await deleteDoc(doc(db, "Users/" + idField + "/Friends/" + auth.currentUser.uid))
+        await deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/Friends/' + idField))
         setVisible(false)
+        setRefresh([]);
         console.log("disconnected");
     }
 
@@ -92,7 +80,6 @@ const FriendScreen = () => {
                 />
                 <Divider/>
                 <Layout style={styles.listContainer}>
-                    <Text>Hello</Text>
                         <List
                         data={friendList}
                         renderItem={({ item }) => {

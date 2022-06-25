@@ -23,13 +23,13 @@ import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
 
 const NotificationScreen = () => {
-    const [texty, setTexty] = React.useState("Hello!");
     const [notifListStr, setNotifListStr] = React.useState([]);
-    console.log("Re-rendered");
+    const [refresh, setRefresh] = React.useState([]);
 
     useFocusEffect(
         React.useCallback(() => {
             let isActive = true;
+            console.log("isActive is true");
             const collectionConnectNotifRef = collection(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/')
             
             const getNotifications = async () => {
@@ -37,7 +37,6 @@ const NotificationScreen = () => {
                     const notifList = [];
                     const qSnapshot = getDocs(collectionConnectNotifRef);
                     await((await qSnapshot)).forEach((doc) => {
-                        // console.log("Connected user!");
                         notifList.push(doc.get('id'));
                     })
                     if (isActive) {
@@ -49,13 +48,13 @@ const NotificationScreen = () => {
             }
 
             getNotifications();
-            console.log("Notification");
-            console.log(notifListStr.toString());
+            console.log("Length is " + notifListStr.length);
             
             return () => {
+                console.log("Setting isActive to false");
                 isActive = false;
             }
-        }, [JSON.stringify(notifListStr), texty])
+        }, [refresh])
     );
     
     
@@ -88,9 +87,6 @@ const NotificationScreen = () => {
                 style={{height:'8%'}}
             />
             <Divider/>
-            <Button onPress={() => setTexty("Bye")}>Say goodbye</Button>
-            <Button onPress={() => setTexty("Hello")}>Say hello</Button>
-            <Text>{texty}</Text>
             <Layout style={styles.listContainer}>
                 <List
                 data={notifListStr}
@@ -99,7 +95,7 @@ const NotificationScreen = () => {
                         // <Button appearance='outline'>
                         // <Text>User ID: {item}</Text>
                         // </Button>
-                        <UserResult keyId={item.id} userFields={item}/>
+                        <UserResult keyId={item.id} userFields={item} setter={setRefresh}/>
                         )
                 }}
                 keyExtractor={(item) => item.id}
