@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 import { 
     Divider, 
     Layout, 
@@ -8,26 +8,33 @@ import {
     Button,
     Input,
     Text,
+    BottomNavigation, 
+    BottomNavigationTab,
 } from '@ui-kitten/components';
-import {
-    ModuleScreen,
-} from '../screens';
 import { KeyboardAvoidingView, SafeAreaView,} from "react-native";
-import { LogoutButton, UserResult } from '../components';
+import { LogoutButton, UserResult, ConnectButton } from '../components';
 import { auth, db } from '../firebase';
 import {
     doc,
     getDoc,
     setDoc,
+    collection,
+    query,
+    getDocs,
 } from 'firebase/firestore';
 import { useEffect } from 'react';
+import { useNavigation, useFocusEffect, NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { TabNavigator } from '../navigation';
+
 
 const ProfileScreen= () => {
     const [displayNameField, setDisplayNameField] = React.useState("");
     const [emailField, setEmailField] = React.useState("");
     const [idField, setIdField] = React.useState("");
+    const [connectListStr, setConnectListStr] = React.useState("");
 
-    useEffect(() => {
+    useFocusEffect(() => {
         const currUser = auth.currentUser;
         const userDoc = doc(db, 'Users/' + currUser.uid);
         getDoc(userDoc).then(result => {
@@ -36,9 +43,20 @@ const ProfileScreen= () => {
             setEmailField(result.get('email'));
             setIdField(result.get('id'));
         })
+        const collectionPendingConnectsRef = collection(db, 'Users/' + currUser.uid + '/PendingConnects');
+        const loadConnected =  async () => {
+            const connectList = [];
+            const qSnapshot = getDocs(collectionPendingConnectsRef);
+            (await qSnapshot).forEach((doc) => {
+                connectList.push(doc.get('id'));
+            })
+            setConnectListStr(connectList.toString());
+        };
+        loadConnected();
     })
 
-    
+    const navigation = useNavigation();
+
     return (
         <SafeAreaView style={{flex:1}}>
         <KeyboardAvoidingView style={{flex:1}}>
@@ -52,12 +70,13 @@ const ProfileScreen= () => {
             <Divider/>
             <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text category='h1'>Profile</Text>
-            <Button onPress={() => ModuleScreen}>
-                BUTTON
+            <Button onPress={() => navigation.navigate('Friends')}>
+                <Text>Friends</Text>                
             </Button>
             <Text>This is your current uid: {idField}</Text>
             <Text>Your email is now: {emailField} </Text>
             <Text>Your display name is: {displayNameField} </Text>
+            <Text>These are the users you have requested to connected with: {connectListStr} </Text> 
             </Layout>
         </KeyboardAvoidingView>
         </SafeAreaView>

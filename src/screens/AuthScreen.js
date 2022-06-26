@@ -15,6 +15,8 @@ import {
 import {
     doc,
     setDoc, 
+    addDoc,
+    collection,
 } from 'firebase/firestore';
 
 import { AuthTextInput, AuthPressable } from '../components';
@@ -24,6 +26,7 @@ import { Text, Icon, Divider, Layout, TopNavigation } from '@ui-kitten/component
 import * as data from '../../app.json'
 
 const AuthScreen = () => {
+    
     const version = data.expo.version;
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
@@ -74,7 +77,7 @@ const AuthScreen = () => {
             .then((userCredentials) => {
                 const user = userCredentials.user;
                 // To show the user object returned
-                console.log(user);
+                // console.log(user);
                 restoreForm();
                 successfulLoginAlert();
             })
@@ -111,7 +114,7 @@ const AuthScreen = () => {
 
     const createUser = (user) => {
         console.log("This is the user");
-        return setDoc(doc(db, 'Users', user.uid), 
+        setDoc(doc(db, 'Users', user.uid), 
             //JSON.parse(JSON.stringify(user))
             {
                 "displayName" : user.uid,

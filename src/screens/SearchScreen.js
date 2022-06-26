@@ -4,18 +4,21 @@ import {
     TopNavigation, 
     List, 
     Icon,
+    Button,
+    Text,
 } from '@ui-kitten/components';
 import {
     onSnapshot,
     query,
     collection,
 } from 'firebase/firestore';
-import { db } from '../firebase';
+import { auth, db } from '../firebase';
 import React, { useState, useEffect } from "react";
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet,} from "react-native";
 import { SearchBar } from "react-native-elements";
 import { UserResult, DATA, LogoutButton } from '../components';
-
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { isSignInWithEmailLink } from 'firebase/auth';
 
 const SearchScreen = () => {
 
@@ -29,6 +32,7 @@ const SearchScreen = () => {
         const userQuery = query(collection(db, 'Users'));
         
         const TT = onSnapshot(userQuery, (snapshot) => {
+            console.log("Listening");
             const userList = []
             snapshot.forEach((doc) => {
                 userList.push({ id: doc.id, ...doc.data() });
@@ -46,12 +50,12 @@ const SearchScreen = () => {
 		  const text_data = text.toUpperCase();
 		  return item_data.indexOf(text_data) > -1;
 		});
-        //console.log("Search Function called");
 		setData(updatedData);
-        //console.log(updatedData);
 		setSearchValue(text);
 	  };
       
+    const navigation = useNavigation();
+
 	return (
         <SafeAreaView style={{flex:1}}>
             <KeyboardAvoidingView style={{flex:1}}>
@@ -78,8 +82,15 @@ const SearchScreen = () => {
                         <List
                         data={data}
                         renderItem={({ item }) => {
-                                return (<UserResult userFields={item} />)
-                            }}
+                            return (
+                                <Button 
+                                onPress = {() => navigation.navigate('User Profile', 
+                                {userID: item.id})}
+                                appearance='outline'>
+                                <Text>User ID: {item.id}</Text>
+                                </Button>
+                                )
+                        }}
                         keyExtractor={(item) => item.id}
                         ItemSeparatorComponent={Divider}
                         />

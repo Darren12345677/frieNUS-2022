@@ -7,18 +7,24 @@ import {
     ModuleScreen,
     SearchScreen,
     ProfileScreen,
+    UserProfileScreen,
+    NotificationScreen,
+    ChatScreen, 
+    FriendScreen,
 } from '../screens';
+import { auth, db } from '../firebase';
 
 const TabNavigator = () => {
     const { Navigator, Screen } = createBottomTabNavigator();
-
     const BottomTabBar = ({ navigation, state }) => (
     <BottomNavigation
         selectedIndex={state.index}
         onSelect={index => navigation.navigate(state.routeNames[index])}>
-        <BottomNavigationTab title='Profile' icon={<Icon name='people-outline'/>} />
-        <BottomNavigationTab title='Search' icon={<Icon name='search-outline'/>} />
-        <BottomNavigationTab title='Modules' icon={<Icon name='book-outline'/>} />
+        <BottomNavigationTab  icon={<Icon name='people-outline'/>} />
+        <BottomNavigationTab  icon={<Icon name='search-outline'/>} />
+        <BottomNavigationTab  icon={<Icon name='book-outline'/>} />
+        <BottomNavigationTab  icon={<Icon name='bell-outline'/>} />
+        <BottomNavigationTab  icon={<Icon name='message-circle-outline'/>} />
     </BottomNavigation>
     );
     
@@ -29,6 +35,13 @@ const TabNavigator = () => {
             <Screen name ='Profile' component = {ProfileScreen}/>
             <Screen name='Search' component= {SearchScreen}/>
             <Screen name='Module List' component= {ModuleScreen}/>
+            <Screen name='Notification' component= {NotificationScreen}/>
+            <Screen name='Chat' component= {ChatScreen}/>
+            <Screen 
+            name='User Profile' 
+            component= {UserProfileScreen}
+            />
+            <Screen name='Friends' component= {FriendScreen}/>
         </Navigator>
     );
 }
