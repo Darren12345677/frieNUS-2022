@@ -10,7 +10,7 @@ import {
     Text,
     Card,
 } from '@ui-kitten/components';
-import { KeyboardAvoidingView, SafeAreaView,} from "react-native";
+import { KeyboardAvoidingView, SafeAreaView, View,  ScrollView} from "react-native";
 import { LogoutButton, ConnectButton } from '../components';
 import { auth, db } from '../firebase';
 import {
@@ -21,6 +21,7 @@ import {
 } from 'firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
+//import { ScrollView } from 'react-native-gesture-handler';
 
 
 const UserProfileScreen= ({navigation, route}) => {
@@ -52,8 +53,8 @@ const UserProfileScreen= ({navigation, route}) => {
             })
 
             if (connectList.length === 0) {
-                console.log("No connected users");
-                setConnectListStr("No connected users");
+                console.log("No pending connects");
+                setConnectListStr("No pending connects");
             } else {
                 setConnectListStr(connectList.toString());
             }
@@ -95,19 +96,49 @@ const UserProfileScreen= ({navigation, route}) => {
         getPendingConnects();
         getFriends();
     })
+
+    const idHeader = (props) => (
+        <View {...props}>
+          <Text category='h6'>User ID</Text>
+        </View>
+      );
+
+    const emailHeader = (props) => (
+    <View {...props}>
+        <Text category='h6'>Email</Text>
+    </View>
+    );
     
+    const pendingReqHeader = (props) => (
+        <View {...props}>
+            <Text category='h6'>Pending Connects</Text>
+        </View>
+    );
+
+    const moduleListHeader = (props) => (
+        <View {...props}>
+            <Text category='h6'>Modules</Text>
+        </View>
+    );
+
+    const friendListHeader = (props) => (
+        <View {...props}>
+            <Text category='h6'>Friends</Text>
+        </View>
+    );
+
     return (
         <SafeAreaView style={{flex:1}}>
         <KeyboardAvoidingView style={{flex:1}}>
             <TopNavigation 
-                title='Profile'
+                title='Explore'
                 alignment='start'
                 accessoryLeft={<Icon name='frienus' pack='customAssets' style={{marginLeft:5, height:60, width:60}} />}
                 accessoryRight={LogoutButton}
                 style={{height:'8%'}}
             />
             <Divider/>
-            <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center',}}>
+            {/* <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center',}}>
                 <Text category='h1' style={[styles.singleLineText]}>{isYourself ? "This is your public profile" : "Searched Profile"}</Text>
                 <Divider/>
                 <Card status='primary' style={{flex: 1, width:'100%',}}>
@@ -135,7 +166,41 @@ const UserProfileScreen= ({navigation, route}) => {
                 <Layout style={{flex:1, alignItems:'center', justifyContent:'center'}}>
                     <ConnectButton isYourself={isYourself} userId={idField}/>
                 </Layout>
+            </Layout> */}
+          <React.Fragment>
+            <Text category='h1' style={[styles.singleLineText]}>{isYourself ? "This is your public profile" : "Searched Profile"}</Text>
+                <Divider/>
+            <ScrollView>
+            <Layout style={styles.container} level='1'>
+                <Card style={styles.card}>
+                <ConnectButton isYourself={isYourself} userId={idField}/>
+                </Card>
             </Layout>
+            <Layout style={styles.topContainer} level='1'>
+
+            <Card style={styles.card} header={idHeader}>
+                <Text>{idField}</Text>
+            </Card>
+
+            <Card style={styles.card} header={emailHeader}>
+                <Text>{emailField}</Text>
+            </Card>
+
+            </Layout>
+
+            <Card style={styles.card} header={pendingReqHeader}>
+            <Text>{connectListStr}</Text>
+            </Card>
+            
+            <Card style={styles.card} header={moduleListHeader}>
+            <Text>{modules}</Text>
+            </Card>
+
+            <Card style={styles.card} header={friendListHeader}>
+            <Text>{friends}</Text>
+            </Card>
+            </ScrollView>
+        </React.Fragment>
         </KeyboardAvoidingView>
         </SafeAreaView>
     )
@@ -149,5 +214,27 @@ const styles = StyleSheet.create({
     },
     manyLineText: {
         textAlign: 'left',
-    }
+    },
+    topContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    card: {
+        flex: 1,
+        margin: 2,
+    },
+    container: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    footerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+    },
+    footerControl: {
+        marginHorizontal: 2,
+    },
+    list: {
+        overflow: 'scroll',
+    },
 })

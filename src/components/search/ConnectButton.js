@@ -17,6 +17,7 @@ import { useEffect } from 'react';
 const ConnectButton = ({isYourself, userId}) => {
     const authUserSnapshot = getDoc(doc(db, "Users/" + auth.currentUser.uid));
     const currUserSnapshot = getDoc(doc(db, "Users/" + userId + "/PendingConnects/" + auth.currentUser.uid));
+    const currUserFriendsSnapshot = getDoc(doc(db, "Users/" + userId + "/Friends/" + auth.currentUser.uid));
     const connectHandler = async () => {
         authUserSnapshot.then(result => {
             const authUserDisplayName = result.get("displayName");
@@ -51,12 +52,18 @@ const ConnectButton = ({isYourself, userId}) => {
                 deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/PendingConnects/' + userId))
                 deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + userId))
                 console.log("We have found friends!");
-            } else {
-                setDoc(doc(db, 'Users/' + userId + '/ConnectNotif/' + auth.currentUser.uid),
-                {
-                    id: auth.currentUser.uid,
+            } else  {
+                currUserFriendsSnapshot.then(result => {
+                    if (result.exists()) {
+                        deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/PendingConnects/' + userId))
+                    } else {
+                        setDoc(doc(db, 'Users/' + userId + '/ConnectNotif/' + auth.currentUser.uid),
+                        {
+                            id: auth.currentUser.uid,
+                        })
+                        console.log("These 2 are not friends :(");
+                    }
                 })
-                console.log("These 2 are not friends :(");
             }
         })
     }

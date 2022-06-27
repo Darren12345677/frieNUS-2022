@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import React from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Text, Button, Card, Layout, Modal, Divider } from '@ui-kitten/components';
@@ -56,29 +56,35 @@ const UserResult = ({keyId, userFields, setter}) => {
     }
 
     const navigation = useNavigation();
+
+    const optionsHeader = (props) => (
+        <View {...props}>
+            <Text category='h6'>Options</Text>
+        </View>
+    );
     
     return (
         <Button onPress={() => setVisible(true)} status='primary' appearance='outline' style={styles.rect}>
             <Text status='primary'>User: {idField}</Text>
-            <Modal visible={visible}>
-                <Card disabled={true}>
-                    <Text style={[styles.modalText]}>These are the modules they are taking: "FILL UP HERE"</Text>
-                    <Layout level='2'>
-                        <Text style={[styles.modalText]}>{finalStr}</Text>
-                        <Button 
-                        onPress = {() => {navigation.navigate('User Profile', {userID: idField}),
-                        setVisible(false)}}>
-                            <Text>View Profile</Text>
-                        </Button>
-                        <Button
-                        onPress={acceptHandler}>
-                            <Text>Accept</Text>
-                        </Button>
-                        <Button
-                        onPress={declineHandler}>
-                            <Text>Decline</Text>
-                        </Button>
-                    </Layout>
+            <Modal visible={visible}
+            onBackdropPress={() => setVisible(false)}>
+                <Card disabled={true} header = {optionsHeader}>
+                    <Button 
+                    onPress = {() => {navigation.navigate('User Profile', {userID: idField}),
+                    setVisible(false)}}>
+                        <Text>View Profile</Text>
+                    </Button>
+                    <Divider></Divider>
+                    <Button
+                    onPress={acceptHandler}>
+                        <Text>Accept</Text>
+                    </Button>
+                    <Divider></Divider>
+                    <Button
+                    onPress={declineHandler}>
+                        <Text>Decline</Text>
+                    </Button>
+                    <Divider></Divider>
                     <Button onPress={() => setVisible(false)}>
                         Dismiss
                     </Button>

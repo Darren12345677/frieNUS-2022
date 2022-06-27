@@ -86,7 +86,8 @@ const FriendScreen = () => {
                             return (
                                 <Button onPress={() => setVisible(true)} status='primary' appearance='outline' style={styles.rect}>
                                 <Text status='primary'>User: {item}</Text>
-                                <Modal visible={visible}>
+                                <Modal visible={visible}
+                                 onBackdropPress={() => setVisible(false)}>
                                     <Card disabled={true}>
                                         <Layout level='2'>
                                             <Button 
@@ -96,13 +97,13 @@ const FriendScreen = () => {
                                             </Button>
                                         </Layout>
                                         <Divider></Divider>
-                                        <Button onPress={() => setVisible(false)}>
-                                            Dismiss
-                                        </Button>
-                                        <Divider></Divider>
                                         <Button
                                         onPress={() => disconnectHandler(item)}>
                                             <Text>Disconnect</Text>
+                                        </Button>
+                                        <Divider></Divider>
+                                        <Button onPress={() => setVisible(false)}>
+                                            Dismiss
                                         </Button>
                                     </Card>
                                 </Modal>

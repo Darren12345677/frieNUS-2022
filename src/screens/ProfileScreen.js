@@ -10,8 +10,9 @@ import {
     Text,
     BottomNavigation, 
     BottomNavigationTab,
+    Card,
 } from '@ui-kitten/components';
-import { KeyboardAvoidingView, SafeAreaView,} from "react-native";
+import { KeyboardAvoidingView, SafeAreaView, StyleSheet, View} from "react-native";
 import { LogoutButton, UserResult, ConnectButton } from '../components';
 import { auth, db } from '../firebase';
 import {
@@ -26,6 +27,7 @@ import { useEffect } from 'react';
 import { useNavigation, useFocusEffect, NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { TabNavigator } from '../navigation';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 const ProfileScreen= () => {
@@ -57,6 +59,24 @@ const ProfileScreen= () => {
 
     const navigation = useNavigation();
 
+    const idHeader = (props) => (
+        <View {...props}>
+          <Text category='h6'>User ID</Text>
+        </View>
+      );
+
+    const emailHeader = (props) => (
+    <View {...props}>
+        <Text category='h6'>Email</Text>
+    </View>
+    );
+
+    const pendingReqHeader = (props) => (
+        <View {...props}>
+            <Text category='h6'>Pending Connects</Text>
+        </View>
+    );
+
     return (
         <SafeAreaView style={{flex:1}}>
         <KeyboardAvoidingView style={{flex:1}}>
@@ -68,7 +88,7 @@ const ProfileScreen= () => {
                 style={{height:'8%'}}
             />
             <Divider/>
-            <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            {/* <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text category='h1'>Profile</Text>
             <Button onPress={() => navigation.navigate('Friends')}>
                 <Text>Friends</Text>                
@@ -77,10 +97,58 @@ const ProfileScreen= () => {
             <Text>Your email is now: {emailField} </Text>
             <Text>Your display name is: {displayNameField} </Text>
             <Text>These are the users you have requested to connected with: {connectListStr} </Text> 
-            </Layout>
+            </Layout> */}   
+            <React.Fragment>
+                <Layout style={styles.topContainer} level='1'>
+
+                <Card style={styles.card} header = {idHeader}>
+                    <Text>{idField}</Text>
+                </Card>
+
+                <Card style={styles.card} header = {emailHeader}>
+                    <Text>{emailField}</Text>
+                </Card>
+
+                </Layout>
+                <Card style={styles.card} header = {pendingReqHeader}>
+                <Text>
+                    {connectListStr}
+                </Text>
+                </Card>
+                <Layout style={styles.container} level='1'>
+                <Card style={styles.card}>
+                <Button onPress={() => navigation.navigate('Friends')}>
+                <Text>Friend list</Text>                
+                </Button>
+                </Card>
+                </Layout>
+                <Divider></Divider>
+            </React.Fragment>
         </KeyboardAvoidingView>
         </SafeAreaView>
     )
 }
 
 export default ProfileScreen;
+
+const styles = StyleSheet.create({
+    topContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    card: {
+      flex: 1,
+      margin: 2,
+    },
+    container: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    footerContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+    },
+    footerControl: {
+      marginHorizontal: 2,
+    },
+  });

@@ -7,7 +7,14 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "react-native",
+    "setupFilesAfterEnv": [
+      "@testing-library/jest-native/extend-expect"
+    ]
   },
   "dependencies": {
     "@eva-design/eva": "^2.1.1",
@@ -32,10 +39,14 @@
     "react-native-screens": "~3.11.1",
     "react-native-svg": "^12.3.0",
     "react-native-web": "0.17.7",
-    "react-redux": "^8.0.1"
+    "react-redux": "^8.0.1",
+    "react-test-renderer": "^17.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.12.9",
+    "@testing-library/jest-native": "^4.0.5",
+    "@testing-library/react-native": "^10.1.1",
+    "jest": "^28.1.1"
   },
   "private": true
 }
