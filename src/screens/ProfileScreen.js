@@ -88,29 +88,19 @@ const ProfileScreen= () => {
                 style={{height:'8%'}}
             />
             <Divider/>
-            {/* <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text category='h1'>Profile</Text>
-            <Button onPress={() => navigation.navigate('Friends')}>
-                <Text>Friends</Text>                
-            </Button>
-            <Text>This is your current uid: {idField}</Text>
-            <Text>Your email is now: {emailField} </Text>
-            <Text>Your display name is: {displayNameField} </Text>
-            <Text>These are the users you have requested to connected with: {connectListStr} </Text> 
-            </Layout> */}   
             <React.Fragment>
                 <Layout style={styles.topContainer} level='1'>
 
-                <Card style={styles.card} header = {idHeader}>
+                <Card status='primary' style={styles.card} header = {idHeader}>
                     <Text>{idField}</Text>
                 </Card>
 
-                <Card style={styles.card} header = {emailHeader}>
+                <Card status='primary' style={styles.card} header = {emailHeader}>
                     <Text>{emailField}</Text>
                 </Card>
 
                 </Layout>
-                <Card style={styles.card} header = {pendingReqHeader}>
+                <Card status='primary' style={styles.card} header = {pendingReqHeader}>
                 <Text>
                     {connectListStr}
                 </Text>

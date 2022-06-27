@@ -54,6 +54,9 @@ const ChatScreen = () => {
                     style={{height:'8%'}}
                 />
                 <Divider/>
+                <Layout style={{flex:1, justifyContent:'center'}}>
+                    <Text style={{textAlign:'center', textAlignVertical:'center',}}>Work In Progress for Milestone 3</Text>
+                </Layout>
             </KeyboardAvoidingView>
         </SafeAreaView>
     )

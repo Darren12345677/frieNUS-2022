@@ -1,23 +1,55 @@
-import { StyleSheet } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 import React from 'react';
 import { Text, Button, Card, Layout, Modal, Divider } from '@ui-kitten/components';
 import {
-    collection,
-    getDocs,
-    addDoc,
     setDoc,
     getDoc,
     doc,
     deleteDoc,
 } from 'firebase/firestore';
 import { auth, db } from '../../firebase';
-import { useEffect } from 'react';
 
 
-const ConnectButton = ({isYourself, userId}) => {
+const ConnectButton = ({isConnected, isYourself, isFriend, userId}) => {
+    // console.log(isConnected);
     const authUserSnapshot = getDoc(doc(db, "Users/" + auth.currentUser.uid));
     const currUserSnapshot = getDoc(doc(db, "Users/" + userId + "/PendingConnects/" + auth.currentUser.uid));
     const currUserFriendsSnapshot = getDoc(doc(db, "Users/" + userId + "/Friends/" + auth.currentUser.uid));
+    
+    const displayTitle = () => {
+        console.log("isDisabled is " + isYourself);
+        if (isFriend) {
+            return "You are already friends with this user";
+        } else if (!isYourself && isConnected) {
+            return "This user wants to connect with you";
+        } else if (isYourself) {
+            return "You cannot connect with yourself";
+        } else {
+            return "Connect";
+        }
+    }
+
+    const shouldDisable = () => { 
+        if (isFriend) {
+            return true;
+        } else if (isYourself) {
+            return true;
+        } else if (!isYourself && isConnected) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    const successfulConnectAlert = () => {
+        console.log("Successful Connect");
+        Alert.alert(
+            "Successful Connect",
+            "",
+            [{text:"Dismiss", onPress: () => console.log("Dismissed")}]
+        )
+    }
+    
     const connectHandler = async () => {
         authUserSnapshot.then(result => {
             const authUserDisplayName = result.get("displayName");
@@ -30,6 +62,7 @@ const ConnectButton = ({isYourself, userId}) => {
             }).then(res => {
                 console.log("Added");
                 checkFriends("hi");
+                successfulConnectAlert();
             })
         })
     }
@@ -68,7 +101,7 @@ const ConnectButton = ({isYourself, userId}) => {
         })
     }
 
-    return (<Button disabled={isYourself} onPress={connectHandler}>Connect</Button>);
+    return (<Button disabled={shouldDisable()} onPress={connectHandler}>{displayTitle()}</Button>);
 };
 
 export default ConnectButton;
