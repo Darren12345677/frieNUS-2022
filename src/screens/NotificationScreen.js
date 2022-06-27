@@ -1,17 +1,13 @@
-import React, {useCallback} from 'react'
+import React from 'react'
 import { 
     Divider, 
     Layout, 
     TopNavigation, 
     List, 
     Icon,
-    Button,
-    Input,
-    Text,
-    Card,
 } from '@ui-kitten/components';
 import { KeyboardAvoidingView, SafeAreaView,} from "react-native";
-import { LogoutButton, ConnectButton, UserResult } from '../components';
+import { LogoutButton, UserResult } from '../components';
 import { auth, db } from '../firebase';
 import {
     doc,
@@ -56,25 +52,6 @@ const NotificationScreen = () => {
             }
         }, [refresh])
     );
-    
-    
-    // const [notifListStr, setNotifListStr] = React.useState([]);
-
-    // useFocusEffect(() => {
-    //     const collectionConnectNotifRef = collection(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/')
-    //     const getNotifications = async () => {
-    //         const notifList = [];
-    //         const qSnapshot = getDocs(collectionConnectNotifRef);
-    //         await((await qSnapshot)).forEach((doc) => {
-    //             // console.log("Connected user!");
-    //             notifList.push(doc.get('id'));
-    //         })
-    //         setNotifListStr([...notifList]);
-    //     }
-
-    //     console.log("Notification");
-    //     getNotifications();
-    // })
 
     return (
         <SafeAreaView style={{flex:1}}>

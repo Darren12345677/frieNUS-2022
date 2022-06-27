@@ -21,24 +21,37 @@ import {
 } from 'firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
-//import { ScrollView } from 'react-native-gesture-handler';
 
 
 const UserProfileScreen= ({navigation, route}) => {
     const idField = route.params.userID
     const isYourself = idField === auth.currentUser.uid;
+    const seeConnected = async () => {
+        getDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid)).then(res => {
+            res.exists() ? setConnected(true) : setConnected(false);
+        })
+    }
+
+    const seeFriend = async () => {
+        getDoc(doc(db, "Users/" + idField + "/Friends/" + auth.currentUser.uid)).then(res => {
+            res.exists() ? setIsFriend(true) : setIsFriend(false);
+        })
+    }
+
     const [displayNameField, setDisplayNameField] = React.useState("");
     const [emailField, setEmailField] = React.useState("");
     const [connectListStr, setConnectListStr] = React.useState("");
     const [modules, setModules] = React.useState("");
     const [friends, setFriends] = React.useState("");
-
+    const [isConnected, setConnected] = React.useState("false");
+    const [isFriend, setIsFriend] = React.useState("false");
+    seeConnected();
+    seeFriend();
 
     useFocusEffect(() => {
         const userDoc = doc(db, 'Users/' + idField);
 
         getDoc(userDoc).then(result => {
-            console.log("This is the currentUser id: " + idField);
             setDisplayNameField(result.get('displayName'));
             setEmailField(result.get('email'));
         })
@@ -48,7 +61,6 @@ const UserProfileScreen= ({navigation, route}) => {
             const connectList = [];
             const qSnapshot = getDocs(collectionPendingConnectsRef);
             await ((await qSnapshot)).forEach((doc) => {
-                // console.log("Connected user!");
                 connectList.push(doc.get('id'));
             })
 
@@ -85,7 +97,6 @@ const UserProfileScreen= ({navigation, route}) => {
             }))
 
             if (friendList.length === 0) {
-                console.log("No friends");
                 setFriends("No friends");
             } else {
                 setFriends(friendList.toString());
@@ -95,7 +106,8 @@ const UserProfileScreen= ({navigation, route}) => {
         getModules();
         getPendingConnects();
         getFriends();
-    })
+    });
+
 
     const idHeader = (props) => (
         <View {...props}>
@@ -138,65 +150,32 @@ const UserProfileScreen= ({navigation, route}) => {
                 style={{height:'8%'}}
             />
             <Divider/>
-            {/* <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center',}}>
-                <Text category='h1' style={[styles.singleLineText]}>{isYourself ? "This is your public profile" : "Searched Profile"}</Text>
-                <Divider/>
-                <Card status='primary' style={{flex: 1, width:'100%',}}>
-                    <Layout>
-                        <Text category='s1'style={[styles.singleLineText]}>ID: {idField}</Text>
-                    </Layout>
-                    <Layout>
-                        <Text category='s1'style={[styles.singleLineText]}>Email: {emailField} </Text>
-                    </Layout>
-                    <Layout>
-                        <Text category='s1'style={[styles.singleLineText]}>Name: {displayNameField} </Text>
-                    </Layout>
-                </Card>
-                <Card status='info' style={{flex:4, width:'100%',}}>
-                    <Layout>
-                        <Text category='s2'style={[styles.manyLineText]}>These are the users they have connected with: {connectListStr} </Text> 
-                    </Layout>
-                    <Layout>
-                        <Text category='s2'style={[styles.manyLineText]}>These are the modules they are taking: {modules}</Text>
-                    </Layout>
-                    <Layout>
-                        <Text category='s2'style={[styles.manyLineText]}>These are their friends: {friends}</Text>
-                    </Layout>
-                </Card>
-                <Layout style={{flex:1, alignItems:'center', justifyContent:'center'}}>
-                    <ConnectButton isYourself={isYourself} userId={idField}/>
-                </Layout>
-            </Layout> */}
           <React.Fragment>
+          <Layout>
             <Text category='h1' style={[styles.singleLineText]}>{isYourself ? "This is your public profile" : "Searched Profile"}</Text>
-                <Divider/>
+          </Layout>
+            <Divider/>
             <ScrollView>
             <Layout style={styles.container} level='1'>
                 <Card style={styles.card}>
-                <ConnectButton isYourself={isYourself} userId={idField}/>
+                <ConnectButton isFriend={isFriend} isConnected={isConnected} isYourself={isYourself} userId={idField}/>
                 </Card>
             </Layout>
             <Layout style={styles.topContainer} level='1'>
-
-            <Card style={styles.card} header={idHeader}>
-                <Text>{idField}</Text>
-            </Card>
-
-            <Card style={styles.card} header={emailHeader}>
-                <Text>{emailField}</Text>
-            </Card>
-
+                <Card status='info' style={styles.card} header={idHeader}>
+                    <Text>{idField}</Text>
+                </Card>
+                <Card status='info' style={styles.card} header={emailHeader}>
+                    <Text>{emailField}</Text>
+                </Card>
             </Layout>
-
-            <Card style={styles.card} header={pendingReqHeader}>
+            <Card status='info' style={styles.card} header={pendingReqHeader}>
             <Text>{connectListStr}</Text>
             </Card>
-            
-            <Card style={styles.card} header={moduleListHeader}>
+            <Card status='info' style={styles.card} header={moduleListHeader}>
             <Text>{modules}</Text>
             </Card>
-
-            <Card style={styles.card} header={friendListHeader}>
+            <Card status='info' style={styles.card} header={friendListHeader}>
             <Text>{friends}</Text>
             </Card>
             </ScrollView>

@@ -84,6 +84,7 @@ const SearchScreen = () => {
                         renderItem={({ item }) => {
                             return (
                                 <Button 
+                                style = {{marginBottom:10}}
                                 onPress = {() => navigation.navigate('User Profile', 
                                 {userID: item.id})}
                                 appearance='outline'>

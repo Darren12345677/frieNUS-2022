@@ -11,7 +11,7 @@ import {
     Card,
     Modal,
 } from '@ui-kitten/components';
-import { KeyboardAvoidingView, SafeAreaView, StyleSheet} from "react-native";
+import { Alert, KeyboardAvoidingView, SafeAreaView, StyleSheet} from "react-native";
 import { LogoutButton } from '../components';
 import { useFocusEffect, useNavigation, NavigationContainer } from '@react-navigation/native';
 import { auth, db } from '../firebase';
@@ -30,6 +30,15 @@ const FriendScreen = () => {
     const [friendList, setFriendList] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [refresh, setRefresh] = React.useState([]);
+
+    const successfulDisconnectAlert = () => {
+        console.log("Successful disconnect");
+        Alert.alert(
+            "Disconnected from friend",
+            "",
+            [{text:"Dismiss", onPress: () => console.log("Dismissed")}]
+        )
+    }
 
     useFocusEffect(
         React.useCallback(() => {
@@ -65,7 +74,7 @@ const FriendScreen = () => {
         await deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/Friends/' + idField))
         setVisible(false)
         setRefresh([]);
-        console.log("disconnected");
+        successfulDisconnectAlert();
     }
 
     return (

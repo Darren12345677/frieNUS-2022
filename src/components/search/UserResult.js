@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import React from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Text, Button, Card, Layout, Modal, Divider } from '@ui-kitten/components';
@@ -33,6 +33,24 @@ const UserResult = ({keyId, userFields, setter}) => {
         getModules();
     })
 
+    const successfulAcceptAlert = () => {
+        console.log("Successful Accept");
+        Alert.alert(
+            "Added new friend!",
+            "",
+            [{text:"Dismiss", onPress: () => console.log("Dismissed")}]
+        )
+    }
+
+    const successfulDeclineAlert = () => {
+        console.log("Successful Decline");
+        Alert.alert(
+            "Declined connect request",
+            "",
+            [{text:"Dismiss", onPress: () => console.log("Dismissed")}]
+        )
+    }
+
     const acceptHandler = async () => {
         await setDoc(doc(db, 'Users/'+ auth.currentUser.uid + '/Friends/' + idField), {
             id: idField,
@@ -44,7 +62,7 @@ const UserResult = ({keyId, userFields, setter}) => {
         await deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField))
         setVisible(false)
         setter([]);
-        console.log("accepted and turned invisible!");
+        successfulAcceptAlert();
     }
 
     const declineHandler = async () => {
@@ -52,7 +70,7 @@ const UserResult = ({keyId, userFields, setter}) => {
         await (deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField)));
         setVisible(false)
         setter([]);
-        console.log("declined and turned invisible");
+        successfulDeclineAlert();
     }
 
     const navigation = useNavigation();
