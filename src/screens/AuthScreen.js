@@ -136,12 +136,6 @@ const AuthScreen = () => {
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? null : null}
             >
-                <TopNavigation 
-                    title='Authentication'
-                    alignment='start'
-                    accessoryLeft={<Icon name='frienus' pack='customAssets' style={{marginLeft:5, width:60, height:60}} />}
-                    style={{flex:0.025}}
-                />
                 <Divider/>
                 <Layout style={[styles.content]}>
                     <Text category='h2' style={[styles.welcomeText]}>
