@@ -4,3 +4,4 @@ export { default as LogoutButton } from './auth/LogoutButton';
 export { default as Module } from './module/Module';
 export { default as UserResult }  from './search/UserResult';
 export { default as ConnectButton }  from './search/ConnectButton';
+export { default as SpinnerView } from './global/SpinnerView';

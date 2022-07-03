@@ -19,18 +19,23 @@ import { SearchBar } from "react-native-elements";
 import { UserResult, DATA, LogoutButton } from '../components';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { isSignInWithEmailLink } from 'firebase/auth';
+import { useSelector, useDispatch } from 'react-redux';
+import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
 
 const SearchScreen = () => {
-
 	const [data, setData] = useState([]);
 	const [searchValue, setSearchValue] = useState("");
-    const [arrayHolder, setArrayHolder] = useState([])
+    const [arrayHolder, setArrayHolder] = useState([]);
+    const dispatch = useDispatch();
+    const refresh = useSelector(state => state.refresh.refresh);
+    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
+    const reduxRefreshFalse = () => {dispatch(setRefreshFalse());};
 
     useEffect(() => {
         // Expensive operation. Consider your app's design on when to invoke this.
         // Could use Redux to help on first application load.
+        console.log("Search Screen");
         const userQuery = query(collection(db, 'Users'));
-        
         const TT = onSnapshot(userQuery, (snapshot) => {
             console.log("Listening");
             const userList = []
@@ -40,9 +45,9 @@ const SearchScreen = () => {
             setArrayHolder([...userList]);
             setData([...userList]);
         });
-
+        reduxRefreshFalse();
         return TT;
-    }, [setSearchValue]);
+    }, [setSearchValue, refresh]);
 
 	const searchFunction = (text) => {
 		const updatedData = arrayHolder.filter((item) => {

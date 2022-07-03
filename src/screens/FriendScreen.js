@@ -25,11 +25,18 @@ import {
     deleteDoc,
 } from 'firebase/firestore';
 import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoadingTrue, setLoadingFalse } from '../store/loading';
+import { setRefreshTrue, } from '../store/refresh';
 
 const FriendScreen = () => {
     const [friendList, setFriendList] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
-    const [refresh, setRefresh] = React.useState([]);
+    const dispatch = useDispatch();
+    const refresh = useSelector(state => state.refresh.refresh);
+    const reduxLoadingTrue = () => {dispatch(setLoadingTrue());};
+    const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
+    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
 
     const successfulDisconnectAlert = () => {
         console.log("Successful disconnect");
@@ -55,12 +62,10 @@ const FriendScreen = () => {
                         setFriendList([...friends]);
                     }
                 } catch (e) {
-                    console.log("Error in useFocusEffect for FriendScreen");
                     console.log(e);
                 }
             }
             getFriends();
-            console.log("got friends");
             return () => {
                 isActive = false;
             }
@@ -70,10 +75,12 @@ const FriendScreen = () => {
     const navigation = useNavigation();
 
     const disconnectHandler = async (idField) => {
+        setVisible(false);
+        reduxLoadingTrue();
         await deleteDoc(doc(db, "Users/" + idField + "/Friends/" + auth.currentUser.uid))
         await deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/Friends/' + idField))
-        setVisible(false)
-        setRefresh([]);
+        reduxRefreshTrue();
+        reduxLoadingFalse();
         successfulDisconnectAlert();
     }
 

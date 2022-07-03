@@ -11,6 +11,7 @@ import {
     BottomNavigation, 
     BottomNavigationTab,
     Card,
+    Spinner,
 } from '@ui-kitten/components';
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet, View} from "react-native";
 import { LogoutButton, UserResult, ConnectButton } from '../components';
@@ -18,16 +19,12 @@ import { auth, db } from '../firebase';
 import {
     doc,
     getDoc,
-    setDoc,
     collection,
-    query,
     getDocs,
 } from 'firebase/firestore';
-import { useEffect } from 'react';
-import { useNavigation, useFocusEffect, NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { TabNavigator } from '../navigation';
-import { ScrollView } from 'react-native-gesture-handler';
+import { useNavigation, useFocusEffect, } from '@react-navigation/native';
+import { useSelector, useDispatch } from 'react-redux';
+import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
 
 
 const ProfileScreen= () => {
@@ -36,11 +33,17 @@ const ProfileScreen= () => {
     const [idField, setIdField] = React.useState("");
     const [connectListStr, setConnectListStr] = React.useState("");
 
-    useFocusEffect(() => {
+    const dispatch = useDispatch();
+    const refresh = useSelector(state => state.refresh.refresh);
+    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
+    const reduxRefreshFalse = () => {dispatch(setRefreshFalse());};
+
+    useFocusEffect(React.useCallback(() => {
+        console.log("Profile Screen");
         const currUser = auth.currentUser;
         const userDoc = doc(db, 'Users/' + currUser.uid);
         getDoc(userDoc).then(result => {
-            console.log("This is the currentUser id: " + currUser.uid);
+            // console.log("This is the currentUser id: " + currUser.uid);
             setDisplayNameField(result.get('displayName'));
             setEmailField(result.get('email'));
             setIdField(result.get('id'));
@@ -55,7 +58,8 @@ const ProfileScreen= () => {
             setConnectListStr(connectList.toString());
         };
         loadConnected();
-    })
+        reduxRefreshFalse();
+    }, [refresh]));
 
     const navigation = useNavigation();
 
@@ -88,9 +92,8 @@ const ProfileScreen= () => {
                 style={{height:'8%'}}
             />
             <Divider/>
-            <React.Fragment>
+            <>
                 <Layout style={styles.topContainer} level='1'>
-
                 <Card status='primary' style={styles.card} header = {idHeader}>
                     <Text>{idField}</Text>
                 </Card>
@@ -112,8 +115,7 @@ const ProfileScreen= () => {
                 </Button>
                 </Card>
                 </Layout>
-                <Divider></Divider>
-            </React.Fragment>
+            </>
         </KeyboardAvoidingView>
         </SafeAreaView>
     )

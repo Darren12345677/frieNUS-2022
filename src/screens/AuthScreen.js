@@ -24,6 +24,9 @@ import { db, auth } from '../firebase';
 
 import { Text, Icon, Divider, Layout, TopNavigation } from '@ui-kitten/components';
 import * as data from '../../app.json'
+import { useDispatch } from 'react-redux';
+import { setLoadingTrue, setLoadingFalse } from '../store/loading';
+import { setRefreshTrue, } from '../store/refresh';
 
 const AuthScreen = () => {
     
@@ -31,6 +34,10 @@ const AuthScreen = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const dispatch = useDispatch();
+    const reduxLoadingTrue = () => {dispatch(setLoadingTrue());};
+    const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
+    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
 
     const successfulLoginAlert = () => {
         console.log("Successful Login")
@@ -72,7 +79,7 @@ const AuthScreen = () => {
             missingFieldsAlert("login");
             return;
         }
-        
+        reduxLoadingTrue();
         await signInWithEmailAndPassword(auth, email, password)
             .then((userCredentials) => {
                 const user = userCredentials.user;
@@ -87,6 +94,8 @@ const AuthScreen = () => {
                 console.error('[loginHandler]', errorCode, errorMessage);
                 errorAlert(errorCode, errorMessage);
             });
+        reduxRefreshTrue();
+        reduxLoadingFalse();
     };
 
     const signUpHandler = async () => {
@@ -94,7 +103,7 @@ const AuthScreen = () => {
             missingFieldsAlert("sign up");
             return;
         }
-
+        reduxLoadingTrue();
         await createUserWithEmailAndPassword(auth, email, password)
             .then((userCredentials) => {
                 const user = userCredentials.user;
@@ -110,10 +119,11 @@ const AuthScreen = () => {
                 console.error('[signUpHandler]', errorCode, errorMessage);
                 errorAlert(errorCode, errorMessage);
             });
+        reduxRefreshTrue();
+        reduxLoadingFalse();
     };
 
     const createUser = (user) => {
-        console.log("This is the user");
         setDoc(doc(db, 'Users', user.uid), 
             //JSON.parse(JSON.stringify(user))
             {
@@ -176,7 +186,6 @@ export default AuthScreen;
 
 const styles = StyleSheet.create({
     content: {
-        // backgroundColor:'red',
         flex: 10,
         justifyContent: 'flex-start',
         alignItems: 'center',

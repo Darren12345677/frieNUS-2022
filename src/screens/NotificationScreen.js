@@ -5,6 +5,7 @@ import {
     TopNavigation, 
     List, 
     Icon,
+    Text,
 } from '@ui-kitten/components';
 import { KeyboardAvoidingView, SafeAreaView,} from "react-native";
 import { LogoutButton, UserResult } from '../components';
@@ -17,41 +18,71 @@ import {
 } from 'firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
 
 const NotificationScreen = () => {
     const [notifListStr, setNotifListStr] = React.useState([]);
-    const [refresh, setRefresh] = React.useState([]);
+    // const [refresh, setRefresh] = React.useState([]);
 
-    useFocusEffect(
-        React.useCallback(() => {
-            let isActive = true;
-            console.log("isActive is true");
-            const collectionConnectNotifRef = collection(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/')
-            
-            const getNotifications = async () => {
-                try {
-                    const notifList = [];
-                    const qSnapshot = getDocs(collectionConnectNotifRef);
-                    await((await qSnapshot)).forEach((doc) => {
-                        notifList.push(doc.get('id'));
-                    })
-                    if (isActive) {
-                        setNotifListStr([...notifList]);
-                    }
-                } catch (e) {
-                    console.log(e);
+    const dispatch = useDispatch();
+    const refresh = useSelector(state => state.refresh.refresh);
+    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
+    const reduxRefreshFalse = () => {dispatch(setRefreshFalse());};
+
+    useEffect(() => {
+        console.log("Notification Screen");
+        let isActive = true;
+        const collectionConnectNotifRef = collection(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/')
+        const getNotifications = async () => {
+            try {
+                const notifList = [];
+                const qSnapshot = getDocs(collectionConnectNotifRef);
+                await((await qSnapshot)).forEach((doc) => {
+                    notifList.push(doc.get('id'));
+                })
+                if (isActive) {
+                    setNotifListStr([...notifList]);
                 }
+            } catch (e) {
+                console.log(e);
             }
+        }
+        getNotifications();
+        return () => {
+            // console.log("Callback");
+            isActive = false;
+            reduxRefreshFalse();
+        }
+    }, [refresh]);
 
-            getNotifications();
-            console.log("Length is " + notifListStr.length);
-            
-            return () => {
-                console.log("Setting isActive to false");
-                isActive = false;
-            }
-        }, [refresh])
-    );
+    // useFocusEffect(
+    //     React.useCallback(() => {
+    //         let isActive = true;
+    //         const collectionConnectNotifRef = collection(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/')
+    //         const getNotifications = async () => {
+    //             try {
+    //                 const notifList = [];
+    //                 const qSnapshot = getDocs(collectionConnectNotifRef);
+    //                 await((await qSnapshot)).forEach((doc) => {
+    //                     notifList.push(doc.get('id'));
+    //                 })
+    //                 if (isActive) {
+    //                     setNotifListStr([...notifList]);
+    //                 }
+    //             } catch (e) {
+    //                 console.log(e);
+    //             }
+    //         }
+    //         getNotifications();
+    //         return () => {
+    //             console.log("Callback");
+    //             isActive = false;
+    //             reduxLoadingFalse();
+    //         }
+    //     }, [isLoading])
+    // );
 
     return (
         <SafeAreaView style={{flex:1}}>
@@ -69,10 +100,11 @@ const NotificationScreen = () => {
                 data={notifListStr}
                 renderItem={({ item }) => {
                     return (
-                        // <Button appearance='outline'>
-                        // <Text>User ID: {item}</Text>
-                        // </Button>
-                        <UserResult keyId={item.id} userFields={item} setter={setRefresh}/>
+                        <UserResult 
+                        keyId={item.id} 
+                        userFields={item} 
+                        // setter={setRefresh}
+                        />
                         )
                 }}
                 keyExtractor={(item) => item.id}

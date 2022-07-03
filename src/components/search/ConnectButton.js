@@ -8,7 +8,9 @@ import {
     deleteDoc,
 } from 'firebase/firestore';
 import { auth, db } from '../../firebase';
-
+import { useDispatch } from 'react-redux';
+import { setLoadingTrue, setLoadingFalse } from '../../store/loading';
+import { setRefreshTrue, } from '../../store/refresh';
 
 const ConnectButton = ({isConnected, isYourself, isFriend, userId}) => {
     // console.log(isConnected);
@@ -16,8 +18,12 @@ const ConnectButton = ({isConnected, isYourself, isFriend, userId}) => {
     const currUserSnapshot = getDoc(doc(db, "Users/" + userId + "/PendingConnects/" + auth.currentUser.uid));
     const currUserFriendsSnapshot = getDoc(doc(db, "Users/" + userId + "/Friends/" + auth.currentUser.uid));
     
+    const dispatch = useDispatch();
+    const reduxLoadingTrue = () => {dispatch(setLoadingTrue());};
+    const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
+    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
+
     const displayTitle = () => {
-        console.log("isDisabled is " + isYourself);
         if (isFriend) {
             return "You are already friends with this user";
         } else if (!isYourself && isConnected) {
@@ -51,24 +57,27 @@ const ConnectButton = ({isConnected, isYourself, isFriend, userId}) => {
     }
     
     const connectHandler = async () => {
+        reduxLoadingTrue();
         authUserSnapshot.then(result => {
             const authUserDisplayName = result.get("displayName");
             const displayStr = authUserDisplayName === userId ? "yourself" : userId;
-            console.log("You connected with " + displayStr);
-            console.log(auth.currentUser.uid);
+            // console.log("You connected with " + displayStr);
+            // console.log(auth.currentUser.uid);
             setDoc(doc(db, 'Users/' + auth.currentUser.uid + '/PendingConnects/' + userId), 
             {
                 id: userId,
             }).then(res => {
-                console.log("Added");
-                checkFriends("hi");
-                successfulConnectAlert();
+                checkFriends();
+                setTimeout(() => {
+                    reduxRefreshTrue();
+                    reduxLoadingFalse();
+                    successfulConnectAlert();
+                }, 1000);
             })
         })
     }
 
-    const checkFriends = async (hello) => {
-        console.log("connectHandler ends, check starts and we say " + hello)
+    const checkFriends = async () => {
         //When connectHandler runs, authUser adds currUser into its PendingConnects,
         //so now we only need to check if authUser is in currUser's PendingConnects!
         //Check if authUser is in currUser's PendingConnects
@@ -84,7 +93,7 @@ const ConnectButton = ({isConnected, isYourself, isFriend, userId}) => {
                 deleteDoc(doc(db, "Users/" + userId + "/PendingConnects/" + auth.currentUser.uid))
                 deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/PendingConnects/' + userId))
                 deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + userId))
-                console.log("We have found friends!");
+                // console.log("We have found friends!");
             } else  {
                 currUserFriendsSnapshot.then(result => {
                     if (result.exists()) {
@@ -94,7 +103,7 @@ const ConnectButton = ({isConnected, isYourself, isFriend, userId}) => {
                         {
                             id: auth.currentUser.uid,
                         })
-                        console.log("These 2 are not friends :(");
+                        // console.log("These 2 are not friends :(");
                     }
                 })
             }
