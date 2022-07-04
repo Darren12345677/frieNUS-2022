@@ -5,6 +5,8 @@ import {
     Platform,
     Alert,
     SafeAreaView,
+    View,
+    Image,
 } from 'react-native';
 import React, { useState } from 'react';
 import {
@@ -24,6 +26,9 @@ import { db, auth } from '../firebase';
 
 import { Text, Icon, Divider, Layout, TopNavigation } from '@ui-kitten/components';
 import * as data from '../../app.json'
+import { useDispatch } from 'react-redux';
+import { setLoadingTrue, setLoadingFalse } from '../store/loading';
+import { setRefreshTrue, } from '../store/refresh';
 
 const AuthScreen = () => {
     
@@ -31,6 +36,10 @@ const AuthScreen = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const dispatch = useDispatch();
+    const reduxLoadingTrue = () => {dispatch(setLoadingTrue());};
+    const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
+    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
 
     const successfulLoginAlert = () => {
         console.log("Successful Login")
@@ -72,7 +81,7 @@ const AuthScreen = () => {
             missingFieldsAlert("login");
             return;
         }
-        
+        reduxLoadingTrue();
         await signInWithEmailAndPassword(auth, email, password)
             .then((userCredentials) => {
                 const user = userCredentials.user;
@@ -87,6 +96,8 @@ const AuthScreen = () => {
                 console.error('[loginHandler]', errorCode, errorMessage);
                 errorAlert(errorCode, errorMessage);
             });
+        reduxRefreshTrue();
+        reduxLoadingFalse();
     };
 
     const signUpHandler = async () => {
@@ -94,7 +105,7 @@ const AuthScreen = () => {
             missingFieldsAlert("sign up");
             return;
         }
-
+        reduxLoadingTrue();
         await createUserWithEmailAndPassword(auth, email, password)
             .then((userCredentials) => {
                 const user = userCredentials.user;
@@ -110,10 +121,11 @@ const AuthScreen = () => {
                 console.error('[signUpHandler]', errorCode, errorMessage);
                 errorAlert(errorCode, errorMessage);
             });
+        reduxRefreshTrue();
+        reduxLoadingFalse();
     };
 
     const createUser = (user) => {
-        console.log("This is the user");
         setDoc(doc(db, 'Users', user.uid), 
             //JSON.parse(JSON.stringify(user))
             {
@@ -137,35 +149,41 @@ const AuthScreen = () => {
                 behavior={Platform.OS === 'ios' ? null : null}
             >
                 <Divider/>
+                <Layout style={{flex:0.075, paddingBottom:'5%'}}>
+                    <Layout style={{backgroundColor:'#FF6721', flex:1, justifyContent:'center', alignItems:'center'}}>
+                        <Text appearance='alternative' category='s1' style={{fontFamily:'Avenir'}}>Make friends with frieNUS!</Text>
+                    </Layout>
+                </Layout>
                 <Layout style={[styles.content]}>
-                    <Text category='h2' style={[styles.welcomeText]}>
-                        {`Welcome to `}
-                        <Text category='h1' style = {{color:'orange'}}>frieNUS!</Text>
-                    </Text>
-                    <Text status='basic' category='h5' style={[styles.authText]}>
-                        {isLogin ? 'Login!' : 'Sign up!'}
+                <Image source={require("../assets/frienus.png")} style={{height:'20%', width:'30%', marginBottom:'2.5%', marginTop:'-5%', resizeMode:'cover'}}/>
+                {/* <View style={{flex:10}}> */}
+                    <Text status='basic' category='h4' style={[styles.authText]}>
+                        {isLogin ? 'Login to frieNUS' : 'Create an account on frieNUS'}
                     </Text>
                     <AuthTextInput
                         value={email}
-                        placeholder="Your Email"
+                        placeholder="Your email address"
                         textHandler={setEmail}
                         keyboardType="email-address"
                     />
                     <AuthTextInput
                         value={password}
-                        placeholder="Your Password"
+                        placeholder="Your password"
                         textHandler={setPassword}
                         secureTextEntry
                     />
                     <AuthPressable
                         onPressHandler={isLogin ? loginHandler : signUpHandler}
-                        title={'Proceed'}
+                        title={isLogin ? 'Login' : 'Create an account'}
+                        iconLeft={isLogin ? <Icon name='unlock'/> : <Icon name='plus'/>}
                     />
                     <AuthPressable
                         onPressHandler={() => setIsLogin(!isLogin)}
-                        title={`Switch to ${isLogin ? 'Sign Up' : 'Login'}`}
+                        title={`Switch to ${isLogin ? 'Sign Up Screen' : 'Login Screen'}`}
+                        iconLeft={isLogin ? <Icon name='plus'/> : <Icon name='unlock'/>}
                     />
                     <Text style = {styles.version} appearance='hint'>Version {version}</Text>
+                {/* </View> */}
                 </Layout>
             </KeyboardAvoidingView>
         </SafeAreaView>
@@ -176,8 +194,7 @@ export default AuthScreen;
 
 const styles = StyleSheet.create({
     content: {
-        // backgroundColor:'red',
-        flex: 10,
+        flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'center',
         flexDirection: 'column',
@@ -190,7 +207,8 @@ const styles = StyleSheet.create({
     },
     authText: {
         marginBottom: 30,
-        fontSize: 30,
+        // fontSize: 30,
+        textAlign:'left'
     },
     version: {
         position: 'absolute',

@@ -9,9 +9,10 @@ import {
     Input,
     Text,
     Card,
+    Spinner,
 } from '@ui-kitten/components';
-import { KeyboardAvoidingView, SafeAreaView, View,  ScrollView} from "react-native";
-import { LogoutButton, ConnectButton } from '../components';
+import { Dimensions, KeyboardAvoidingView, SafeAreaView, View, ScrollView} from "react-native";
+import { LogoutButton, ConnectButton, SpinnerView } from '../components';
 import { auth, db } from '../firebase';
 import {
     doc,
@@ -21,10 +22,12 @@ import {
 } from 'firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
 
 const UserProfileScreen= ({navigation, route}) => {
     const idField = route.params.userID
+    
     const isYourself = idField === auth.currentUser.uid;
     const seeConnected = async () => {
         getDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid)).then(res => {
@@ -45,18 +48,24 @@ const UserProfileScreen= ({navigation, route}) => {
     const [friends, setFriends] = React.useState("");
     const [isConnected, setConnected] = React.useState("false");
     const [isFriend, setIsFriend] = React.useState("false");
+    // const [isLoading, setIsLoading] = React.useState(false);
+    const windowHeight = Dimensions.get('window').height;
+    const windowWidth = Dimensions.get('window').width;
+    const dispatch = useDispatch();
+    const refresh = useSelector(state => state.refresh.refresh);
+    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
+    const reduxRefreshFalse = () => {dispatch(setRefreshFalse());};
+
     seeConnected();
     seeFriend();
 
-    useFocusEffect(() => {
+    useFocusEffect(React.useCallback(() => {
         const userDoc = doc(db, 'Users/' + idField);
-
         getDoc(userDoc).then(result => {
             setDisplayNameField(result.get('displayName'));
             setEmailField(result.get('email'));
         })
         const collectionPendingConnectsRef = collection(db, 'Users/' + idField + '/PendingConnects');
-        
         const getPendingConnects =  async () => {
             const connectList = [];
             const qSnapshot = getDocs(collectionPendingConnectsRef);
@@ -65,7 +74,6 @@ const UserProfileScreen= ({navigation, route}) => {
             })
 
             if (connectList.length === 0) {
-                console.log("No pending connects");
                 setConnectListStr("No pending connects");
             } else {
                 setConnectListStr(connectList.toString());
@@ -81,7 +89,6 @@ const UserProfileScreen= ({navigation, route}) => {
             })
             
             if (modsList.length === 0) {
-                console.log("modsList Length is " + modsList.length);
                 setModules("Empty");
             } else {
                 setModules(modsList.toString());
@@ -102,11 +109,10 @@ const UserProfileScreen= ({navigation, route}) => {
                 setFriends(friendList.toString());
             }
         }
-        console.log("UserProfile");
         getModules();
         getPendingConnects();
         getFriends();
-    });
+    }, [refresh]));
 
 
     const idHeader = (props) => (
@@ -150,10 +156,11 @@ const UserProfileScreen= ({navigation, route}) => {
                 style={{height:'8%'}}
             />
             <Divider/>
-          <React.Fragment>
-          <Layout>
-            <Text category='h1' style={[styles.singleLineText]}>{isYourself ? "This is your public profile" : "Searched Profile"}</Text>
-          </Layout>
+        <>
+        <Layout>
+            <Layout>
+                <Text category='h1' style={[styles.singleLineText]}>{isYourself ? "This is your public profile" : "Searched Profile"}</Text>
+            </Layout>
             <Divider/>
             <ScrollView>
             <Layout style={styles.container} level='1'>
@@ -170,16 +177,17 @@ const UserProfileScreen= ({navigation, route}) => {
                 </Card>
             </Layout>
             <Card status='info' style={styles.card} header={pendingReqHeader}>
-            <Text>{connectListStr}</Text>
+                <Text>{connectListStr}</Text>
             </Card>
             <Card status='info' style={styles.card} header={moduleListHeader}>
-            <Text>{modules}</Text>
+                <Text>{modules}</Text>
             </Card>
             <Card status='info' style={styles.card} header={friendListHeader}>
-            <Text>{friends}</Text>
+                <Text>{friends}</Text>
             </Card>
             </ScrollView>
-        </React.Fragment>
+        </Layout>
+        </>
         </KeyboardAvoidingView>
         </SafeAreaView>
     )

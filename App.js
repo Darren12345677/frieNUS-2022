@@ -21,6 +21,7 @@ console.log("App start");
 export default App = () => {
     return (
         <>
+            <Provider store={store}>
             <IconRegistry icons={[EvaIconsPack, CustomIconPack]} />
             <SafeAreaView style={GlobalStyles.droidSafeArea}>
             <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme}}>
@@ -28,6 +29,7 @@ export default App = () => {
                 <StatusBar style='auto' />
             </ApplicationProvider>
             </SafeAreaView>
+            </Provider>
         </>
     );
 };

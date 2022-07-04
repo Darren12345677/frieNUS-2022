@@ -10,6 +10,7 @@ import {
     Text,
     Card,
     Modal,
+    Spinner,
 } from '@ui-kitten/components';
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet} from "react-native";
 import { LogoutButton } from '../components';
@@ -24,22 +25,20 @@ import {
     doc,
     deleteDoc
 } from 'firebase/firestore';
+import { useSelector, useDispatch } from 'react-redux';
+import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
+import { useEffect } from 'react';
 
 const ChatScreen = () => {
-    const [friendList, setFriendList] = React.useState([]);
-    const [visible, setVisible] = React.useState(false);
-    useFocusEffect(() => {
-        const currUserFriends = collection(db, 'Users/' + auth.currentUser.uid + '/Friends');
-        const getFriends = async () => {
-            const friends = [];
-            await (await getDocs(currUserFriends)).forEach((doc => {
-                const friendId = doc.get('id')
-                friends.push(friendId);
-            }))
-            setFriendList([...friends]);
-        }
-        getFriends();
-    })
+    const dispatch = useDispatch();
+    const refresh = useSelector(state => state.refresh.refresh);
+    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
+    const reduxRefreshFalse = () => {dispatch(setRefreshFalse());};
+
+    useEffect(() => {
+        console.log("Chat Screen");
+        reduxRefreshFalse();
+    }, [refresh]);
 
     const navigation = useNavigation();
 
@@ -56,6 +55,9 @@ const ChatScreen = () => {
                 <Divider/>
                 <Layout style={{flex:1, justifyContent:'center'}}>
                     <Text style={{textAlign:'center', textAlignVertical:'center',}}>Work In Progress for Milestone 3</Text>
+                    <Text>{`${refresh}`}</Text>
+                    <Button onPress={reduxRefreshTrue}>TRUE BUTTON</Button>
+                    <Button onPress={reduxRefreshFalse}>FALSE BUTTON</Button>
                 </Layout>
             </KeyboardAvoidingView>
         </SafeAreaView>

@@ -7,12 +7,11 @@
   "text-primary-color": "$color-primary-default",
   "text-active-color": "$color-primary-active",
 
-
-
   "background-basic-color-1": "$color-basic-100",
   "background-basic-color-2": "$color-basic-300",
   "background-basic-color-3": "$color-basic-500",
   "background-basic-color-4": "$color-basic-700",
+
   "border-basic-color-1": "$color-basic-100",
   "border-basic-color-2": "$color-basic-200",
   "border-basic-color-3": "$color-basic-300",
@@ -24,6 +23,7 @@
   "color-basic-transparent-400": "rgba(99, 188, 247, 0.32)",
   "color-basic-transparent-500": "rgba(99, 188, 247, 0.40)",
   "color-basic-transparent-600": "rgba(99, 188, 247, 0.48)",
+
   "color-basic-100": "#EAFCFE",
   "color-basic-200": "#E0F9FE",
   "color-basic-300": "#D8F5FD",
@@ -68,6 +68,15 @@
   "color-primary-800": "#931A0A",
   "color-primary-900": "#7A0C06",
 
+  // "color-primary-100": "#FEFCFB",
+  // "color-primary-200": "#FEF9F7",
+  // "color-primary-300": "#FDF4F3",
+  // "color-primary-400": "#FBF0EF",
+  // "color-primary-500": "#FAEAEB",
+  // "color-primary-600": "#D7ABB1",
+  // "color-primary-700": "#B37584",
+  // "color-primary-800": "#904A61",
+  // "color-primary-900": "#772C4C",
 
 
 

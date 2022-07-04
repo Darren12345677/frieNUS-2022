@@ -14,12 +14,19 @@ import {
 import { auth, db } from '../../firebase';
 import ConnectButton from './ConnectButton';
 import NotificationScreen, * as NotifScreen from '../../screens/NotificationScreen';
+import { useDispatch } from 'react-redux';
+import { setLoadingTrue, setLoadingFalse } from '../../store/loading';
+import { setRefreshTrue, } from '../../store/refresh';
 
-
-const UserResult = ({keyId, userFields, setter}) => {
+const UserResult = ({keyId, userFields}) => {
     const idField = userFields;
     const [visible, setVisible] = React.useState(false);
     const [finalStr, setStr] = React.useState("");
+
+    const dispatch = useDispatch();
+    const reduxLoadingTrue = () => {dispatch(setLoadingTrue());};
+    const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
+    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
 
     useFocusEffect(() => {
         const colRef = collection(db, 'Users/' + idField + '/Modules');
@@ -52,6 +59,8 @@ const UserResult = ({keyId, userFields, setter}) => {
     }
 
     const acceptHandler = async () => {
+        reduxLoadingTrue();
+        setVisible(false)
         await setDoc(doc(db, 'Users/'+ auth.currentUser.uid + '/Friends/' + idField), {
             id: idField,
         })
@@ -60,16 +69,18 @@ const UserResult = ({keyId, userFields, setter}) => {
         })
         await deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid))
         await deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField))
-        setVisible(false)
-        setter([]);
+        reduxRefreshTrue();
+        reduxLoadingFalse();
         successfulAcceptAlert();
     }
 
     const declineHandler = async () => {
+        reduxLoadingTrue();
+        setVisible(false);
         await (deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid)));
         await (deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField)));
-        setVisible(false)
-        setter([]);
+        reduxRefreshTrue();
+        reduxLoadingFalse();
         successfulDeclineAlert();
     }
 
