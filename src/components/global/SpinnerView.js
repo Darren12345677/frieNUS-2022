@@ -3,23 +3,20 @@ import React from 'react';
 import { Layout, Spinner, Text } from '@ui-kitten/components';
 
 const SpinnerView = ({dimWidth, dimHeight}) => {
-    console.log(dimWidth);
-    console.log(dimHeight);
 
     return (
-    <View style=
-        {{backgroundColor: "rgba(9, 31, 89, 0.10)",
+    <Layout style=
+        {{backgroundColor: "rgba(9, 31, 89, 0.15)",
         position: 'absolute',
         height: dimHeight,
         width: dimWidth,
-        // left: '50%',
-        // right: '50%',
         alignItems: 'center',
         justifyContent: 'center',}}>
-
-        <Spinner size='giant'/>
-        <Text>Loading</Text>
-    </View>
+      <Layout level='1' style={{justifyContent:'center', alignItems:'center', padding:20, borderRadius:60}}>
+        <Spinner status='primary' size='giant'/>
+        <Text category='h6' style={{textColor:'black', paddingTop:20}} >Loading</Text>
+      </Layout>
+    </Layout>
     );
   }
   
@@ -29,12 +26,9 @@ const SpinnerView = ({dimWidth, dimHeight}) => {
     screen: {
         backgroundColor: "rgba(9, 31, 89, 0.10)",
         position: 'absolute',
-        // left: '50%',
-        // right: '50%',
         alignItems: 'center',
         justifyContent: 'center',
     }
   });
   
-
   //backgroundColor: "rgba(9, 31, 89, 0.10)",

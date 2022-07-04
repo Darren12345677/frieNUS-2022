@@ -3,7 +3,7 @@ import React from 'react';
 import { Text, Button } from '@ui-kitten/components';
 
 const AuthPressable = (props) => {
-  const { onPressHandler, title } = props;
+  const { onPressHandler, title, iconLeft, iconRight } = props;
 
   return (
     <Button
@@ -11,8 +11,10 @@ const AuthPressable = (props) => {
       appearance='outline'
       style={[styles.kButton]}
       status='primary'
+      accessoryLeft={iconLeft}
+      accessoryRight={iconRight}
       >
-      {evaProps => <Text {...evaProps} style={[styles.texty]}> {title} </Text>}
+      {evaProps => <Text {...evaProps} status='warning' category='p1'> {title} </Text>}
     </Button>
   )
 }
@@ -40,6 +42,6 @@ const styles = StyleSheet.create({
         height: '5%',
         alignItems: "center",
         borderRadius: 50,
-        color: 'blue'
+        // color: 'blue'
     }
 });

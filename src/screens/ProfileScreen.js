@@ -3,17 +3,13 @@ import {
     Divider, 
     Layout, 
     TopNavigation, 
-    List, 
     Icon,
     Button,
     Input,
     Text,
-    BottomNavigation, 
-    BottomNavigationTab,
     Card,
-    Spinner,
 } from '@ui-kitten/components';
-import { KeyboardAvoidingView, SafeAreaView, StyleSheet, View} from "react-native";
+import { Alert, KeyboardAvoidingView, SafeAreaView, StyleSheet, View, Keyboard} from "react-native";
 import { LogoutButton, UserResult, ConnectButton } from '../components';
 import { auth, db } from '../firebase';
 import {
@@ -21,6 +17,8 @@ import {
     getDoc,
     collection,
     getDocs,
+    setDoc,
+    updateDoc,
 } from 'firebase/firestore';
 import { useNavigation, useFocusEffect, } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
@@ -32,6 +30,7 @@ const ProfileScreen= () => {
     const [emailField, setEmailField] = React.useState("");
     const [idField, setIdField] = React.useState("");
     const [connectListStr, setConnectListStr] = React.useState("");
+    const [displayNameInput, setDisplayNameInput] = React.useState("");
 
     const dispatch = useDispatch();
     const refresh = useSelector(state => state.refresh.refresh);
@@ -60,6 +59,37 @@ const ProfileScreen= () => {
         loadConnected();
         reduxRefreshFalse();
     }, [refresh]));
+
+    const emptyAlert = () => {
+        Alert.alert(
+            "Display name cannot be empty!",
+            "",
+            [{ text:"Dismiss", onPress: () => console.log("Dismissed")}]
+        )
+    };
+
+    const displayNameAlert = () => {
+        Alert.alert(
+            "Display name set!",
+            "",
+            [{ text:"Dismiss", onPress: () => console.log("Dismissed")}]
+        )
+    };
+
+    const displayNameHandler = async () => {
+        const currUser = auth.currentUser;
+        const userDoc = doc(db, 'Users/' + currUser.uid);
+        if (displayNameInput.length == 0) {
+            emptyAlert();
+        } else {
+            updateDoc(userDoc, {
+                "displayName" : displayNameInput,
+            })
+            setDisplayNameInput('');
+            Keyboard.dismiss();
+            displayNameAlert();
+        }
+    }
 
     const navigation = useNavigation();
 
@@ -94,6 +124,16 @@ const ProfileScreen= () => {
             <Divider/>
             <>
                 <Layout style={styles.topContainer} level='1'>
+                    <Input
+                        style={styles.displayNameInput}
+                        placeholder={"Set your display name here"}
+                        onChangeText={setDisplayNameInput}></Input>
+                    <Button 
+                        style={styles.displayNameButton}
+                        onPress={displayNameHandler}
+                        >Save Changes</Button>
+                </Layout>
+                <Layout style={styles.topContainer} level='1'>
                 <Card status='primary' style={styles.card} header = {idHeader}>
                     <Text>{idField}</Text>
                 </Card>
@@ -104,10 +144,9 @@ const ProfileScreen= () => {
 
                 </Layout>
                 <Card status='primary' style={styles.card} header = {pendingReqHeader}>
-                <Text>
-                    {connectListStr}
-                </Text>
+                    <Text>{connectListStr}</Text>
                 </Card>
+
                 <Layout style={styles.container} level='1'>
                 <Card style={styles.card}>
                 <Button onPress={() => navigation.navigate('Friends')}>
@@ -125,22 +164,30 @@ export default ProfileScreen;
 
 const styles = StyleSheet.create({
     topContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
+        backgroundColor:'white',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     card: {
-      flex: 1,
-      margin: 2,
+        flex: 1,
+        margin: 2,
     },
     container: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     footerContainer: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
     },
     footerControl: {
-      marginHorizontal: 2,
+        marginHorizontal: 2,
     },
+    displayNameInput: {
+        width:'55%',
+        margin: 5,
+    },
+    displayNameButton: {
+        margin: 5,
+    }
   });

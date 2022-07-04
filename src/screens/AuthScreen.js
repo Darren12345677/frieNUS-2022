@@ -5,6 +5,8 @@ import {
     Platform,
     Alert,
     SafeAreaView,
+    View,
+    Image,
 } from 'react-native';
 import React, { useState } from 'react';
 import {
@@ -147,35 +149,41 @@ const AuthScreen = () => {
                 behavior={Platform.OS === 'ios' ? null : null}
             >
                 <Divider/>
+                <Layout style={{flex:0.075, paddingBottom:'5%'}}>
+                    <Layout style={{backgroundColor:'#FF6721', flex:1, justifyContent:'center', alignItems:'center'}}>
+                        <Text appearance='alternative' category='s1' style={{fontFamily:'Avenir'}}>Make friends with frieNUS!</Text>
+                    </Layout>
+                </Layout>
                 <Layout style={[styles.content]}>
-                    <Text category='h2' style={[styles.welcomeText]}>
-                        {`Welcome to `}
-                        <Text category='h1' style = {{color:'orange'}}>frieNUS!</Text>
-                    </Text>
-                    <Text status='basic' category='h5' style={[styles.authText]}>
-                        {isLogin ? 'Login!' : 'Sign up!'}
+                <Image source={require("../assets/frienus.png")} style={{height:'20%', width:'30%', marginBottom:'2.5%', marginTop:'-5%', resizeMode:'cover'}}/>
+                {/* <View style={{flex:10}}> */}
+                    <Text status='basic' category='h4' style={[styles.authText]}>
+                        {isLogin ? 'Login to frieNUS' : 'Create an account on frieNUS'}
                     </Text>
                     <AuthTextInput
                         value={email}
-                        placeholder="Your Email"
+                        placeholder="Your email address"
                         textHandler={setEmail}
                         keyboardType="email-address"
                     />
                     <AuthTextInput
                         value={password}
-                        placeholder="Your Password"
+                        placeholder="Your password"
                         textHandler={setPassword}
                         secureTextEntry
                     />
                     <AuthPressable
                         onPressHandler={isLogin ? loginHandler : signUpHandler}
-                        title={'Proceed'}
+                        title={isLogin ? 'Login' : 'Create an account'}
+                        iconLeft={isLogin ? <Icon name='unlock'/> : <Icon name='plus'/>}
                     />
                     <AuthPressable
                         onPressHandler={() => setIsLogin(!isLogin)}
-                        title={`Switch to ${isLogin ? 'Sign Up' : 'Login'}`}
+                        title={`Switch to ${isLogin ? 'Sign Up Screen' : 'Login Screen'}`}
+                        iconLeft={isLogin ? <Icon name='plus'/> : <Icon name='unlock'/>}
                     />
                     <Text style = {styles.version} appearance='hint'>Version {version}</Text>
+                {/* </View> */}
                 </Layout>
             </KeyboardAvoidingView>
         </SafeAreaView>
@@ -186,7 +194,7 @@ export default AuthScreen;
 
 const styles = StyleSheet.create({
     content: {
-        flex: 10,
+        flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'center',
         flexDirection: 'column',
@@ -199,7 +207,8 @@ const styles = StyleSheet.create({
     },
     authText: {
         marginBottom: 30,
-        fontSize: 30,
+        // fontSize: 30,
+        textAlign:'left'
     },
     version: {
         position: 'absolute',
