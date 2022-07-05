@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { 
     Divider, 
     Layout, 
@@ -59,13 +59,15 @@ const UserProfileScreen= ({navigation, route}) => {
     seeConnected();
     seeFriend();
 
-    useFocusEffect(React.useCallback(() => {
+    useEffect(() => {
         const userDoc = doc(db, 'Users/' + idField);
         getDoc(userDoc).then(result => {
             setDisplayNameField(result.get('displayName'));
             setEmailField(result.get('email'));
         })
         const collectionPendingConnectsRef = collection(db, 'Users/' + idField + '/PendingConnects');
+        const colRef = collection(db, 'Users/' + idField + '/Modules');
+        const friendsRef = collection(db, 'Users/' + idField + '/Friends');
         const getPendingConnects =  async () => {
             const connectList = [];
             const qSnapshot = getDocs(collectionPendingConnectsRef);
@@ -80,7 +82,6 @@ const UserProfileScreen= ({navigation, route}) => {
             }
         };
 
-        const colRef = collection(db, 'Users/' + idField + '/Modules');
         const getModules = async () => {
             const modsList = [];
             await (await getDocs(colRef)).forEach((doc) => {
@@ -95,7 +96,7 @@ const UserProfileScreen= ({navigation, route}) => {
             }
         }
 
-        const friendsRef = collection(db, 'Users/' + idField + '/Friends');
+        
         const getFriends = async () => {
             const friendList = [];
             await (await getDocs(friendsRef)).forEach((doc => {
@@ -112,7 +113,8 @@ const UserProfileScreen= ({navigation, route}) => {
         getModules();
         getPendingConnects();
         getFriends();
-    }, [refresh]));
+        reduxRefreshFalse();
+    }, [refresh, idField]);
 
 
     const idHeader = (props) => (
@@ -157,7 +159,7 @@ const UserProfileScreen= ({navigation, route}) => {
             />
             <Divider/>
         <>
-        <Layout>
+        <Layout style={{flex:1}}>
             <Layout>
                 <Text category='h1' style={[styles.singleLineText]}>{isYourself ? "This is your public profile" : "Searched Profile"}</Text>
             </Layout>
