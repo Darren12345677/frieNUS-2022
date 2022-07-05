@@ -8,7 +8,7 @@ import {
     Text,
 } from '@ui-kitten/components';
 import { KeyboardAvoidingView, SafeAreaView,} from "react-native";
-import { LogoutButton, UserResult } from '../components';
+import { LogoutButton, NotificationEntry } from '../components';
 import { auth, db } from '../firebase';
 import {
     doc,
@@ -99,13 +99,7 @@ const NotificationScreen = () => {
                 <List
                 data={notifListStr}
                 renderItem={({ item }) => {
-                    return (
-                        <UserResult 
-                        keyId={item.id} 
-                        userFields={item} 
-                        // setter={setRefresh}
-                        />
-                        )
+                    return (<NotificationEntry userFields={item} />);
                 }}
                 keyExtractor={(item) => item.id}
                 ItemSeparatorComponent={Divider}

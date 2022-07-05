@@ -8,11 +8,11 @@ export const loadingSlice = createSlice({
     reducers: {
         // Can mutate state directly; Do it in a mutable way as compared to Redux
         setLoadingTrue: state => {
-            console.log("Loading");
+            // console.log("Loading");
             state.loading = true;
         },
         setLoadingFalse: state => {
-            console.log("Loading Done");
+            // console.log("Loading Done");
             state.loading = false;
         },
     }

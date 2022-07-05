@@ -21,7 +21,7 @@ import {
     collection,
 } from 'firebase/firestore';
 
-import { AuthTextInput, AuthPressable } from '../components';
+import { AuthTextInput, AuthPressable, ImprovedAlert } from '../components';
 import { db, auth } from '../firebase';
 
 import { Text, Icon, Divider, Layout, TopNavigation } from '@ui-kitten/components';
@@ -36,44 +36,27 @@ const AuthScreen = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    
     const dispatch = useDispatch();
     const reduxLoadingTrue = () => {dispatch(setLoadingTrue());};
     const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
     const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
 
     const successfulLoginAlert = () => {
-        console.log("Successful Login")
-        Alert.alert(
-            "Login successful!",
-            //This empty argument is for the captions. Otherwise app will crash when msg is displayed.
-            "",
-            [{ text:"Dismiss", onPress: () => console.log("Dismissed")} ]
-        )
-    };
-
-    const signUpAlert = () => {
-        console.log("Successful Sign Up")
-        Alert.alert(
-            "Sign up successfully completed!",
-            //This empty argument is for the captions. Otherwise app will crash when msg is displayed.
-            "",
-            [{ text:"Dismiss", onPress: () => console.log("Dismissed")} ]
-        )
+        ImprovedAlert("Successful Login","Login successful!");
     };
 
     const missingFieldsAlert = (type) => {
-        console.log("Missing Fields for " + type)
-        Alert.alert(
-            "Missing fields for " + type + ", please try again!",
-            //This empty argument is for the captions. Otherwise app will crash when msg is displayed.
-            "",
-            [{ text:"Dismiss", onPress: () => console.log("Dismissed")}]
-        )
+        ImprovedAlert("Missing Fields for " + type, "Missing fields for " + type + ", please try again!");
+    };
+
+    const signUpAlert = () => {
+        ImprovedAlert("Successful Sign Up", "Account created!");
     };
 
     const errorAlert = (errorCode, errorMsg) => {
-        Alert.alert(errorCode, errorMsg, 
-        [{ text:"Dismiss", onPress: () => console.log("Dismissed")}])
+        console.log("This is the error code: " + errorCode);
+        ImprovedAlert(errorMsg, "Encountered an error");
     }
 
     const loginHandler = async () => {
@@ -89,6 +72,7 @@ const AuthScreen = () => {
                 // console.log(user);
                 restoreForm();
                 successfulLoginAlert();
+                console.log("Here");
             })
             .catch((error) => {
                 const errorCode = error.code;

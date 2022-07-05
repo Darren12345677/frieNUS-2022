@@ -1,32 +1,21 @@
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import React from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { Text, Button, Card, Layout, Modal, Divider } from '@ui-kitten/components';
+import { Text, Button, Card, Modal, Divider } from '@ui-kitten/components';
 import {
     collection,
     getDocs,
-    addDoc,
     setDoc,
-    getDoc,
     doc,
     deleteDoc
 } from 'firebase/firestore';
 import { auth, db } from '../../firebase';
-import ConnectButton from './ConnectButton';
-import NotificationScreen, * as NotifScreen from '../../screens/NotificationScreen';
-import { useDispatch } from 'react-redux';
-import { setLoadingTrue, setLoadingFalse } from '../../store/loading';
-import { setRefreshTrue, } from '../../store/refresh';
 
-const UserResult = ({keyId, userFields}) => {
+import { ImprovedAlert, AwaitButton } from '../../components';
+
+const NotificationEntry = ({userFields}) => {
     const idField = userFields;
     const [visible, setVisible] = React.useState(false);
-    const [finalStr, setStr] = React.useState("");
-
-    const dispatch = useDispatch();
-    const reduxLoadingTrue = () => {dispatch(setLoadingTrue());};
-    const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
-    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
 
     useFocusEffect(() => {
         const colRef = collection(db, 'Users/' + idField + '/Modules');
@@ -41,25 +30,15 @@ const UserResult = ({keyId, userFields}) => {
     })
 
     const successfulAcceptAlert = () => {
-        console.log("Successful Accept");
-        Alert.alert(
-            "Added new friend!",
-            "",
-            [{text:"Dismiss", onPress: () => console.log("Dismissed")}]
-        )
+        ImprovedAlert("Successful Accept", "Added new friend!");
     }
 
+
     const successfulDeclineAlert = () => {
-        console.log("Successful Decline");
-        Alert.alert(
-            "Declined connect request",
-            "",
-            [{text:"Dismiss", onPress: () => console.log("Dismissed")}]
-        )
+        ImprovedAlert("Successful Decline", "Declined connect request");
     }
 
     const acceptHandler = async () => {
-        reduxLoadingTrue();
         setVisible(false)
         await setDoc(doc(db, 'Users/'+ auth.currentUser.uid + '/Friends/' + idField), {
             id: idField,
@@ -69,18 +48,13 @@ const UserResult = ({keyId, userFields}) => {
         })
         await deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid))
         await deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField))
-        reduxRefreshTrue();
-        reduxLoadingFalse();
         successfulAcceptAlert();
     }
 
     const declineHandler = async () => {
-        reduxLoadingTrue();
         setVisible(false);
         await (deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid)));
         await (deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField)));
-        reduxRefreshTrue();
-        reduxLoadingFalse();
         successfulDeclineAlert();
     }
 
@@ -104,15 +78,9 @@ const UserResult = ({keyId, userFields}) => {
                         <Text>View Profile</Text>
                     </Button>
                     <Divider></Divider>
-                    <Button
-                    onPress={acceptHandler}>
-                        <Text>Accept</Text>
-                    </Button>
+                    <AwaitButton awaitFunction={acceptHandler} title={"Accept"}/>
                     <Divider></Divider>
-                    <Button
-                    onPress={declineHandler}>
-                        <Text>Decline</Text>
-                    </Button>
+                    <AwaitButton awaitFunction={declineHandler} title={"Decline"}/>
                     <Divider></Divider>
                     <Button onPress={() => setVisible(false)}>
                         Dismiss
@@ -123,7 +91,7 @@ const UserResult = ({keyId, userFields}) => {
     );
 };
 
-export default UserResult;
+export default NotificationEntry;
 
 const styles = StyleSheet.create({
     rect: {

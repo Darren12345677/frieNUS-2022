@@ -14,7 +14,7 @@ const SpinnerView = ({dimWidth, dimHeight}) => {
         justifyContent: 'center',}}>
       <Layout level='1' style={{justifyContent:'center', alignItems:'center', padding:20, borderRadius:60}}>
         <Spinner status='primary' size='giant'/>
-        <Text category='h6' style={{textColor:'black', paddingTop:20}} >Loading</Text>
+        <Text category='h6' style={{paddingTop:20}} >Loading</Text>
       </Layout>
     </Layout>
     );

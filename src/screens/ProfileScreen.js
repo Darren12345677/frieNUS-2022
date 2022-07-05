@@ -10,7 +10,7 @@ import {
     Card,
 } from '@ui-kitten/components';
 import { Alert, KeyboardAvoidingView, SafeAreaView, StyleSheet, View, Keyboard} from "react-native";
-import { LogoutButton, UserResult, ConnectButton } from '../components';
+import { LogoutButton, ImprovedAlert, AwaitButton } from '../components';
 import { auth, db } from '../firebase';
 import {
     doc,
@@ -23,6 +23,7 @@ import {
 import { useNavigation, useFocusEffect, } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
+import { useEffect } from 'react';
 
 
 const ProfileScreen= () => {
@@ -34,15 +35,12 @@ const ProfileScreen= () => {
 
     const dispatch = useDispatch();
     const refresh = useSelector(state => state.refresh.refresh);
-    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
     const reduxRefreshFalse = () => {dispatch(setRefreshFalse());};
+    const currUser = auth.currentUser;
+    const userDoc = doc(db, 'Users/' + currUser.uid);
 
-    useFocusEffect(React.useCallback(() => {
-        console.log("Profile Screen");
-        const currUser = auth.currentUser;
-        const userDoc = doc(db, 'Users/' + currUser.uid);
+    useEffect(() => {
         getDoc(userDoc).then(result => {
-            // console.log("This is the currentUser id: " + currUser.uid);
             setDisplayNameField(result.get('displayName'));
             setEmailField(result.get('email'));
             setIdField(result.get('id'));
@@ -58,22 +56,14 @@ const ProfileScreen= () => {
         };
         loadConnected();
         reduxRefreshFalse();
-    }, [refresh]));
+    }, [refresh]);
 
     const emptyAlert = () => {
-        Alert.alert(
-            "Display name cannot be empty!",
-            "",
-            [{ text:"Dismiss", onPress: () => console.log("Dismissed")}]
-        )
+        ImprovedAlert("Display name input is empty", "Display name cannot be empty!");
     };
 
     const displayNameAlert = () => {
-        Alert.alert(
-            "Display name set!",
-            "",
-            [{ text:"Dismiss", onPress: () => console.log("Dismissed")}]
-        )
+        ImprovedAlert("Display name set successful", "Display name set!");
     };
 
     const displayNameHandler = async () => {
@@ -127,26 +117,20 @@ const ProfileScreen= () => {
                     <Input
                         style={styles.displayNameInput}
                         placeholder={"Set your display name here"}
-                        onChangeText={setDisplayNameInput}></Input>
-                    <Button 
-                        style={styles.displayNameButton}
-                        onPress={displayNameHandler}
-                        >Save Changes</Button>
+                        onChangeText={setDisplayNameInput}/>
+                    <AwaitButton awaitFunction={displayNameHandler} title={"Save Changes"} style={styles.displayNameButton}/>
                 </Layout>
                 <Layout style={styles.topContainer} level='1'>
                 <Card status='primary' style={styles.card} header = {idHeader}>
                     <Text>{idField}</Text>
                 </Card>
-
                 <Card status='primary' style={styles.card} header = {emailHeader}>
                     <Text>{emailField}</Text>
                 </Card>
-
                 </Layout>
                 <Card status='primary' style={styles.card} header = {pendingReqHeader}>
                     <Text>{connectListStr}</Text>
                 </Card>
-
                 <Layout style={styles.container} level='1'>
                 <Card style={styles.card}>
                 <Button onPress={() => navigation.navigate('Friends')}>

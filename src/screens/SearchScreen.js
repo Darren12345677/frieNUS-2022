@@ -34,7 +34,6 @@ const SearchScreen = () => {
     useEffect(() => {
         // Expensive operation. Consider your app's design on when to invoke this.
         // Could use Redux to help on first application load.
-        console.log("Search Screen");
         const userQuery = query(collection(db, 'Users'));
         const TT = onSnapshot(userQuery, (snapshot) => {
             console.log("Listening");

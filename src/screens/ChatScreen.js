@@ -13,7 +13,7 @@ import {
     Spinner,
 } from '@ui-kitten/components';
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet} from "react-native";
-import { LogoutButton } from '../components';
+import { LogoutButton, AwaitButton } from '../components';
 import { useFocusEffect, useNavigation, NavigationContainer } from '@react-navigation/native';
 import { auth, db } from '../firebase';
 import {
@@ -35,8 +35,12 @@ const ChatScreen = () => {
     const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
     const reduxRefreshFalse = () => {dispatch(setRefreshFalse());};
 
+    const testFn = async () => {
+        const namez = (await getDoc(doc(db, "Users/"+auth.currentUser.uid))).get("displayName");
+        console.log(namez);
+    }
+
     useEffect(() => {
-        console.log("Chat Screen");
         reduxRefreshFalse();
     }, [refresh]);
 
@@ -58,6 +62,7 @@ const ChatScreen = () => {
                     <Text>{`${refresh}`}</Text>
                     <Button onPress={reduxRefreshTrue}>TRUE BUTTON</Button>
                     <Button onPress={reduxRefreshFalse}>FALSE BUTTON</Button>
+                    <AwaitButton awaitFunction={testFn} title={"Hello"}></AwaitButton>
                 </Layout>
             </KeyboardAvoidingView>
         </SafeAreaView>

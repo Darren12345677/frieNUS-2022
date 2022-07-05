@@ -3,7 +3,6 @@ import {
     SafeAreaView,
     KeyboardAvoidingView,
     Keyboard,
-    Alert,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import {
@@ -16,7 +15,7 @@ import {
 } from 'firebase/firestore';
 
 import { auth, db } from '../firebase';
-import { Module, LogoutButton } from '../components';
+import { Module, LogoutButton, ImprovedAlert, AwaitButton } from '../components';
 import { 
     Divider, 
     Layout, 
@@ -58,34 +57,26 @@ const ModuleScreen = () => {
     }, [onSubmitHandler, refresh]);
 
     const showRes = (text) => {
-        console.log(text);
-        Alert.alert(
-            text,"",[{text:"Dismiss", onPress: () => console.log("Dismissed")}]
-        )
-    };
+        ImprovedAlert(text, text);
+    }
 
-    // https://firebase.google.com/docs/firestore/manage-data/add-data#web-version-9
-    // https://firebase.google.com/docs/firestore/manage-data/add-data#web-version-9_7
     const onSubmitHandler = async () => {
         if (module.length === 0) {
             showRes('Module description cannot be empty!');
             return;
         }
         try {
-            reduxLoadingTrue();
+            // reduxLoadingTrue();
             clearForm();
             const moduleRef = await addDoc(collection(db, 'Users/' + currUser + '/Modules'), {
                 desc: module,
-                // completed: false,
             });
-            console.log('onSubmitHandler success', moduleRef.id);
-            reduxRefreshTrue();
-            reduxLoadingFalse();
+            // reduxRefreshTrue();
+            // reduxLoadingFalse();
             showRes('Successfully added module!');
         } catch (err) {
-            console.log('onSubmitHandler failure', err);
-            reduxRefreshTrue();
-            reduxLoadingFalse();
+            // reduxRefreshTrue();
+            // reduxLoadingFalse();
             showRes('Failed to add module!');
         }
     };
@@ -94,12 +85,10 @@ const ModuleScreen = () => {
         try {
             reduxLoadingTrue();
             await deleteDoc(doc(db, 'Users/' + currUser + '/Modules', id));
-            console.log('onDeleteHandler success', id);
             reduxRefreshTrue();
             reduxLoadingFalse();
             showRes('Successfully deleted module!');
         } catch (err) {
-            console.log('onDeleteHandler failure', err);
             reduxRefreshTrue();
             reduxLoadingFalse();
             showRes('Failed to delete module!');
@@ -139,16 +128,14 @@ const ModuleScreen = () => {
                             placeholder={INPUT_PLACEHOLDER}
                             style={styles.moduleInput}
                             status='basic'
-                        /> 
-                        <Button
-                            onPress={onSubmitHandler}
-                            style={styles.button}
-                            accessoryLeft={addIcon}
-                            size='giant'
-                            status='primary'
-                            appearance='ghost'
-                        >
-                        </Button>
+                        />
+                        <AwaitButton 
+                        awaitFunction={onSubmitHandler} 
+                        style={styles.button} 
+                        accessoryLeft={addIcon}
+                        size='giant'
+                        status='primary'
+                        appearance='ghost'/>
                     </Layout>
                     <Layout style={styles.listContainer}>
                         <List
@@ -162,7 +149,6 @@ const ModuleScreen = () => {
                             )}
                             style={styles.list}
                             showsVerticalScrollIndicator={false}
-                            ItemSeparatorComponent={Divider}
                         />
                     </Layout>
                 </Layout>
@@ -191,7 +177,7 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         // backgroundColor:'black',
-        flex: 1,
+        // flex: 1,
         width:'100%',
         flexDirection: 'row',
         justifyContent:'flex-start',

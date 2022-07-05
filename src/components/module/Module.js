@@ -1,7 +1,7 @@
 import { StyleSheet, Platform } from 'react-native';
 import React from 'react';
-import { Text, Layout, Button, Icon } from '@ui-kitten/components';
-
+import { Text, Layout, Icon } from '@ui-kitten/components';
+import { AwaitButton } from "../../components";
 
 const Module = (props) => {
     const { data, onDelete } = props;
@@ -11,14 +11,13 @@ const Module = (props) => {
     }
 
     const DeleteIcon = (props) => (
-        <Button 
-          onPress={() => onDelete(data.id)} 
-          accessoryLeft={renderTrashIcon} 
-          size='medium'
-          appearance='ghost'
-          status='basic'
-          style={{paddingTop:0, paddingBottom:10, paddingRight:5}}>
-        </Button>
+        <AwaitButton 
+        awaitFunction={() => onDelete(data.id)}
+        accessoryRight={renderTrashIcon} 
+        size='medium'
+        appearance='ghost'
+        status='basic'
+        style={{paddingTop:0, paddingBottom:10, paddingRight:5}}/>
     );
 
     return (
