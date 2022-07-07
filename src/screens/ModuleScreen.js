@@ -54,7 +54,7 @@ const ModuleScreen = () => {
             setModuleList([...modules]);
         });
         return unsubscribe;
-    }, [onSubmitHandler, refresh]);
+    }, [refresh]);
 
     const showRes = (text) => {
         ImprovedAlert(text, text);

@@ -2,62 +2,11 @@ import { StyleSheet, View } from 'react-native';
 import React from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Text, Button, Card, Modal, Divider } from '@ui-kitten/components';
-import {
-    collection,
-    getDocs,
-    setDoc,
-    doc,
-    deleteDoc
-} from 'firebase/firestore';
-import { auth, db } from '../../firebase';
-
 import { ImprovedAlert, AwaitButton } from '../../components';
 
-const NotificationEntry = ({userFields}) => {
-    const idField = userFields;
+const NotificationEntry = (props) => {
+    const {idField, onAccept, onDecline} = props;
     const [visible, setVisible] = React.useState(false);
-
-    useFocusEffect(() => {
-        const colRef = collection(db, 'Users/' + idField + '/Modules');
-        const getModules = async () => {
-            const modsList = [];
-            await (await getDocs(colRef)).forEach((doc) => {
-                const moduleCode = doc.get('desc');
-                modsList.push(moduleCode);
-            })
-        }
-        getModules();
-    })
-
-    const successfulAcceptAlert = () => {
-        ImprovedAlert("Successful Accept", "Added new friend!");
-    }
-
-
-    const successfulDeclineAlert = () => {
-        ImprovedAlert("Successful Decline", "Declined connect request");
-    }
-
-    const acceptHandler = async () => {
-        setVisible(false)
-        await setDoc(doc(db, 'Users/'+ auth.currentUser.uid + '/Friends/' + idField), {
-            id: idField,
-        })
-        await setDoc(doc(db, 'Users/'+ idField + '/Friends/' + auth.currentUser.uid), {
-            id: auth.currentUser.uid,
-        })
-        await deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid))
-        await deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField))
-        successfulAcceptAlert();
-    }
-
-    const declineHandler = async () => {
-        setVisible(false);
-        await (deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid)));
-        await (deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField)));
-        successfulDeclineAlert();
-    }
-
     const navigation = useNavigation();
 
     const optionsHeader = (props) => (
@@ -78,9 +27,15 @@ const NotificationEntry = ({userFields}) => {
                         <Text>View Profile</Text>
                     </Button>
                     <Divider></Divider>
-                    <AwaitButton awaitFunction={acceptHandler} title={"Accept"}/>
+                    <AwaitButton awaitFunction={()=>{
+                        setVisible(false)
+                        onAccept(idField)
+                    }} title={"Accept"}/>
                     <Divider></Divider>
-                    <AwaitButton awaitFunction={declineHandler} title={"Decline"}/>
+                    <AwaitButton awaitFunction={()=>{
+                        setVisible(false)
+                        onDecline(idField)
+                    }} title={"Decline"}/>
                     <Divider></Divider>
                     <Button onPress={() => setVisible(false)}>
                         Dismiss

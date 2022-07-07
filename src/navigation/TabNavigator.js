@@ -30,10 +30,10 @@ const TabNavigator = () => {
             //Makes screen lag
             // reduxRefreshTrue();
             return navigation.navigate(state.routeNames[index])}}>
-        <BottomNavigationTab title='Profile' icon={<Icon name='people-outline'/>} />
-        <BottomNavigationTab title='Search' icon={<Icon name='search-outline'/>} />
-        <BottomNavigationTab title='Modules' icon={<Icon name='book-outline'/>} />
-        <BottomNavigationTab title='Notifications' icon={<Icon name='bell-outline'/>} />
+        <BottomNavigationTab  icon={<Icon name='people-outline'/>} />
+        <BottomNavigationTab  icon={<Icon name='search-outline'/>} />
+        <BottomNavigationTab  icon={<Icon name='book-outline'/>} />
+        <BottomNavigationTab  icon={<Icon name='bell-outline'/>} />
         <BottomNavigationTab 
         // onPress doesn't work for some reason
         // onPressIn={() => console.log("Hello")}

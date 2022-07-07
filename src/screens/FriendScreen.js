@@ -17,15 +17,14 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { auth, db } from '../firebase';
 import {
     collection,
-    getDocs,
-    addDoc,
-    setDoc,
-    getDoc,
     doc,
     deleteDoc,
+    onSnapshot,
+    query, 
 } from 'firebase/firestore';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { setLoadingTrue, setLoadingFalse } from '../store/loading';
 import { setRefreshFalse, } from '../store/refresh';
 
 const FriendScreen = () => {
@@ -33,34 +32,45 @@ const FriendScreen = () => {
     const [visible, setVisible] = React.useState(false);
     const dispatch = useDispatch();
     const refresh = useSelector(state => state.refresh.refresh);
-    const reduxRefreshFalse = () => {dispatch(setRefreshFalse());};
+    const reduxLoadingTrue = () => {dispatch(setLoadingTrue());};
+    const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
+    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
 
     const successfulDisconnectAlert = () => {
         ImprovedAlert("Successful disconnect", "Disconnected from friend");
     }
 
     useEffect(() => {
-        let isActive = true;
-            const currUserFriends = collection(db, 'Users/' + auth.currentUser.uid + '/Friends');
-            const getFriends = async () => {
-                try {
-                    const friends = [];
-                    await (await getDocs(currUserFriends)).forEach((doc => {
-                        const friendId = doc.get('id')
-                        friends.push(friendId);
-                    }))
-                    if (isActive) {
-                        setFriendList([...friends]);
-                    }
-                } catch (e) {
-                    console.log(e);
-                }
-            }
-            getFriends();
-            reduxRefreshFalse();
-            return () => {
-                isActive = false;
-            }
+        // let isActive = true;
+        //     const currUserFriends = collection(db, 'Users/' + auth.currentUser.uid + '/Friends');
+        //     const getFriends = async () => {
+        //         try {
+        //             const friends = [];
+        //             await (await getDocs(currUserFriends)).forEach((doc => {
+        //                 const friendId = doc.get('id')
+        //                 friends.push(friendId);
+        //             }))
+        //             if (isActive) {
+        //                 setFriendList([...friends]);
+        //             }
+        //         } catch (e) {
+        //             console.log(e);
+        //         }
+        //     }
+        //     getFriends();
+        //     reduxRefreshFalse();
+        //     return () => {
+        //         isActive = false;
+        //     }
+        const friendQuery = query(collection(db, 'Users/' + auth.currentUser.uid + '/Friends'));
+        const unsubscribe = onSnapshot(friendQuery, (snapshot) => {
+            const friends = [];     
+            snapshot.forEach((doc) => {
+                friends.push({ id: doc.id, ...doc.data() });
+            });
+            setFriendList([...friends]);
+        });
+        return unsubscribe;
     }, [refresh]);
 
     const navigation = useNavigation();
@@ -94,17 +104,16 @@ const FriendScreen = () => {
                         renderItem={({ item }) => {
                             return (
                                 <Button onPress={() => setVisible(true)} status='primary' appearance='filled' style={styles.rect}>
-                                <Text category='s1' appearance='alternative'>User: {item}</Text>
+                                <Text category='s1' appearance='alternative'>User: {item.id}</Text>
                                 <Modal 
                                 visible={visible}
-                                onBackdropPress={() => setVisible(false)}
-                                >
+                                onBackdropPress={() => setVisible(false)}>
                                     <Card disabled={true} status='info' style={[styles.popup]}>
                                         <Button 
-                                        onPress = {() => {navToUser(item)}}>View Profile
+                                        onPress = {() => {navToUser(item.id)}}>View Profile
                                         </Button>
                                         <Divider/>
-                                        <AwaitButton awaitFunction={() => disconnectHandler(item)} title={"Disconnect"}/>
+                                        <AwaitButton awaitFunction={() => disconnectHandler(item.id)} title={"Disconnect"}/>
                                         <Divider/>
                                         <Button onPress={() => setVisible(false)}>Dismiss</Button>
                                     </Card>

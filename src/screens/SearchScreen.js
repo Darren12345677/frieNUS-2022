@@ -16,7 +16,7 @@ import { auth, db } from '../firebase';
 import React, { useState, useEffect } from "react";
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet,} from "react-native";
 import { SearchBar } from "react-native-elements";
-import { UserResult, DATA, LogoutButton } from '../components';
+import { UserResult, DATA, LogoutButton, AwaitButton } from '../components';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { isSignInWithEmailLink } from 'firebase/auth';
 import { useSelector, useDispatch } from 'react-redux';
@@ -94,7 +94,9 @@ const SearchScreen = () => {
                                 appearance='outline'>
                                 <Text>User ID: {item.id}</Text>
                                 </Button>
-                                )
+                                // <AwaitButton awaitFunction={() => navigation.navigate('User Profile', 
+                                //  {userID: item.id})} title={item.id}/>
+                            )
                         }}
                         keyExtractor={(item) => item.id}
                         ItemSeparatorComponent={Divider}
