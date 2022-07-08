@@ -37,6 +37,7 @@ const NotificationScreen = () => {
     const [visible, setVisible] = React.useState(false);
     const navigation = useNavigation();
     const isFocused = useIsFocused();
+    const [userItem, setUserItem] = React.useState("");
 
     useEffect(() => {
         // const connectNotifQuery = query(collection(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif'));
@@ -115,31 +116,37 @@ const NotificationScreen = () => {
                 data={notifList}
                 renderItem={({ item }) => {
                     return (        
-                    <Button onPress={() => setVisible(true)} status='primary' appearance='outline' style={styles.rect}>
+                    <Button onPress={() => {setVisible(true) 
+                    setUserItem(item)}} status='primary' appearance='outline' style={styles.rect}>
                     <Text status='primary'>User: {item}</Text>
-                    <Modal visible={visible}
-                    onBackdropPress={() => setVisible(false)}>
-                        <Card disabled={true} header = {optionsHeader}>
-                            <Button 
-                            onPress = {() => {navigation.navigate('User Profile', {userID: item}),
-                            setVisible(false)}}>
-                                <Text>View Profile</Text>
-                            </Button>
-                            <Divider></Divider>
-                            <AwaitButton awaitFunction={()=>acceptHandler(item)} title={"Accept"}/>
-                            <Divider></Divider>
-                            <AwaitButton awaitFunction={()=>declineHandler(item)} title={"Decline"}/>
-                            <Divider></Divider>
-                            <Button onPress={() => setVisible(false)}>
-                                Dismiss
-                            </Button>
-                        </Card>
-                    </Modal>
                 </Button>);
                 }}
                 keyExtractor={(item) => item.id}
                 ItemSeparatorComponent={Divider}
                 />
+                <Modal 
+                visible={visible}
+                onBackdropPress={() => setVisible(false)}>
+                <Card disabled={true} header = {optionsHeader}>
+                <Text>{userItem}</Text>
+                <Button 
+                onPress = {() => {
+                    console.log(userItem);
+                    navigation.navigate('User Profile', {userID: userItem}),
+                    setVisible(false);
+                    }}>
+                <Text>View Profile</Text>
+                </Button>
+                <Divider></Divider>
+                <AwaitButton awaitFunction={()=>acceptHandler(userItem)} title={"Accept"}/>
+                <Divider></Divider>
+                <AwaitButton awaitFunction={()=>declineHandler(userItem)} title={"Decline"}/>
+                <Divider></Divider>
+                <Button onPress={() => setVisible(false)}>
+                    Dismiss
+                </Button>
+                </Card>
+            </Modal>
             </Layout>
         </KeyboardAvoidingView>
         </SafeAreaView>

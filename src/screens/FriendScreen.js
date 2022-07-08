@@ -35,6 +35,7 @@ const FriendScreen = () => {
     const reduxLoadingTrue = () => {dispatch(setLoadingTrue());};
     const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
     const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
+    const [userItem, setUserItem] = React.useState("");
 
     const successfulDisconnectAlert = () => {
         ImprovedAlert("Successful disconnect", "Disconnected from friend");
@@ -103,27 +104,28 @@ const FriendScreen = () => {
                         data={friendList}
                         renderItem={({ item }) => {
                             return (
-                                <Button onPress={() => setVisible(true)} status='primary' appearance='filled' style={styles.rect}>
+                                <Button onPress={() => {setVisible(true) 
+                                setUserItem(item.id)}} status='primary' appearance='filled' style={styles.rect}>
                                 <Text category='s1' appearance='alternative'>User: {item.id}</Text>
-                                <Modal 
-                                visible={visible}
-                                onBackdropPress={() => setVisible(false)}>
-                                    <Card disabled={true} status='info' style={[styles.popup]}>
-                                        <Button 
-                                        onPress = {() => {navToUser(item.id)}}>View Profile
-                                        </Button>
-                                        <Divider/>
-                                        <AwaitButton awaitFunction={() => disconnectHandler(item.id)} title={"Disconnect"}/>
-                                        <Divider/>
-                                        <Button onPress={() => setVisible(false)}>Dismiss</Button>
-                                    </Card>
-                                </Modal>
                             </Button>
                             );
                         }}
                         keyExtractor={(item) => item.id}
                         ItemSeparatorComponent={Divider}
                         />
+                        <Modal 
+                        visible={visible}
+                        onBackdropPress={() => setVisible(false)}>
+                            <Card disabled={true} status='info' style={[styles.popup]}>
+                                <Button 
+                                onPress = {() => {navToUser(userItem)}}>View Profile
+                                </Button>
+                                <Divider/>
+                                <AwaitButton awaitFunction={() => disconnectHandler(userItem)} title={"Disconnect"}/>
+                                <Divider/>
+                                <Button onPress={() => setVisible(false)}>Dismiss</Button>
+                            </Card>
+                        </Modal>
                     </Layout>
             </KeyboardAvoidingView>
         </SafeAreaView>
