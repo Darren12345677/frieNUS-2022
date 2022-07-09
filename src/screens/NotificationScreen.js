@@ -40,30 +40,30 @@ const NotificationScreen = () => {
     const [userItem, setUserItem] = React.useState("");
 
     useEffect(() => {
-        // const connectNotifQuery = query(collection(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif'));
-        // const unsubscribe = onSnapshot(connectNotifQuery, (snapshot) => {
-        //     const connectNotif = [];     
-        //     snapshot.forEach((doc) => {
-        //         connectNotif.push({ id: doc.id, ...doc.data() });
-        //     });
-        //     setNotifList([...connectNotif]);
-        // });
-        // return unsubscribe;
-        if (isFocused) {
-            console.log('In inFocused Block', isFocused);
-            fetchData();
-         }
-    }, [refresh, isFocused]);
+        const connectNotifQuery = query(collection(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif'));
+        const unsubscribe = onSnapshot(connectNotifQuery, (snapshot) => {
+            const connectNotif = [];     
+            snapshot.forEach((doc) => {
+                connectNotif.push({ id: doc.id, ...doc.data() });
+            });
+            setNotifList([...connectNotif]);
+        });
+        return unsubscribe;
+        // if (isFocused) {
+        //     console.log('In inFocused Block', isFocused);
+        //     fetchData();
+        //  }
+    }, []);
 
-    const fetchData = async () => {
-        const collectionConnectNotifRef = collection(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/')
-        const notifList = [];
-        const qSnapshot = getDocs(collectionConnectNotifRef);
-        await((await qSnapshot)).forEach((doc) => {
-            notifList.push(doc.get('id'));
-        })
-        setNotifList([...notifList])
-    }
+    // const fetchData = async () => {
+    //     const collectionConnectNotifRef = collection(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/')
+    //     const notifList = [];
+    //     const qSnapshot = getDocs(collectionConnectNotifRef);
+    //     await((await qSnapshot)).forEach((doc) => {
+    //         notifList.push(doc.get('id'));
+    //     })
+    //     setNotifList([...notifList])
+    // }
 
     const successfulAcceptAlert = () => {
         ImprovedAlert("Successful Accept", "Added new friend!");
@@ -117,8 +117,8 @@ const NotificationScreen = () => {
                 renderItem={({ item }) => {
                     return (        
                     <Button onPress={() => {setVisible(true) 
-                    setUserItem(item)}} status='primary' appearance='outline' style={styles.rect}>
-                    <Text status='primary'>User: {item}</Text>
+                    setUserItem(item.id)}} status='primary' appearance='outline' style={styles.rect}>
+                    <Text status='primary'>User: {item.id}</Text>
                 </Button>);
                 }}
                 keyExtractor={(item) => item.id}

@@ -46,7 +46,7 @@ const SearchScreen = () => {
         });
         reduxRefreshFalse();
         return TT;
-    }, [setSearchValue, refresh]);
+    }, []);
 
 	const searchFunction = (text) => {
 		const updatedData = arrayHolder.filter((item) => {
