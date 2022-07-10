@@ -100,12 +100,6 @@ const SearchScreen = () => {
       />
     );
 
-    const clearSearch = () => {
-        return (
-            <Icon name='close-outline'/>
-        );
-    }
-
 	return (
         <SafeAreaView style={{flex:1}}>
             <KeyboardAvoidingView style={{flex:1}}>
@@ -135,6 +129,7 @@ const SearchScreen = () => {
                                 setIsSearch(false)}}
                             placement='bottom'
                             onPressIn={() => {setIsSearch(true);}}
+                            style={[styles.AC]}
                             >
                             {autoArr.map(renderOption)}
                         </Autocomplete>
@@ -151,7 +146,7 @@ const SearchScreen = () => {
                         renderItem={({ item }) => {
                             return (
                                 <Button 
-                                style = {{marginBottom:10, marginRight:10, justifyContent:'flex-start', marginLeft:10}}
+                                style = {{marginBottom:10, marginHorizontal:25, justifyContent:'flex-start'}}
                                 onPress = {() => navigation.navigate('User Profile', 
                                 {userID: item.id})}
                                 appearance='outline'>
@@ -188,7 +183,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
         paddingTop: 20,
         flex: 1,
-        width:'95%',
+        width:'100%',
     },
     searchBar: {
         marginHorizontal: 10,
@@ -197,6 +192,13 @@ const styles = StyleSheet.create({
         marginLeft: 20,
         marginBottom: 15,
     },
+    AC: {
+        shadowColor: '#171717',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 5,
+    }
   });
 
 

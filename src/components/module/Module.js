@@ -1,6 +1,6 @@
 import { StyleSheet, Platform } from 'react-native';
 import React from 'react';
-import { Text, Layout, Icon } from '@ui-kitten/components';
+import { Text, Layout, Icon, Card } from '@ui-kitten/components';
 import { AwaitButton } from "../../components";
 
 const Module = (props) => {
@@ -20,11 +20,39 @@ const Module = (props) => {
         style={{paddingTop:0, paddingBottom:10, paddingRight:5}}/>
     );
 
+    const headerText = (props) => {
+        return (
+        <>
+        <Text {...props} category='s1' style={[styles.modCodeText, {lineHeight: Platform.OS === 'ios' ? 30 : 20}]}>
+        {data.modCode}
+        </Text>
+        <Text status='primary' category='label' style={[styles.modSemText, {lineHeight: Platform.OS === 'ios' ? 15 : 10}]}>
+        Sem: {data.semesters}
+        </Text>
+        </>
+        );
+    }
+
+    const semText = (props) => {
+        return (
+        <Text status='primary' category='label' style={[styles.modSemText, {lineHeight: Platform.OS === 'ios' ? 15 : 10}]}>
+        Sem: {data.semesters}
+        </Text>);
+    }
+
     return (
         <Layout style={[styles.container, styles.containerShadow]}>
             <Layout style = {[styles.header]} />
             <Layout level='1' style = {[styles.contents]}>
-                <Text style={[styles.taskText, {lineHeight: Platform.OS === 'ios' ? 30 : 20}]}>
+                <Layout level='1' style={[styles.leftBox]}>
+                <Text {...props} category='s1' style={[styles.modCodeText, {lineHeight: Platform.OS === 'ios' ? 30 : 20}]}>
+                {data.modCode}
+                </Text>
+                <Text status='primary' category='label' style={[styles.modSemText, {lineHeight: Platform.OS === 'ios' ? 15 : 10}]}>
+                Sem: {data.semesters}
+                </Text>
+                </Layout>
+                <Text category='p1' style={[styles.modDescText, {lineHeight: Platform.OS === 'ios' ? 30 : 20}]}>
                     {data.desc}
                 </Text>
                 <DeleteIcon />
@@ -40,7 +68,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         marginHorizontal: 14,
-        marginVertical: 10,
+        marginVertical: 5,
         alignItems: 'center',
         borderRadius: 4,
     },
@@ -63,9 +91,24 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
         elevation: 5,
     },
-    taskText: {
+    leftBox: {
+        flex: 1,
+        flexDirection: 'column',
+    },
+    modCodeText: {
         fontWeight: 'bold',
         flex: 1,
+        flexWrap: 'wrap',
+        flexDirection: 'row',
+        fontFamily: 'Arial',
+    },
+    modSemText: {
+        flex: 1,
+        textAlign:'left',
+        marginBottom: 5,
+    },
+    modDescText: {
+        flex: 3,
         flexWrap: 'wrap',
         flexDirection: 'row',
         fontFamily: 'Arial',

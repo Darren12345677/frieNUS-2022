@@ -12,6 +12,7 @@ import React, { useState } from 'react';
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
+    sendEmailVerification,
 } from 'firebase/auth';
 
 import {
@@ -24,6 +25,7 @@ import {
 import { AuthTextInput, AuthPressable, ImprovedAlert } from '../components';
 import { db, auth } from '../firebase';
 
+
 import { Text, Icon, Divider, Layout, TopNavigation } from '@ui-kitten/components';
 import * as data from '../../app.json'
 import { useDispatch } from 'react-redux';
@@ -31,7 +33,6 @@ import { setLoadingTrue, setLoadingFalse } from '../store/loading';
 import { setRefreshTrue, } from '../store/refresh';
 
 const AuthScreen = () => {
-    
     const version = data.expo.version;
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');

@@ -39,7 +39,7 @@ const AwaitButton = (props) => {
 
   return (
     //With the spread operator, we can treat the AwaitButton as a normal button
-    <Button style = {{marginBottom:5}} {...props} onPress={Wait}></Button>
+    <Button {...props} onPress={Wait}></Button>
   );
 }
   
