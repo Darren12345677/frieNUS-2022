@@ -86,7 +86,7 @@ const ConnectButton = ({isConnected, isYourself, isFriend, userId}) => {
     return (
         <AwaitButton 
             disabled={shouldDisable()} 
-            title={displayTitle()} 
+            children={displayTitle()} 
             awaitFunction={connecter}
         ></AwaitButton>
     );

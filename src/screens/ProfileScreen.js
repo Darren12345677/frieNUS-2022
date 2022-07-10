@@ -118,7 +118,7 @@ const ProfileScreen= () => {
                         style={styles.displayNameInput}
                         placeholder={"Set your display name here"}
                         onChangeText={setDisplayNameInput}/>
-                    <AwaitButton awaitFunction={displayNameHandler} title={"Save Changes"} style={styles.displayNameButton}/>
+                    <AwaitButton awaitFunction={displayNameHandler} children={"Save Changes"} style={styles.displayNameButton}/>
                 </Layout>
                 <Layout style={styles.topContainer} level='1'>
                 <Card status='primary' style={styles.card} header = {idHeader}>

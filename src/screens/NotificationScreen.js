@@ -112,7 +112,7 @@ const NotificationScreen = () => {
             />
             <Divider/>
             <Layout style={styles.listContainer}>
-                <List
+                {notifList.length != 0 ? <List
                 data={notifList}
                 renderItem={({ item }) => {
                     return (        
@@ -123,7 +123,7 @@ const NotificationScreen = () => {
                 }}
                 keyExtractor={(item) => item.id}
                 ItemSeparatorComponent={Divider}
-                />
+                /> : <Layout style={{flex:1, alignItems:'center', justifyContent:'center'}}><Text category='p1' status='info' style={[styles.noNotifText]}> You have no notifications</Text></Layout>}
                 <Modal 
                 visible={visible}
                 onBackdropPress={() => setVisible(false)}>
@@ -156,15 +156,13 @@ const NotificationScreen = () => {
 export default NotificationScreen;
 
 const styles = StyleSheet.create({
-    singleLineText: {
-        textAlign: 'center',
-    },
-    manyLineText: {
-        textAlign: 'left',
-    },
     listContainer: {
-        backgroundColor:'red',
+        // backgroundColor:'red',
         flex: 1,
         width:'100%',
+    }, 
+    noNotifText: {
+        textAlign: 'center',
+        textAlignVertical: 'center',
     }
 })

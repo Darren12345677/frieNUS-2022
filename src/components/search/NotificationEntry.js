@@ -30,12 +30,12 @@ const NotificationEntry = (props) => {
                     <AwaitButton awaitFunction={()=>{
                         setVisible(false)
                         onAccept(idField)
-                    }} title={"Accept"}/>
+                    }} children={"Accept"}/>
                     <Divider></Divider>
                     <AwaitButton awaitFunction={()=>{
                         setVisible(false)
                         onDecline(idField)
-                    }} title={"Decline"}/>
+                    }} children={"Decline"}/>
                     <Divider></Divider>
                     <Button onPress={() => setVisible(false)}>
                         Dismiss

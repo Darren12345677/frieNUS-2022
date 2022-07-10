@@ -23,7 +23,7 @@ const Module = (props) => {
     return (
         <Layout style={[styles.container, styles.containerShadow]}>
             <Layout style = {[styles.header]} />
-            <Layout level='2' style = {[styles.contents]}>
+            <Layout level='1' style = {[styles.contents]}>
                 <Text style={[styles.taskText, {lineHeight: Platform.OS === 'ios' ? 30 : 20}]}>
                     {data.desc}
                 </Text>
@@ -38,7 +38,6 @@ export default Module;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'aliceblue',
         flexDirection: 'column',
         marginHorizontal: 14,
         marginVertical: 10,

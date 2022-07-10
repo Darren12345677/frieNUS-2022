@@ -22,8 +22,8 @@ import {
     TopNavigation, 
     List, 
     Icon,
-    Button,
     Input,
+    Text,
 } from '@ui-kitten/components';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoadingTrue, setLoadingFalse } from '../store/loading';
@@ -66,17 +66,12 @@ const ModuleScreen = () => {
             return;
         }
         try {
-            // reduxLoadingTrue();
             clearForm();
             const moduleRef = await addDoc(collection(db, 'Users/' + currUser + '/Modules'), {
                 desc: module,
             });
-            // reduxRefreshTrue();
-            // reduxLoadingFalse();
             showRes('Successfully added module!');
         } catch (err) {
-            // reduxRefreshTrue();
-            // reduxLoadingFalse();
             showRes('Failed to add module!');
         }
     };
@@ -121,7 +116,7 @@ const ModuleScreen = () => {
                     />
                 <Divider/>
                 <Layout level='1' style={[styles.content]}>
-                    <Layout level='2' style={styles.inputContainer}>
+                    <Layout level='3' style={styles.inputContainer}>
                         <Input
                             onChangeText={setModule}
                             value={module}
@@ -137,8 +132,9 @@ const ModuleScreen = () => {
                         status='primary'
                         appearance='ghost'/>
                     </Layout>
-                    <Layout style={styles.listContainer}>
-                        <List
+                <Divider/>
+                    <Layout level='1' style={styles.listContainer}>
+                        {moduleList.length != 0 ? <List
                             data={moduleList}
                             renderItem={({ item, index }) => (
                                 <Module
@@ -149,7 +145,10 @@ const ModuleScreen = () => {
                             )}
                             style={styles.list}
                             showsVerticalScrollIndicator={false}
-                        />
+                        /> : 
+                        <Layout level='1' style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+                        <Text category='p1' status='info' style={[styles.noModulesText]}> You have not added any modules yet</Text>
+                        </Layout>}
                     </Layout>
                 </Layout>
             </KeyboardAvoidingView>
@@ -188,7 +187,12 @@ const styles = StyleSheet.create({
         marginLeft: 16,
     },
     button: {
-        flex: 0.25,
-        marginHorizontal: 10,
+        flex: 0.05,
+        marginRight: 5,
+        // borderColor:'black',
     },
+    noModulesText: {
+        textAlign: 'center',
+        textAlignVertical: 'center',
+    }
 });

@@ -3,14 +3,10 @@ import {
     Divider, 
     Layout, 
     TopNavigation, 
-    List, 
+    useTheme,
     Icon,
     Button,
-    Input,
     Text,
-    Card,
-    Modal,
-    Spinner,
 } from '@ui-kitten/components';
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet} from "react-native";
 import { LogoutButton, AwaitButton } from '../components';
@@ -30,6 +26,7 @@ import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
 import { useEffect } from 'react';
 
 const ChatScreen = () => {
+    const theme = useTheme();
     const dispatch = useDispatch();
     const refresh = useSelector(state => state.refresh.refresh);
     const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
@@ -46,23 +43,26 @@ const ChatScreen = () => {
 
     const navigation = useNavigation();
 
+    const titleText = props => {
+        return (<Text {...props} style={{}} category='h5'>Chat</Text>);
+    }
+
     return (
         <SafeAreaView style={{flex:1}}>
-            <KeyboardAvoidingView style={{flex:1}}>
+            <KeyboardAvoidingView style={{flex:1, backgroundColor: theme['background-basic-color-4']}}>
                 <TopNavigation 
-                    title='Chat'
+                    title={titleText}
                     alignment='start'
                     accessoryLeft={<Icon name='frienus' pack='customAssets' style={{marginLeft:5, height:60, width:60}} />}
                     accessoryRight={LogoutButton}
-                    style={{height:'8%'}}
+                    style={{height:'8%', backgroundColor: theme['background-basic-color-1']}}
                 />
-                <Divider/>
-                <Layout style={{flex:1, justifyContent:'center'}}>
-                    <Text style={{textAlign:'center', textAlignVertical:'center',}}>Work In Progress for Milestone 3</Text>
+                <Layout level='3' style={{flex:1, justifyContent:'center'}}>
+                    {/* <Text style={{textAlign:'center', textAlignVertical:'center',}}>Work In Progress for Milestone 3</Text>
                     <Text>{`${refresh}`}</Text>
                     <Button onPress={reduxRefreshTrue}>TRUE BUTTON</Button>
                     <Button onPress={reduxRefreshFalse}>FALSE BUTTON</Button>
-                    <AwaitButton awaitFunction={testFn} title={"Hello"}></AwaitButton>
+                    <AwaitButton awaitFunction={testFn} title={"Hello"}></AwaitButton> */}
                 </Layout>
             </KeyboardAvoidingView>
         </SafeAreaView>
@@ -76,9 +76,6 @@ const styles = StyleSheet.create({
         padding: 2,
         marginVertical: 8,
         marginHorizontal: 16,
-      },
-    container: {
-        minHeight: 192,
       },
     modalText: {
         textAlign: 'center'

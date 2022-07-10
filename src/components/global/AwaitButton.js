@@ -11,7 +11,7 @@ import { setRefreshTrue, } from '../../store/refresh';
 //the timeout ends.
 
 const AwaitButton = (props) => {
-  const {awaitFunction, title} = props;
+  const {awaitFunction} = props;
   const dispatch = useDispatch();
   const reduxLoadingTrue = () => {dispatch(setLoadingTrue());};
   const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
@@ -39,7 +39,7 @@ const AwaitButton = (props) => {
 
   return (
     //With the spread operator, we can treat the AwaitButton as a normal button
-    <Button style = {{marginBottom:5}} {...props} onPress={Wait}> {title} </Button>
+    <Button style = {{marginBottom:5}} {...props} onPress={Wait}></Button>
   );
 }
   

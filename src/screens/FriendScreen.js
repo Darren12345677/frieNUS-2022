@@ -121,7 +121,7 @@ const FriendScreen = () => {
                                 onPress = {() => {navToUser(userItem)}}>View Profile
                                 </Button>
                                 <Divider/>
-                                <AwaitButton awaitFunction={() => disconnectHandler(userItem)} title={"Disconnect"}/>
+                                <AwaitButton awaitFunction={() => disconnectHandler(userItem)} children={"Disconnect"}/>
                                 <Divider/>
                                 <Button onPress={() => setVisible(false)}>Dismiss</Button>
                             </Card>
