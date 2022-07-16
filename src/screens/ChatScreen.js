@@ -1,69 +1,79 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 import { 
     Divider, 
     Layout, 
     TopNavigation, 
-    useTheme,
+    List, 
     Icon,
     Button,
+    Input,
     Text,
+    Card,
+    Modal,
 } from '@ui-kitten/components';
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet} from "react-native";
-import { LogoutButton, AwaitButton } from '../components';
-import { useFocusEffect, useNavigation, NavigationContainer } from '@react-navigation/native';
+import { LogoutButton, ImprovedAlert, AwaitButton } from '../components';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { auth, db } from '../firebase';
 import {
     collection,
-    getDocs,
-    addDoc,
-    setDoc,
-    getDoc,
     doc,
-    deleteDoc
+    deleteDoc,
+    onSnapshot,
+    query, 
 } from 'firebase/firestore';
-import { useSelector, useDispatch } from 'react-redux';
-import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
 import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoadingTrue, setLoadingFalse } from '../store/loading';
+import { setRefreshFalse, } from '../store/refresh';
 
 const ChatScreen = () => {
-    const theme = useTheme();
-    const dispatch = useDispatch();
+    const [friendList, setFriendList] = React.useState([]);
     const refresh = useSelector(state => state.refresh.refresh);
-    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
-    const reduxRefreshFalse = () => {dispatch(setRefreshFalse());};
 
-    const testFn = async () => {
-        const namez = (await getDoc(doc(db, "Users/"+auth.currentUser.uid))).get("displayName");
-        console.log(namez);
+    const successfulDisconnectAlert = () => {
+        ImprovedAlert("Successful disconnect", "Disconnected from friend");
     }
 
     useEffect(() => {
-        reduxRefreshFalse();
+        const friendQuery = query(collection(db, 'Users/' + auth.currentUser.uid + '/Friends'));
+        const unsubscribe = onSnapshot(friendQuery, (snapshot) => {
+            const friends = [];     
+            snapshot.forEach((doc) => {
+                friends.push({ id: doc.id, ...doc.data() });
+            });
+            setFriendList([...friends]);
+        });
+        return unsubscribe;
     }, [refresh]);
 
     const navigation = useNavigation();
 
-    const titleText = props => {
-        return (<Text {...props} style={{}} category='h5'>Chat</Text>);
-    }
-
     return (
         <SafeAreaView style={{flex:1}}>
-            <KeyboardAvoidingView style={{flex:1, backgroundColor: theme['background-basic-color-4']}}>
+            <KeyboardAvoidingView style={{flex:1}}>
                 <TopNavigation 
-                    title={titleText}
-                    alignment='start'
-                    accessoryLeft={<Icon name='frienus' pack='customAssets' style={{marginLeft:5, height:60, width:60}} />}
-                    accessoryRight={LogoutButton}
-                    style={{height:'8%', backgroundColor: theme['background-basic-color-1']}}
+                title='Chat'
+                alignment='start'
+                accessoryLeft={<Icon name='frienus' pack='customAssets' style={{marginLeft:5, height:60, width:60}} />}
+                accessoryRight={LogoutButton}
+                style={{height:'8%'}}
                 />
-                <Layout level='3' style={{flex:1, justifyContent:'center'}}>
-                    {/* <Text style={{textAlign:'center', textAlignVertical:'center',}}>Work In Progress for Milestone 3</Text>
-                    <Text>{`${refresh}`}</Text>
-                    <Button onPress={reduxRefreshTrue}>TRUE BUTTON</Button>
-                    <Button onPress={reduxRefreshFalse}>FALSE BUTTON</Button>
-                    <AwaitButton awaitFunction={testFn} title={"Hello"}></AwaitButton> */}
-                </Layout>
+                <Divider/>
+                <Layout style={styles.listContainer}>
+                        <List
+                        data={friendList}
+                        renderItem={({ item }) => {
+                            return (
+                                <Button onPress={() => navigation.navigate('Messages', {userID: item.id})} status='primary' appearance='filled' style={styles.rect}>
+                                <Text category='s1' appearance='alternative'>User: {item.id}</Text>
+                            </Button>
+                            );
+                        }}
+                        keyExtractor={(item) => item.id}
+                        ItemSeparatorComponent={Divider}
+                        />
+                    </Layout>
             </KeyboardAvoidingView>
         </SafeAreaView>
     )
@@ -77,7 +87,24 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         marginHorizontal: 16,
       },
+    container: {
+        minHeight: 192,
+      },
     modalText: {
         textAlign: 'center'
-    }
+    },
+    singleLineText: {
+        textAlign: 'center',
+    },
+    manyLineText: {
+        textAlign: 'left',
+    },
+    listContainer: {
+        // backgroundColor:'red',
+        flex: 1,
+        width:'100%',
+    },
+    popup: {
+        borderRadius: 5,
+    },
 })

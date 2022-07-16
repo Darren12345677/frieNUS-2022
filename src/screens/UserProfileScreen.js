@@ -85,7 +85,7 @@ const UserProfileScreen= ({navigation, route}) => {
         const getModules = async () => {
             const modsList = [];
             await (await getDocs(colRef)).forEach((doc) => {
-                const moduleCode = doc.get('desc');
+                const moduleCode = doc.get('modCode');
                 modsList.push(moduleCode);
             })
             

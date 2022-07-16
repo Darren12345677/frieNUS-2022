@@ -11,6 +11,7 @@ import {
     NotificationScreen,
     ChatScreen, 
     FriendScreen,
+    SingleChatScreen,
 } from '../screens';
 import { auth, db } from '../firebase';
 import { useSelector, useDispatch } from 'react-redux';
@@ -37,11 +38,6 @@ const TabNavigator = () => {
         <BottomNavigationTab 
         // onPress doesn't work for some reason
         // onPressIn={() => console.log("Hello")}
-        title={evaProps => 
-        <>
-            <Text {...evaProps}>Chat</Text>
-        </>
-        }
         icon={<Icon name='message-circle-outline'/>}/>
     </BottomNavigation>
     );
@@ -60,6 +56,7 @@ const TabNavigator = () => {
             component= {UserProfileScreen}
             />
             <Screen name='Friends' component= {FriendScreen}/>
+            <Screen name='Messages' component= {SingleChatScreen}/>
         </Navigator>
     );
 }

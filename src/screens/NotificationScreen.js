@@ -138,9 +138,9 @@ const NotificationScreen = () => {
                 <Text>View Profile</Text>
                 </Button>
                 <Divider></Divider>
-                <AwaitButton awaitFunction={()=>acceptHandler(userItem)} title={"Accept"}/>
+                <AwaitButton awaitFunction={()=>acceptHandler(userItem)} children={"Accept"}/>
                 <Divider></Divider>
-                <AwaitButton awaitFunction={()=>declineHandler(userItem)} title={"Decline"}/>
+                <AwaitButton awaitFunction={()=>declineHandler(userItem)} children={"Decline"}/>
                 <Divider></Divider>
                 <Button onPress={() => setVisible(false)}>
                     Dismiss

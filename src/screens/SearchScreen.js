@@ -21,7 +21,7 @@ import { auth, db } from '../firebase';
 import React, { useState, useEffect } from "react";
 import { Keyboard, KeyboardAvoidingView, SafeAreaView, StyleSheet, View,} from "react-native";
 import { SearchBar } from "react-native-elements";
-import { UserResult, LogoutButton, AwaitButton } from '../components';
+import { LogoutButton, AwaitButton } from '../components';
 import { useFocusEffect, useNavigation, useIsFocused } from '@react-navigation/native';
 import { isSignInWithEmailLink } from 'firebase/auth';
 import { useSelector, useDispatch } from 'react-redux';
@@ -110,7 +110,7 @@ const SearchScreen = () => {
                     accessoryRight={LogoutButton}
                     style={{height:'8%'}}
                 />
-                <Layout level='1' style={{flex: 1, alignItems:'center', justifyContent:'flex start', flexDirection:"column"}}>
+                <Layout level='1' style={{flex: 1, alignItems:'center', justifyContent:'flex-start', flexDirection:"column"}}>
                     <Layout level='1' style={{paddingTop:10, width:'95%'}}>
                         <Autocomplete
                             status={value.length==0 ? 'basic' : 'primary'}
@@ -170,7 +170,7 @@ export default SearchScreen;
 const styles = StyleSheet.create({
 	content: {
         flex: 1,
-        justifyContent: 'flex start',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         flexDirection: 'column',
 	},
