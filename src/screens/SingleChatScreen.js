@@ -26,7 +26,7 @@ import {
     FieldValue,
     serverTimestamp,
 } from 'firebase/firestore';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
@@ -38,6 +38,7 @@ const SingleChatScreen= ({navigation, route}) => {
     const idField = route.params.userID;
     const [message, setMessage] = useState('');  
     const [messageList, setMessageList] = useState([])
+    const isFocus = useIsFocused();
 
     useEffect(() => {
         const messageQuery = query(collection(db, 'Users/' + auth.currentUser.uid + '/Friends/' + idField + '/Messages'), orderBy('creation'))
@@ -49,7 +50,7 @@ const SingleChatScreen= ({navigation, route}) => {
             setMessageList([...messages]);
         })
         return unsubscribe
-    }, []);
+    }, [isFocus]);
 
     const onSubmitHandler = async () => {
         if (message.length === 0) {
