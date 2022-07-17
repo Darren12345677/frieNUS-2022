@@ -7,3 +7,4 @@ export { default as ConnectButton }  from './search/ConnectButton';
 export { default as SpinnerView } from './global/SpinnerView';
 export { default as ImprovedAlert } from './global/ImprovedAlert';
 export { default as AwaitButton } from './global/AwaitButton';
+export { default as MessageItem } from './chat/MessageItem';
