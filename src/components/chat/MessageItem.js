@@ -30,8 +30,11 @@ export default MessageItem;
 const styles = StyleSheet.create({
     containerOther: {
         padding: 20,
+        paddingVertical: 10,
+        paddingHorizontal: 10,
         flexDirection: 'row',
         flex: 1,
+        // backgroundColor: 'red',
     },
     containerTextOther: {
         marginHorizontal: 14,
@@ -43,9 +46,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     containerCurrent: {
-        padding: 20,
+        paddingVertical: 10,
+        paddingHorizontal: 10,
         flexDirection: 'row-reverse',
         flex: 1,
+        // backgroundColor: 'black',
     },
     containerTextCurrent: {
         marginHorizontal: 14,

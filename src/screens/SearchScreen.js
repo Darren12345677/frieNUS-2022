@@ -138,7 +138,7 @@ const SearchScreen = () => {
                     <Layout level='1' style={{flex:1}}/>
                     :
                     <Layout level='4' style={styles.listContainer}>
-                        <Text category='h6' style={[styles.listHeader]}>User Profiles</Text>
+                        <Text appearance='hint' category='h6' style={[styles.listHeader]}>User Profiles</Text>
                         <Divider/>
                         <List
                         style={{flex:1, paddingTop:20}}

@@ -12,6 +12,8 @@ import {
     ChatScreen, 
     FriendScreen,
     SingleChatScreen,
+    ProfileSettingsScreen,
+    AccountSettingsScreen,
 } from '../screens';
 import { auth, db } from '../firebase';
 import { useSelector, useDispatch } from 'react-redux';
@@ -51,12 +53,11 @@ const TabNavigator = () => {
             <Screen name='Module List' component= {ModuleScreen}/>
             <Screen name='Notification' component= {NotificationScreen}/>
             <Screen name='Chat' component= {ChatScreen}/>
-            <Screen 
-            name='User Profile' 
-            component= {UserProfileScreen}
-            />
+            <Screen name='User Profile' component= {UserProfileScreen}/>
             <Screen name='Friends' component= {FriendScreen}/>
             <Screen name='Messages' component= {SingleChatScreen}/>
+            <Screen name='Profile Settings' component= {ProfileSettingsScreen}/>
+            <Screen name='Account Settings' component= {AccountSettingsScreen}/>
         </Navigator>
     );
 }

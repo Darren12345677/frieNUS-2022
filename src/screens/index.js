@@ -7,3 +7,5 @@ export { default as NotificationScreen } from './NotificationScreen';
 export { default as ChatScreen } from './ChatScreen';
 export { default as FriendScreen } from './FriendScreen';
 export { default as SingleChatScreen } from './SingleChatScreen';
+export { default as ProfileSettingsScreen } from './ProfileSettingsScreen';
+export { default as AccountSettingsScreen } from './AccountSettingsScreen';
