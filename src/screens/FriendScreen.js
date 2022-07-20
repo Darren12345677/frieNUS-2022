@@ -88,6 +88,43 @@ const FriendScreen = () => {
         setVisible(false);
     }
 
+    const NoFriendDisplay = () => (
+        <Layout style={styles.noFriendDisplay}>
+            <Text category='p1' status='info'>You have no friends yet!</Text>
+        </Layout>
+    )
+
+    const ListDisplay = () => (
+        <>
+        <List
+        data={friendList}
+        renderItem={({ item }) => {
+            return (
+                <Button onPress={() => {setVisible(true) 
+                setUserItem(item.id)}} status='primary' appearance='filled' style={styles.rect}>
+                <Text category='s1' appearance='alternative'>User: {item.id}</Text>
+            </Button>
+            );
+        }}
+        keyExtractor={(item) => item.id}
+        ItemSeparatorComponent={Divider}
+        />
+        <Modal 
+        visible={visible}
+        onBackdropPress={() => setVisible(false)}>
+            <Card disabled={true} status='info' style={[styles.popup]}>
+                <Button 
+                onPress = {() => {navToUser(userItem)}}>View Profile
+                </Button>
+                <Divider/>
+                <AwaitButton awaitFunction={() => disconnectHandler(userItem)} children={"Disconnect"}/>
+                <Divider/>
+                <Button onPress={() => setVisible(false)}>Dismiss</Button>
+            </Card>
+        </Modal>
+    </>
+    );
+
     return (
         <SafeAreaView style={{flex:1}}>
             <KeyboardAvoidingView style={{flex:1}}>
@@ -100,33 +137,8 @@ const FriendScreen = () => {
                 />
                 <Divider/>
                 <Layout style={styles.listContainer}>
-                        <List
-                        data={friendList}
-                        renderItem={({ item }) => {
-                            return (
-                                <Button onPress={() => {setVisible(true) 
-                                setUserItem(item.id)}} status='primary' appearance='filled' style={styles.rect}>
-                                <Text category='s1' appearance='alternative'>User: {item.id}</Text>
-                            </Button>
-                            );
-                        }}
-                        keyExtractor={(item) => item.id}
-                        ItemSeparatorComponent={Divider}
-                        />
-                        <Modal 
-                        visible={visible}
-                        onBackdropPress={() => setVisible(false)}>
-                            <Card disabled={true} status='info' style={[styles.popup]}>
-                                <Button 
-                                onPress = {() => {navToUser(userItem)}}>View Profile
-                                </Button>
-                                <Divider/>
-                                <AwaitButton awaitFunction={() => disconnectHandler(userItem)} children={"Disconnect"}/>
-                                <Divider/>
-                                <Button onPress={() => setVisible(false)}>Dismiss</Button>
-                            </Card>
-                        </Modal>
-                    </Layout>
+                {friendList.length==0 ? <NoFriendDisplay/> : <ListDisplay/>}
+                </Layout>
             </KeyboardAvoidingView>
         </SafeAreaView>
     )
@@ -159,5 +171,10 @@ const styles = StyleSheet.create({
     },
     popup: {
         borderRadius: 5,
+    },
+    noFriendDisplay: {
+        flex:1,
+        alignItems:'center',
+        justifyContent:'center',
     },
 })

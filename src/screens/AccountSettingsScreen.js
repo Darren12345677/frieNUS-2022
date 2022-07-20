@@ -3,28 +3,24 @@ import {
     Divider, 
     Layout, 
     TopNavigation, 
-    List, 
     Icon,
     Button,
-    Input,
     Text,
     Card,
     Modal,
 } from '@ui-kitten/components';
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet} from "react-native";
-import { LogoutButton, ImprovedAlert, AwaitButton, AuthTextInput, AuthPressable } from '../components';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { LogoutButton, ImprovedAlert, AwaitButton, AuthTextInput } from '../components';
 import { auth, db } from '../firebase';
 import { 
     deleteUser, 
     sendEmailVerification, 
     sendPasswordResetEmail, 
     reauthenticateWithCredential, 
-    signInWithEmailAndPassword, 
     EmailAuthProvider,
 } from 'firebase/auth';
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import {  useSelector } from 'react-redux';
 import {
     doc,
     deleteDoc,

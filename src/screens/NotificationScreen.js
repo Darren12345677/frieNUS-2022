@@ -10,7 +10,7 @@ import {
     Text, 
     Button, 
 } from '@ui-kitten/components';
-import { useFocusEffect, useNavigation, useIsFocused } from '@react-navigation/native';
+import {  useNavigation, useIsFocused } from '@react-navigation/native';
 import { KeyboardAvoidingView, SafeAreaView, View} from "react-native";
 import { LogoutButton, NotificationEntry } from '../components';
 import { auth, db } from '../firebase';
@@ -21,22 +21,14 @@ import {
     onSnapshot,
     deleteDoc,
     setDoc,
-    getDocs,
 } from 'firebase/firestore';import { StyleSheet } from 'react-native';
 import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
 import { ImprovedAlert, AwaitButton } from '../components';
 
 const NotificationScreen = () => {
     const [notifList, setNotifList] = React.useState([]);
-    const dispatch = useDispatch();
-    const refresh = useSelector(state => state.refresh.refresh);
-    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
-    const reduxRefreshFalse = () => {dispatch(setRefreshFalse());};
     const [visible, setVisible] = React.useState(false);
     const navigation = useNavigation();
-    const isFocused = useIsFocused();
     const [userItem, setUserItem] = React.useState("");
 
     useEffect(() => {
@@ -49,21 +41,7 @@ const NotificationScreen = () => {
             setNotifList([...connectNotif]);
         });
         return unsubscribe;
-        // if (isFocused) {
-        //     console.log('In inFocused Block', isFocused);
-        //     fetchData();
-        //  }
     }, []);
-
-    // const fetchData = async () => {
-    //     const collectionConnectNotifRef = collection(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/')
-    //     const notifList = [];
-    //     const qSnapshot = getDocs(collectionConnectNotifRef);
-    //     await((await qSnapshot)).forEach((doc) => {
-    //         notifList.push(doc.get('id'));
-    //     })
-    //     setNotifList([...notifList])
-    // }
 
     const successfulAcceptAlert = () => {
         ImprovedAlert("Successful Accept", "Added new friend!");
@@ -100,6 +78,14 @@ const NotificationScreen = () => {
         </View>
     );
 
+    const NoNotifDisplay = () => (
+        <Layout style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+            <Text category='p1' status='info' style={[styles.noNotifText]}>
+                You have no notifications
+            </Text>
+        </Layout>
+    );
+
     return (
         <SafeAreaView style={{flex:1}}>
         <KeyboardAvoidingView style={{flex:1}}>
@@ -123,11 +109,11 @@ const NotificationScreen = () => {
                 }}
                 keyExtractor={(item) => item.id}
                 ItemSeparatorComponent={Divider}
-                /> : <Layout style={{flex:1, alignItems:'center', justifyContent:'center'}}><Text category='p1' status='info' style={[styles.noNotifText]}> You have no notifications</Text></Layout>}
+                /> : <NoNotifDisplay/>}
                 <Modal 
                 visible={visible}
                 onBackdropPress={() => setVisible(false)}>
-                <Card disabled={true} header = {optionsHeader}>
+                <Card disabled={true} header={optionsHeader}>
                 <Text>{userItem}</Text>
                 <Button 
                 onPress = {() => {
