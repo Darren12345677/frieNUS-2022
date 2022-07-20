@@ -25,8 +25,6 @@ import {
 
 import { AuthTextInput, AuthPressable, ImprovedAlert } from '../components';
 import { db, auth } from '../firebase';
-
-
 import { Text, Icon, Divider, Layout, TopNavigation, Button } from '@ui-kitten/components';
 import * as data from '../../app.json'
 import { useDispatch, useSelector } from 'react-redux';
@@ -36,6 +34,9 @@ import { setMyName } from '../store/myName';
 import { setMyCourse } from '../store/myCourse';
 import { setMyFaculty } from '../store/myFaculty';
 import { setMyYear } from '../store/myYear';
+import { setMyAvatar } from '../store/myAvatar';
+
+const DEFAULT_AVATAR = "https://reactjs.org/logo-og.png";
 
 const AuthScreen = () => {
     const version = data.expo.version;
@@ -55,6 +56,7 @@ const AuthScreen = () => {
     const reduxSetMyCourse = (course) => {dispatch(setMyCourse({input: course}));};
     const reduxSetMyFaculty = (faculty) => {dispatch(setMyFaculty({input: faculty}));};
     const reduxSetMyYear = (year) => {dispatch(setMyYear({input: year}));};
+    const reduxSetMyAvatar = (avatarLink) => {dispatch(setMyAvatar({input: avatarLink}));};
 
     // useEffect(() => {
     //     console.log("name has been set");
@@ -97,11 +99,12 @@ const AuthScreen = () => {
                     const newFac = res.get('faculty');
                     const newCourse = res.get('course');
                     const newYear = res.get('year');
+                    const newAvatar = res.get('avatar');
                     reduxSetMyName(newName);
                     reduxSetMyFaculty(newFac);
                     reduxSetMyCourse(newCourse);
                     reduxSetMyYear(newYear);
-                    // console.log('Done');
+                    reduxSetMyAvatar(newAvatar);
                 })
             })
             .catch((error) => {
@@ -164,12 +167,14 @@ const AuthScreen = () => {
                 "faculty": "Not selected",
                 "course": "Not selected",
                 "year": 1,
+                "avatar": DEFAULT_AVATAR,
             }
         ).then(res => {
             reduxSetMyName("Not selected");
             reduxSetMyFaculty("Not selected");
             reduxSetMyCourse("Not selected");
             reduxSetMyYear(1);
+            reduxSetMyAvatar(DEFAULT_AVATAR);
             console.log("New user made");
         }).catch(err => {
             console.log("Error in createUser function")

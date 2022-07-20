@@ -1,32 +1,29 @@
-import React, {useCallback} from 'react'
+import React from 'react';
 import { 
     Divider, 
     Layout, 
     TopNavigation, 
     Icon,
     Button,
-    Input,
+    Avatar,
     Text,
     Card,
     List,
     useTheme,
 } from '@ui-kitten/components';
-import { Alert, KeyboardAvoidingView, SafeAreaView, StyleSheet, View, Keyboard, ScrollView} from "react-native";
-import { LogoutButton, ImprovedAlert, AwaitButton } from '../components';
+import { KeyboardAvoidingView, SafeAreaView, StyleSheet, ScrollView} from "react-native";
+import { LogoutButton, AwaitButton } from '../components';
 import { auth, db } from '../firebase';
 import {
     doc,
     getDoc,
     collection,
     getDocs,
-    setDoc,
-    updateDoc,
 } from 'firebase/firestore';
-import { useNavigation, useFocusEffect, } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
-import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
+import { setRefreshFalse } from '../store/refresh';
 import { useEffect } from 'react';
-import { setMyName } from '../store/myName';
 
 const ProfileScreen= () => {
     const [emailField, setEmailField] = React.useState("");
@@ -40,6 +37,7 @@ const ProfileScreen= () => {
     const myCourse = useSelector(state => state.myCourse.myCourse);
     const myFaculty = useSelector(state => state.myFaculty.myFaculty);
     const myYear = useSelector(state => state.myYear.myYear);
+    const myAvatar = useSelector(state => state.myAvatar.myAvatar);
 
     const reduxRefreshFalse = () => {dispatch(setRefreshFalse());};
     const currUser = auth.currentUser;
@@ -107,6 +105,22 @@ const ProfileScreen= () => {
         console.log("Refreshed");
     }
 
+    const DisplayNoConnects = () => (
+        <Text style={styles.noConnects}>You have no pending connects yet</Text>
+    );
+
+    const DisplayConnectList = () => (
+        <List style={[styles.list, {backgroundColor:theme['background-basic-color-1']}]} data={connectList} renderItem={
+            ({item}) => {
+                return (
+                <Layout level='1' style={[styles.listTextContainer, {borderColor:theme['border-basic-color-3']}]}>
+                <Text category='p1' style={styles.listText}>User ID: {item.id}</Text>
+                {/* <Text category='label' style={styles.listText}>Name: {item.id}</Text> */}
+                </Layout>
+                )}} 
+        />
+    );
+
     return (
         <SafeAreaView style={{flex:1}}>
         <KeyboardAvoidingView style={{flex:1}}>
@@ -118,9 +132,22 @@ const ProfileScreen= () => {
                 style={{height:'8%'}}
             />
             <Divider/>
-            <>
+            <ScrollView>
+                <Layout style={styles.topContainer}>
+                    <Avatar defaultSource={require('../assets/image-outline.png')} shape='round' source={{uri: myAvatar}} style={styles.image}/>
+                    <Text style={styles.topText} category='h5' status='primary'
+                    children={
+`Welcome back, 
+    ${myName}`}/>
+                    <AwaitButton 
+                    appearance='ghost'
+                    status='basic'
+                    style={styles.refresh} 
+                    accessoryLeft={<Icon style={styles.refreshIcon} name='refresh-outline'/>} 
+                    awaitFunction={refreshHandler}/>
+                </Layout>
                 <Layout style={styles.ribbon} level='4'>
-                    <Text category='h5'>Welcome back</Text>
+                    <Text category='h5'>Details</Text>
                 </Layout>
                 <Card disabled='true' status='primary' style={styles.card} header={accountHeader}>
                     <CardText leftText='Account ID' rightText={idField}/>
@@ -133,20 +160,12 @@ const ProfileScreen= () => {
                     <CardText leftText='Course' rightText={myCourse}/>
                     <CardText leftText='Year' rightText={myYear}/>                          
                 </Card>
-                
                 <Layout style={styles.ribbon} level='4'>
                     <Text style={styles.ribbonText} category='h5'>Your pending connects</Text>
                 </Layout>
-                <List style={[styles.card, {backgroundColor:theme['background-basic-color-1']}]} data={connectList} renderItem={
-                    ({item}) => {
-                        return (
-                        <Layout level='1' style={[styles.listTextContainer, {borderColor:theme['border-basic-color-3']}]}>
-                        <Text category='p1' style={styles.listText}>User ID: {item.id}</Text>
-                        <Text category='label' style={styles.listText}>Name: {item.id}</Text>
-                        </Layout>
-                        )
-                    }
-                }/>
+                <Layout level='1' style={styles.container}>
+                {connectList.length == 0 ? <DisplayNoConnects/> : <DisplayConnectList/>}
+                </Layout>
                 <Layout style={styles.container} level='1'>
                     <Card style={styles.bottomCard}>
                     <Button onPress={() => navigation.navigate('Friends')}>
@@ -154,8 +173,7 @@ const ProfileScreen= () => {
                     </Button>
                     </Card>
                 </Layout>
-                {/* <AwaitButton awaitFunction={refreshHandler}>Refreshh</AwaitButton> */}
-            </>
+            </ScrollView>
         </KeyboardAvoidingView>
         </SafeAreaView>
     )
@@ -193,6 +211,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 2,
         elevation: 5,
+        marginVertical:5,
     },
     inputContainer: {
         backgroundColor:'white',
@@ -202,11 +221,22 @@ const styles = StyleSheet.create({
     topContainer: {
         backgroundColor:'white',
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
+        alignItems:'center',
+        paddingLeft:30,
+        paddingVertical:20,
+    },
+    topText: {
+        marginLeft:30,
     },
     card: {
         marginVertical: 2,
         marginHorizontal: 5,
+    },
+    list: {
+        marginVertical: 10,
+        marginHorizontal: 5,
+        paddingVertical: 10,
     },
     container: {
         marginVertical: 2,
@@ -223,5 +253,15 @@ const styles = StyleSheet.create({
     },
     cardContent: {
         flexDirection: 'row',
-    }
+    },
+    image: {
+        width:75,
+        height:75,
+    },
+    noConnects: {
+        paddingVertical:40,  
+    },
+    refresh: {
+        marginLeft:20,
+    },
   });

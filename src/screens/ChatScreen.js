@@ -113,7 +113,6 @@ const styles = StyleSheet.create({
         textAlign: 'left',
     },
     listContainer: {
-        // backgroundColor:'red',
         flex: 1,
         width:'100%',
     },

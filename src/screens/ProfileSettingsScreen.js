@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import React from 'react'
 import { 
     Divider, 
     Layout, 
@@ -13,20 +13,15 @@ import {
     useTheme,
     RadioGroup,
     Radio,
-    Autocomplete
+    Autocomplete,
+    Avatar,
 } from '@ui-kitten/components';
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet, Keyboard, ScrollView} from "react-native";
-import { LogoutButton, ImprovedAlert, AwaitButton } from '../components';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { ImprovedAlert, AwaitButton } from '../components';
 import { auth, db } from '../firebase';
 import {
-    collection,
     doc,
-    deleteDoc,
-    onSnapshot,
-    query, 
     updateDoc,
-    getDoc,
 } from 'firebase/firestore';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -34,6 +29,9 @@ import { setMyName } from '../store/myName';
 import { setMyCourse } from '../store/myCourse';
 import { setMyFaculty } from '../store/myFaculty';
 import { setMyYear } from '../store/myYear';
+import { setMyAvatar } from '../store/myAvatar';
+
+const REACT_LOGO = "https://reactjs.org/logo-og.png";
 
 const ProfileSettingsScreen = () => {
     const refresh = useSelector(state => state.refresh.refresh);
@@ -41,15 +39,19 @@ const ProfileSettingsScreen = () => {
     const myCourse = useSelector(state => state.myCourse.myCourse);
     const myFaculty = useSelector(state => state.myFaculty.myFaculty);
     const myYear = useSelector(state => state.myYear.myYear);
+    const myAvatar = useSelector(state => state.myAvatar.myAvatar);
     const [name, setName] = React.useState(myName);
     const [faculty, setFaculty] = React.useState(myFaculty);
     const [course, setCourse] = React.useState(myCourse);
     const [year, setYear] = React.useState(myYear-1);
+    const [avatar, setAvatar] = React.useState(myAvatar);
+    const [avatarInput, setAvatarInput] = React.useState(myAvatar);
     const dispatch = useDispatch();
     const reduxSetMyName = (name) => {dispatch(setMyName({input: name})); };
     const reduxSetMyCourse = (course) => {dispatch(setMyCourse({input: course}));};
     const reduxSetMyFaculty = (faculty) => {dispatch(setMyFaculty({input: faculty}));};
     const reduxSetMyYear = (year) => {dispatch(setMyYear({input: year}));};
+    const reduxSetMyAvatar = (avatarLink) => {dispatch(setMyAvatar({input: avatarLink}));};
     const theme = useTheme();
 
     useEffect(() => {
@@ -80,16 +82,18 @@ const ProfileSettingsScreen = () => {
         if (name.length == 0) {
             emptyAlert();
         } else {
+            await updateDoc(userDoc, {
+                "name" : name,
+                "faculty": faculty,
+                "course": course,
+                "year": year+1,
+                "avatar": avatar,
+            })
             reduxSetMyName(name);
             reduxSetMyFaculty(faculty);
             reduxSetMyCourse(course);
             reduxSetMyYear(year+1);
-            await updateDoc(userDoc, {
-                "name" : myName,
-                "faculty": myFaculty,
-                "course": myCourse,
-                "year": myYear,
-            })
+            reduxSetMyAvatar(avatar);
             Keyboard.dismiss();
             saveAlert();
         }
@@ -120,6 +124,11 @@ const ProfileSettingsScreen = () => {
         )
     }
 
+    const changeImage = () => {
+        setAvatar(avatarInput);
+        console.log(avatar);
+    }
+
     return (
         <SafeAreaView style={{flex:1}}>
             <KeyboardAvoidingView style={{flex:1}}>
@@ -133,6 +142,20 @@ const ProfileSettingsScreen = () => {
                 <Divider/>
                 <ScrollView>
                 <Layout level='2' style={styles.screen}>
+                <Layout level='4' style={styles.ribbon}>
+                    <Text category='s1'>The image which your friends can see</Text>
+                </Layout>
+                <Layout style={[styles.container, styles.imageContainer]} level='1'>
+                <Avatar defaultSource={require('../assets/image-outline.png')} shape='round' source={{uri: avatar}} style={styles.image}/>
+                    <Input
+                        style={[styles.imageInput, {backgroundColor:theme['background-basic-color-1']}]}
+                        placeholder={"Enter the link to your image here"}
+                        value={avatarInput}
+                        onChangeText={setAvatarInput}
+                        accessoryRight={<Icon onPress={() => {setAvatarInput("")}} name='close-outline'/>}
+                        />
+                    <Button style={styles.imageButton} onPress={changeImage}>Change image</Button>
+                </Layout>
                 <Layout level='4' style={styles.ribbon}>
                     <Text category='s1'>The name which your friends can see</Text>
                 </Layout>
@@ -187,10 +210,7 @@ const ProfileSettingsScreen = () => {
                     <Text category='label'>
                         {`Selected Year: ${year + 1}`}
                     </Text>
-                    <RadioGroup
-                        selectedIndex={year}
-                        onChange={index => setYear(index)}
-                        >
+                    <RadioGroup selectedIndex={year} onChange={index => setYear(index)}>
                         <Radio>Year 1</Radio>
                         <Radio>Year 2</Radio>
                         <Radio>Year 3</Radio>
@@ -230,6 +250,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
+    imageContainer: {
+        flexDirection:'column',
+    },
     saveButton: {
         paddingVertical: -1,
         marginHorizontal: 10,
@@ -248,5 +271,24 @@ const styles = StyleSheet.create({
         justifyContent:'flex-start',
         marginLeft: 10,
         paddingLeft: 10,
+    },
+    image: {
+        marginLeft:20,
+        marginVertical:10,
+        width:100,
+        height:100,
+    },
+    imageInput: {
+        width:'95%',
+        margin: 5,
+        shadowColor: '#171717',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 5,
+    },
+    imageButton: {
+        width:'95%',
+        margin:5,
     },
 })

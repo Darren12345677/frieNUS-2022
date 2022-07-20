@@ -8,6 +8,7 @@ import myNameReducer from './myName';
 import myFacultyReducer from './myFaculty';
 import myCourseReducer from './myCourse';
 import myYearReducer from './myYear';
+import myAvatarReducer from './myAvatar';
 
 export const store = configureStore({
     reducer: {
@@ -18,5 +19,6 @@ export const store = configureStore({
         myFaculty: myFacultyReducer,
         myCourse: myCourseReducer,
         myYear: myYearReducer,
+        myAvatar: myAvatarReducer,
     },
 });
