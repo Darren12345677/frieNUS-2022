@@ -81,7 +81,7 @@ const NotificationScreen = () => {
     const NoNotifDisplay = () => (
         <Layout style={{flex:1, alignItems:'center', justifyContent:'center'}}>
             <Text category='p1' status='info' style={[styles.noNotifText]}>
-                You have no notifications
+                You do not have any notifications yet
             </Text>
         </Layout>
     );

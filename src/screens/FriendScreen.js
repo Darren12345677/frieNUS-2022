@@ -88,10 +88,23 @@ const FriendScreen = () => {
         setVisible(false);
     }
 
+    const navToSearch = (item) => {
+        navigation.navigate('Search');
+    }
+
     const NoFriendDisplay = () => (
         <Layout style={styles.noFriendDisplay}>
-            <Text category='p1' status='info'>You have no friends yet!</Text>
+            <Text category='p1' status='info'>
+                You have no friends yet!
+            </Text>
+            <Button accessoryRight={searchIcon} style={styles.searchButton} onPress={navToSearch} category='p2' status='info'>
+                Start connecting with other users
+            </Button>
         </Layout>
+    )
+
+    const searchIcon = () => (
+        <Icon name='corner-down-right-outline' fill='white' style={styles.searchIcon}></Icon>
     )
 
     const ListDisplay = () => (
@@ -177,4 +190,12 @@ const styles = StyleSheet.create({
         alignItems:'center',
         justifyContent:'center',
     },
+    searchButton: {
+        margin:20,
+    },
+    searchIcon: {
+        width:20,
+        height:20,
+        marginHorizontal:10,
+    }
 })
