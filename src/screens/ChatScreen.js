@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import React from 'react'
 import { 
     Divider, 
     Layout, 
@@ -6,34 +6,24 @@ import {
     List, 
     Icon,
     Button,
-    Input,
     Text,
-    Card,
-    Modal,
 } from '@ui-kitten/components';
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet} from "react-native";
-import { LogoutButton, ImprovedAlert, AwaitButton } from '../components';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { LogoutButton, ImprovedAlert } from '../components';
+import { useNavigation } from '@react-navigation/native';
 import { auth, db } from '../firebase';
 import {
     collection,
-    doc,
-    deleteDoc,
     onSnapshot,
     query, 
 } from 'firebase/firestore';
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setLoadingTrue, setLoadingFalse } from '../store/loading';
-import { setRefreshFalse, } from '../store/refresh';
+import { useSelector } from 'react-redux';
+
 
 const ChatScreen = () => {
     const [friendList, setFriendList] = React.useState([]);
     const refresh = useSelector(state => state.refresh.refresh);
-
-    const successfulDisconnectAlert = () => {
-        ImprovedAlert("Successful disconnect", "Disconnected from friend");
-    }
 
     useEffect(() => {
         const friendQuery = query(collection(db, 'Users/' + auth.currentUser.uid + '/Friends'));
@@ -49,6 +39,40 @@ const ChatScreen = () => {
 
     const navigation = useNavigation();
 
+    const navToSearch = (item) => {
+        navigation.navigate('Search');
+    }
+
+    const NoFriendDisplay = () => (
+        <Layout style={styles.noFriendDisplay}>
+            <Text category='s1' status='info'>
+                You can only chat with friends
+            </Text>
+            <Button accessoryRight={searchIcon} style={styles.searchButton} onPress={navToSearch} category='p2' status='info'>
+                Make friends by connecting with other users
+            </Button>
+        </Layout>
+    )
+
+    const ChatListDisplay = () => (
+        <List
+        data={friendList}
+        renderItem={({ item }) => {
+            return (
+                <Button onPress={() => navigation.navigate('Messages', {userID: item.id})} status='primary' appearance='filled' style={styles.rect}>
+                <Text category='s1' appearance='alternative'>User: {item.id}</Text>
+            </Button>
+            );
+        }}
+        keyExtractor={(item) => item.id}
+        ItemSeparatorComponent={Divider}
+        />
+    )
+
+    const searchIcon = () => (
+        <Icon name='corner-down-right-outline' fill='white' style={styles.searchIcon}></Icon>
+    )
+
     return (
         <SafeAreaView style={{flex:1}}>
             <KeyboardAvoidingView style={{flex:1}}>
@@ -61,19 +85,8 @@ const ChatScreen = () => {
                 />
                 <Divider/>
                 <Layout style={styles.listContainer}>
-                        <List
-                        data={friendList}
-                        renderItem={({ item }) => {
-                            return (
-                                <Button onPress={() => navigation.navigate('Messages', {userID: item.id})} status='primary' appearance='filled' style={styles.rect}>
-                                <Text category='s1' appearance='alternative'>User: {item.id}</Text>
-                            </Button>
-                            );
-                        }}
-                        keyExtractor={(item) => item.id}
-                        ItemSeparatorComponent={Divider}
-                        />
-                    </Layout>
+                {friendList.length == 0 ? <NoFriendDisplay/> : <ChatListDisplay/>}
+                </Layout>
             </KeyboardAvoidingView>
         </SafeAreaView>
     )
@@ -107,4 +120,17 @@ const styles = StyleSheet.create({
     popup: {
         borderRadius: 5,
     },
+    noFriendDisplay: {
+        flex:1,
+        alignItems:'center',
+        justifyContent:'center',
+    },
+    searchButton: {
+        margin:20,
+    },
+    searchIcon: {
+        width:20,
+        height:20,
+        marginHorizontal:10,
+    }
 })
