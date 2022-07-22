@@ -30,7 +30,7 @@ export default MessageItem;
 const styles = StyleSheet.create({
     containerOther: {
         padding: 20,
-        paddingVertical: 10,
+        paddingVertical: 3,
         paddingHorizontal: 10,
         flexDirection: 'row',
         flex: 1,
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     },
     containerTextOther: {
         marginHorizontal: 14,
-        backgroundColor: 'blue',
+        backgroundColor: 'grey',
         borderRadius: 8,
         paddingVertical: 4,
         paddingHorizontal: 8,
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     containerCurrent: {
-        paddingVertical: 10,
+        paddingVertical: 3,
         paddingHorizontal: 10,
         flexDirection: 'row-reverse',
         flex: 1,
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     },
     containerTextCurrent: {
         marginHorizontal: 14,
-        backgroundColor: 'gray',
+        backgroundColor: 'steelblue',
         borderRadius: 8,
         paddingVertical: 4,
         paddingHorizontal: 8,
@@ -67,5 +67,13 @@ const styles = StyleSheet.create({
     displayName: {
         color: 'gray',
         fontSize: 13
-    }
+    }, 
+    modCodeText: {
+        fontWeight: 'bold',
+        flex: 1,
+        flexDirection: 'row',
+        fontFamily: 'Arial',
+        textAlign:'left',
+        fontSize:12, 
+    },
 })

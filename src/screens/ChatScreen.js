@@ -7,8 +7,9 @@ import {
     Icon,
     Button,
     Text,
+    Avatar,
 } from '@ui-kitten/components';
-import { KeyboardAvoidingView, SafeAreaView, StyleSheet} from "react-native";
+import { KeyboardAvoidingView, SafeAreaView, StyleSheet, View, TouchableOpacity, Image} from "react-native";
 import { LogoutButton, ImprovedAlert } from '../components';
 import { useNavigation } from '@react-navigation/native';
 import { auth, db } from '../firebase';
@@ -16,9 +17,12 @@ import {
     collection,
     onSnapshot,
     query, 
+    doc,
+    getDoc, 
 } from 'firebase/firestore';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import myAvatar from '../store/myAvatar';
 
 
 const ChatScreen = () => {
@@ -58,10 +62,16 @@ const ChatScreen = () => {
         <List
         data={friendList}
         renderItem={({ item }) => {
+                const started = item.lastUpdate != null;
             return (
-                <Button onPress={() => navigation.navigate('Messages', {userID: item.id})} status='primary' appearance='filled' style={styles.rect}>
-                <Text category='s1' appearance='alternative'>User: {item.id}</Text>
-            </Button>
+                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Messages', {userID: item.id})} status='primary' appearance='filled'>
+                <Image style={styles.image} source={{ uri: myAvatar }} />
+                <View style={{ flex: 1 }}>
+                    <Text style={styles.userDisplay}>{item.id}</Text>
+                    <Text style={styles.lastMessage}>{item.lastMessage}</Text>
+                </View>
+                <Text style={styles.date}>{started?item.lastUpdate.toDate().toISOString().slice(0,10):null}</Text>
+                </TouchableOpacity>
             );
         }}
         keyExtractor={(item) => item.id}
@@ -96,9 +106,9 @@ export default ChatScreen;
 
 const styles = StyleSheet.create({
     rect: {
-        padding: 2,
-        marginVertical: 8,
-        marginHorizontal: 16,
+        padding: 14,
+        flexDirection: 'row',
+        alignItems: 'center'
       },
     container: {
         minHeight: 192,
@@ -131,5 +141,31 @@ const styles = StyleSheet.create({
         width:20,
         height:20,
         marginHorizontal:10,
+    },
+    userDisplay: {
+        fontSize: 16,
+        fontWeight: 'bold'
+    }, 
+    lastMessage: {
+        fontSize: 13,
+        color: 'gray'
+    },
+    button: {
+        padding: 14,
+        flexDirection: 'row',
+        alignItems: 'center', 
+        backgroundColor: 'lightcyan'
+    },
+    image: {
+        backgroundColor: 'grey',
+        height: 60,
+        aspectRatio: 1,
+        borderRadius: 30,
+        marginRight: 16, 
+        justifyContent: 'center', 
+        alignItems:'center'
+    },
+    date: {
+        color: 'gray', 
     }
 })

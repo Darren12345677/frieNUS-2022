@@ -164,7 +164,9 @@ const ProfileScreen= () => {
                     <Text category='h5'>Details</Text>
                 </Layout>
                 <Card disabled='true' status='primary' style={styles.card} header={accountHeader}>
-                    <CardText leftText='Account ID' rightText={idField}/>
+                    <Text>
+                    Account ID: {idField}
+                    </Text>
                     <CardText leftText='Email' rightText={emailField}/>
                     <CardText leftText='Account Verified' rightText={`${currUser.emailVerified}`}/>   
                 </Card>
@@ -237,15 +239,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems:'center',
-        paddingLeft:30,
+        paddingLeft:20,
         paddingVertical:20,
     },
     topText: {
-        marginLeft:30,
+        marginLeft:10,
     },
     card: {
         marginVertical: 2,
-        marginHorizontal: 5,
+        marginHorizontal: 10,
     },
     list: {
         marginVertical: 10,

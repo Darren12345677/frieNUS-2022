@@ -25,6 +25,7 @@ import {
     orderBy,
     FieldValue,
     serverTimestamp,
+    updateDoc,
 } from 'firebase/firestore';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
@@ -66,6 +67,17 @@ const SingleChatScreen= ({navigation, route}) => {
                 sender: auth.currentUser.uid,
                 creation: serverTimestamp()
             });
+            const data1 = {
+                id: auth.currentUser.uid,
+                lastUpdate:serverTimestamp(), 
+                lastMessage:message
+            }
+            updateDoc(doc(db, 'Users/' + idField + '/Friends/' + auth.currentUser.uid), data1);
+            updateDoc(doc(db, 'Users/' + auth.currentUser.uid + '/Friends/' + idField), {
+                id:idField,
+                lastUpdate:serverTimestamp(), 
+                lastMessage:message
+            });
             console.log(message)
         }
         setMessage('')
@@ -96,20 +108,23 @@ const SingleChatScreen= ({navigation, route}) => {
                     onContentSizeChange={() => {
                         scrollViewRef.current.scrollToEnd({ animated: true })
                     }}
+                    style={styles.list}
                 />
             <View style={styles.containerInput}>
-                <TextInput
+                <Input
                     value = {message}
                     onChangeText = {setMessage}
                     placement = 'center'
                     style={styles.input}
                     placeholder = 'send a message'>
-                    </TextInput>
+                    </Input>
                     <AwaitButton 
                     awaitFunction={onSubmitHandler} 
-                    style={styles.button} 
-                    accessoryLeft={<Icon name='plus-outline' pack='eva'/>}
-                    status='primary'
+                    size='medium'
+                    appearance='ghost'
+                    status='basic'
+                    justifyContent='center'
+                    accessoryLeft={<Icon name='paper-plane-outline' pack='eva'/>}
                     />
             </View>
         </SafeAreaView>
@@ -127,21 +142,19 @@ const styles = StyleSheet.create({
         //backgroundColor: 'red',
     },
     containerInput: {
-        padding: 10,
         flexDirection: 'row',
-        backgroundColor: 'orange'
+        backgroundColor: 'azure'
     },
     container: {
         justifyContent: 'flex-end',
         flex: 1
-
     },
     input: {
         backgroundColor: 'lightblue',
         borderRadius: 4,
-        flex: 1,
-        marginHorizontal: 10,
-        paddingHorizontal: 10
+        flex: 20,
+        marginLeft: 10,
+        padding: 10, 
     },
     list: {
         overflow: 'scroll',
