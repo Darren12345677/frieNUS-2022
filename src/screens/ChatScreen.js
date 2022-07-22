@@ -10,8 +10,8 @@ import {
     Avatar,
 } from '@ui-kitten/components';
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet, View, TouchableOpacity, Image} from "react-native";
-import { LogoutButton, ImprovedAlert } from '../components';
-import { useNavigation } from '@react-navigation/native';
+import { LogoutButton, ImprovedAlert, ChatItem } from '../components';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { auth, db } from '../firebase';
 import {
     collection,
@@ -28,8 +28,10 @@ import myAvatar from '../store/myAvatar';
 const ChatScreen = () => {
     const [friendList, setFriendList] = React.useState([]);
     const refresh = useSelector(state => state.refresh.refresh);
+    const isFocus = useIsFocused();
 
     useEffect(() => {
+        console.log('check')
         const friendQuery = query(collection(db, 'Users/' + auth.currentUser.uid + '/Friends'));
         const unsubscribe = onSnapshot(friendQuery, (snapshot) => {
             const friends = [];     
@@ -39,7 +41,7 @@ const ChatScreen = () => {
             setFriendList([...friends]);
         });
         return unsubscribe;
-    }, [refresh]);
+    }, [isFocus]);
 
     const navigation = useNavigation();
 
@@ -62,16 +64,8 @@ const ChatScreen = () => {
         <List
         data={friendList}
         renderItem={({ item }) => {
-                const started = item.lastUpdate != null;
             return (
-                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Messages', {userID: item.id})} status='primary' appearance='filled'>
-                <Image style={styles.image} source={{ uri: myAvatar }} />
-                <View style={{ flex: 1 }}>
-                    <Text style={styles.userDisplay}>{item.id}</Text>
-                    <Text style={styles.lastMessage}>{item.lastMessage}</Text>
-                </View>
-                <Text style={styles.date}>{started?item.lastUpdate.toDate().toISOString().slice(0,10):null}</Text>
-                </TouchableOpacity>
+                <ChatItem item = {item} />
             );
         }}
         keyExtractor={(item) => item.id}
@@ -141,31 +135,5 @@ const styles = StyleSheet.create({
         width:20,
         height:20,
         marginHorizontal:10,
-    },
-    userDisplay: {
-        fontSize: 16,
-        fontWeight: 'bold'
-    }, 
-    lastMessage: {
-        fontSize: 13,
-        color: 'gray'
-    },
-    button: {
-        padding: 14,
-        flexDirection: 'row',
-        alignItems: 'center', 
-        backgroundColor: 'lightcyan'
-    },
-    image: {
-        backgroundColor: 'grey',
-        height: 60,
-        aspectRatio: 1,
-        borderRadius: 30,
-        marginRight: 16, 
-        justifyContent: 'center', 
-        alignItems:'center'
-    },
-    date: {
-        color: 'gray', 
     }
 })

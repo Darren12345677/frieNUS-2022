@@ -106,7 +106,7 @@ const SingleChatScreen= ({navigation, route}) => {
                     showsVerticalScrollIndicator={false}
                     ref={scrollViewRef}
                     onContentSizeChange={() => {
-                        scrollViewRef.current.scrollToEnd({ animated: true })
+                        scrollViewRef.current.scrollToEnd({ animated: false })
                     }}
                     style={styles.list}
                 />

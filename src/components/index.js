@@ -8,3 +8,4 @@ export { default as SpinnerView } from './global/SpinnerView';
 export { default as ImprovedAlert } from './global/ImprovedAlert';
 export { default as AwaitButton } from './global/AwaitButton';
 export { default as MessageItem } from './chat/MessageItem';
+export { default as ChatItem } from './chat/ChatItem';
