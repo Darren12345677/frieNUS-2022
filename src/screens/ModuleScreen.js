@@ -157,35 +157,36 @@ const ModuleScreen = () => {
                     />
                 <Divider/>
                 <Layout level='1' style={{flex: 1, flexDirection:"column"}}>
-                <Layout level='1' style={{marginHorizontal:20, flex:1, flexDirection:'row', justifyContent:'flex-start', alignItems:'center', direction:'inherit', flexWrap:'nowrap'}}>
-                <Layout style={{marginBottom:30, width:'90%', justifyContent:'center'}}>    
-                    <Autocomplete
-                    placeholder={INPUT_PLACEHOLDER}
-                    value={module}
-                    onSelect={onSelect}
-                    onChangeText={onChangeText}
-                    placement='bottom'
-                    accessoryLeft={<Icon name='book-open-outline'/>}
-                    accessoryRight={module.length != 0 ? <Icon name='close-outline' onPress={() => {
-                        console.log('Pressed');
-                        setModule("");
-                        // setAutoArr(nusmods);
-                        Keyboard.dismiss();
-                    }}/> : null}
-                    onBlur={() => setAutoArr(nusmods)}
-                    style={[styles.AC, {marginTop:24, marginBottom:20}]}
-                    >{autoArr.map(renderOption)}</Autocomplete>
-                </Layout>
-                <Layout level='1' style={{width:'10%'}}>
-                    <AwaitButton 
-                    awaitFunction={onSubmitHandler} 
-                    style={styles.button} 
-                    accessoryLeft={<Icon name='plus-outline' pack='eva'/>}
-                    status='primary'
-                    />
-                </Layout>
-                </Layout>
-                <Layout level='4' style={{flex:10, marginTop:20}}>
+                    <Layout level='1' style={{marginHorizontal:10, flexDirection:'row', justifyContent:'flex-start', 
+                    alignItems:'center', marginVertical:10}}>
+                        <Layout style={{width:'85%', justifyContent:'center'}}>    
+                            <Autocomplete
+                            placeholder={INPUT_PLACEHOLDER}
+                            value={module}
+                            onSelect={onSelect}
+                            onChangeText={onChangeText}
+                            placement='bottom'
+                            accessoryLeft={<Icon name='book-open-outline'/>}
+                            accessoryRight={module.length != 0 ? <Icon name='close-outline' onPress={() => {
+                                console.log('Pressed');
+                                setModule("");
+                                // setAutoArr(nusmods);
+                                Keyboard.dismiss();
+                            }}/> : null}
+                            onBlur={() => setAutoArr(nusmods)}
+                            style={[styles.AC]}
+                            >{autoArr.map(renderOption)}</Autocomplete>
+                        </Layout>
+                        <Layout level='1' style={{width:'15%'}}>
+                            <AwaitButton 
+                            awaitFunction={onSubmitHandler} 
+                            style={styles.button} 
+                            accessoryLeft={<Icon name='plus-outline' pack='eva'/>}
+                            status='primary'
+                            />
+                        </Layout>
+                    </Layout>
+                <Layout level='4' style={{flex:10}}>
                     <Text category='h6' style={{marginLeft:20,marginVertical:15}}>Your Modules</Text>
                     {moduleList.length != 0 
                     ? <List
@@ -245,7 +246,6 @@ const styles = StyleSheet.create({
         flex: 0.05,
         marginLeft: 10,
         marginRight: 10,
-        marginTop: 3,
         shadowColor: '#171717',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.2,

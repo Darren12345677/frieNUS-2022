@@ -77,12 +77,13 @@ const styles = StyleSheet.create({
         backgroundColor: "darkorange",
         width: "100%",
         height: 3,
+        fontSize:5,
     },
     contents: {
         flex: 1,
         flexDirection: 'row',
         paddingHorizontal: 6,
-        paddingTop: 5,
+        paddingVertical: 10,
     },
     containerShadow: {
         shadowColor: '#171717',
@@ -92,23 +93,25 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     leftBox: {
-        flex: 1,
+        flex: 2,
         flexDirection: 'column',
     },
     modCodeText: {
         fontWeight: 'bold',
         flex: 1,
-        flexWrap: 'wrap',
         flexDirection: 'row',
         fontFamily: 'Arial',
+        textAlign:'left',
+        fontSize:12, 
     },
     modSemText: {
         flex: 1,
         textAlign:'left',
         marginBottom: 5,
+        fontSize:10,
     },
     modDescText: {
-        flex: 3,
+        flex: 5,
         flexWrap: 'wrap',
         flexDirection: 'row',
         fontFamily: 'Arial',
