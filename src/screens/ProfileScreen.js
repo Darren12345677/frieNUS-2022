@@ -182,13 +182,6 @@ const ProfileScreen= () => {
                 <Layout level='1' style={styles.container}>
                 {connectList.length == 0 ? <DisplayNoConnects/> : <DisplayConnectList/>}
                 </Layout>
-                <Layout style={styles.container} level='1'>
-                    <Card style={styles.bottomCard}>
-                    <Button onPress={() => navigation.navigate('Friends')}>
-                        <Text>Friend list</Text>                
-                    </Button>
-                    </Card>
-                </Layout>
             </ScrollView>
         </KeyboardAvoidingView>
         </SafeAreaView>
@@ -211,10 +204,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         paddingVertical: 2,
-    },
-    bottomCard: {
-        paddingVertical:-10,
-        width:'95%',
     },
     listText: {
         paddingLeft: 5,

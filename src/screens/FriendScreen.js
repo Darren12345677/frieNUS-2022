@@ -12,7 +12,7 @@ import {
     Modal,
 } from '@ui-kitten/components';
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet} from "react-native";
-import { LogoutButton, ImprovedAlert, AwaitButton } from '../components';
+import { LogoutButton, ImprovedAlert, AwaitButton, FriendItem } from '../components';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { auth, db } from '../firebase';
 import {
@@ -29,13 +29,11 @@ import { setRefreshFalse, } from '../store/refresh';
 
 const FriendScreen = () => {
     const [friendList, setFriendList] = React.useState([]);
-    const [visible, setVisible] = React.useState(false);
     const dispatch = useDispatch();
     const refresh = useSelector(state => state.refresh.refresh);
     const reduxLoadingTrue = () => {dispatch(setLoadingTrue());};
     const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
     const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
-    const [userItem, setUserItem] = React.useState("");
 
     const successfulDisconnectAlert = () => {
         ImprovedAlert("Successful disconnect", "Disconnected from friend");
@@ -74,18 +72,11 @@ const FriendScreen = () => {
         return unsubscribe;
     }, [refresh]);
 
-    const navigation = useNavigation();
-
     const disconnectHandler = async (idField) => {
         setVisible(false);
         await deleteDoc(doc(db, "Users/" + idField + "/Friends/" + auth.currentUser.uid))
         await deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/Friends/' + idField))
         successfulDisconnectAlert();
-    }
-
-    const navToUser = (item) => {
-        navigation.navigate('User Profile', {userID: item});
-        setVisible(false);
     }
 
     const navToSearch = (item) => {
@@ -113,28 +104,12 @@ const FriendScreen = () => {
         data={friendList}
         renderItem={({ item }) => {
             return (
-                <Button onPress={() => {setVisible(true) 
-                setUserItem(item.id)}} status='primary' appearance='filled' style={styles.rect}>
-                <Text category='s1' appearance='alternative'>User: {item.id}</Text>
-            </Button>
+                <FriendItem item = {item} />
             );
         }}
         keyExtractor={(item) => item.id}
         ItemSeparatorComponent={Divider}
         />
-        <Modal 
-        visible={visible}
-        onBackdropPress={() => setVisible(false)}>
-            <Card disabled={true} status='info' style={[styles.popup]}>
-                <Button 
-                onPress = {() => {navToUser(userItem)}}>View Profile
-                </Button>
-                <Divider/>
-                <AwaitButton awaitFunction={() => disconnectHandler(userItem)} children={"Disconnect"}/>
-                <Divider/>
-                <Button onPress={() => setVisible(false)}>Dismiss</Button>
-            </Card>
-        </Modal>
     </>
     );
 

@@ -27,22 +27,24 @@ const ChatItem = ({item}) => {
     const started = item.lastUpdate != null;
     const [userName, setUserName] = React.useState(item.id);
     const [avatar, setAvatar] = React.useState('');
-    const userDoc = doc(db, 'Users/' + item.id);
-    const setCurrUser = () => {
-        getDoc(userDoc).then(result => {
-            if (result.get('name') != null) {
-                setUserName(result.get('name'));
-            } 
-            if (result.get('avatar') != null) {
+    useEffect(() => {
+        const userDoc = doc(db, 'Users/' + item.id);
+        const setCurrUser = () => {
+            getDoc(userDoc).then(result => {
+                if (result.get('name') != 'Not selected') {
+                    setUserName(result.get('name'));
+                }
                 setAvatar(result.get('avatar'));
-            }
-        })
-    }
-    setCurrUser();
+            })
+        }
+        setCurrUser();
+    }, [])
+
 
     const navigation = useNavigation();
     return (
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Messages', {userID: item.id})} status='primary' appearance='filled'>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Messages', {userID: item.id, 
+        displayName: userName})} status='primary' appearance='filled'>
         <Image style={styles.image} source={{ uri: avatar }} />
         <View style={{ flex: 1 }}>
             <Text style={styles.userDisplay}>{userName}</Text>

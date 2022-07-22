@@ -8,6 +8,7 @@ import {
     Button,
     Text,
     Avatar,
+    Card
 } from '@ui-kitten/components';
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet, View, TouchableOpacity, Image} from "react-native";
 import { LogoutButton, ImprovedAlert, ChatItem } from '../components';
@@ -19,6 +20,7 @@ import {
     query, 
     doc,
     getDoc, 
+    orderBy
 } from 'firebase/firestore';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
@@ -32,7 +34,7 @@ const ChatScreen = () => {
 
     useEffect(() => {
         console.log('check')
-        const friendQuery = query(collection(db, 'Users/' + auth.currentUser.uid + '/Friends'));
+        const friendQuery = query(collection(db, 'Users/' + auth.currentUser.uid + '/Friends'), orderBy('lastUpdate', 'desc'));
         const unsubscribe = onSnapshot(friendQuery, (snapshot) => {
             const friends = [];     
             snapshot.forEach((doc) => {
@@ -41,7 +43,7 @@ const ChatScreen = () => {
             setFriendList([...friends]);
         });
         return unsubscribe;
-    }, [isFocus]);
+    }, []);
 
     const navigation = useNavigation();
 
@@ -91,6 +93,11 @@ const ChatScreen = () => {
                 <Layout style={styles.listContainer}>
                 {friendList.length == 0 ? <NoFriendDisplay/> : <ChatListDisplay/>}
                 </Layout>
+                    <Card style={styles.bottomCard}>
+                    <Button onPress={() => navigation.navigate('Friends')}>
+                        <Text>Friends</Text>                
+                    </Button>
+                    </Card>
             </KeyboardAvoidingView>
         </SafeAreaView>
     )
@@ -130,6 +137,9 @@ const styles = StyleSheet.create({
     },
     searchButton: {
         margin:20,
+    },
+    bottomCard: {
+        paddingVertical:-10,
     },
     searchIcon: {
         width:20,

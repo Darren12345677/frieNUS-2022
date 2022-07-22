@@ -37,6 +37,7 @@ import { initializeAuth } from 'firebase/auth';
 
 const SingleChatScreen= ({navigation, route}) => {
     const idField = route.params.userID;
+    const name = route.params.displayName;
     const [message, setMessage] = useState('');  
     const [messageList, setMessageList] = useState([])
     const isFocus = useIsFocused();
@@ -92,7 +93,7 @@ const SingleChatScreen= ({navigation, route}) => {
     return (
         <SafeAreaView style={styles.container}>
             <TopNavigation 
-                title={idField}
+                title={name}
                 alignment='start'
                 accessoryLeft={<Icon name='frienus' pack='customAssets' style={{marginLeft:5, height:60, width:60}} />}
                 accessoryRight={LogoutButton}
