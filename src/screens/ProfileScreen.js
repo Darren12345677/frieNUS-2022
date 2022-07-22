@@ -19,6 +19,7 @@ import {
     getDoc,
     collection,
     getDocs,
+    deleteDoc,
 } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
@@ -49,15 +50,28 @@ const ProfileScreen= () => {
             setIdField(result.get('id'));
         })
         const collectionPendingConnectsRef = collection(db, 'Users/' + currUser.uid + '/PendingConnects');
-        const loadPendingConnects =  async () => {
-            const arr = [];
-            const qSnapshot = getDocs(collectionPendingConnectsRef);
-            (await qSnapshot).forEach((doc) => {
-                arr.push({id: doc.get('id')});
-            })
-            setConnectList([...arr]);
-        };
-        loadPendingConnects();
+        
+        const arr = [];
+        const qSnapshot = getDocs(collectionPendingConnectsRef);
+        console.log("Got qsnapshot");
+
+        qSnapshot.then(snapshot => {
+            let curr = 0;
+            for (const document of snapshot.docs) {
+                getDoc(doc(db, 'Users/' + document.get('id'))).then(userDocument => {
+                    if (userDocument.exists()) {
+                        arr.push({id: document.get('id')});
+                        curr += 1;
+                    } else {
+                        deleteDoc(doc(db, 'Users/' + currUser.uid + '/PendingConnects/' + document.get('id')));
+                        curr += 1;
+                    }
+                    if (curr == snapshot.docs.length) {
+                        setConnectList([...arr]);
+                    }
+                });
+            }
+        });
         reduxRefreshFalse();
     }, [refresh]);
 
@@ -169,7 +183,7 @@ const ProfileScreen= () => {
                 <Layout style={styles.container} level='1'>
                     <Card style={styles.bottomCard}>
                     <Button onPress={() => navigation.navigate('Friends')}>
-                    <Text>Friend list</Text>                
+                        <Text>Friend list</Text>                
                     </Button>
                     </Card>
                 </Layout>
