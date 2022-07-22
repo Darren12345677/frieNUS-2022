@@ -45,6 +45,13 @@ const FriendItem = ({item}) => {
         }
         setCurrUser();
     }, [])
+
+    const disconnectHandler = async (idField) => {
+        setVisible(false);
+        await deleteDoc(doc(db, "Users/" + idField + "/Friends/" + auth.currentUser.uid))
+        await deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/Friends/' + idField))
+        successfulDisconnectAlert();
+    }
     
     const navToChat = (item) => {
         navigation.navigate('Messages', {userID: item, displayName:userDisplay});
