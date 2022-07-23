@@ -35,8 +35,8 @@ const NotifItem = ({item}) => {
         const userDoc = doc(db, 'Users/' + item.id);
         const setCurrUser = () => {
             getDoc(userDoc).then(result => {
-                if (result.get('name') != 'Not selected') {
-                    setUserDisplay(result.get('name'));
+                if (result.get('id') != 'Not selected') {
+                    setUserDisplay(result.get('id'));
                 }
             })
         }
@@ -96,7 +96,7 @@ const NotifItem = ({item}) => {
             navigation.navigate('User Profile', {userID: userItem})
             }} status='basic' appearance='outline' 
             style={styles.rect} footer={Footer}>
-            <Text category='s1' appearance='default'>{userDisplay}</Text>
+            <Text category='s1' appearance='default'>User "{userDisplay}" wants to connect with you</Text>
         </Card>
         </Layout>
         )

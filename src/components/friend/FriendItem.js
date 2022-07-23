@@ -31,6 +31,7 @@ import { setRefreshFalse, } from '../../store/refresh';
 const FriendItem = ({item}) => {
     const [userItem, setUserItem] = React.useState(item.id);
     const [userDisplay, setUserDisplay] = React.useState(item.id);
+    const [userID, setUserID] = React.useState(item.id);
     const [avatar, setAvatar] = React.useState(null);
     const navigation = useNavigation();
 
@@ -91,7 +92,10 @@ const FriendItem = ({item}) => {
             style={styles.rect} footer={Footer}>
             <View style={{flexDirection:'row'}}>
             <Image style={styles.image} source={{ uri: avatar }}/>
-            <Text category='s1' appearance='default' style={{flex: 1, flexWrap: 'wrap'}}>{userDisplay}</Text>
+            <View style={styles.textContainer}>
+            <Text category='s1' appearance='default' style={{flex: 1, flexWrap: 'wrap'}}>Name: {userDisplay}</Text>
+            <Text category='c1' appearance='default' style={{flex: 1, flexWrap: 'wrap'}}>ID: "{userID}"</Text>
+            </View>
             </View>
         </Card>
         {/* <Modal 
@@ -170,5 +174,8 @@ const styles = StyleSheet.create({
         marginRight: 16, 
         justifyContent: 'center', 
         alignItems:'center',
+    },
+    textContainer: {
+        flexDirection:'column',
     }
 })

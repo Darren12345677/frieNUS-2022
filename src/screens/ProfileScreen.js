@@ -31,7 +31,6 @@ const ProfileScreen= () => {
     const [idField, setIdField] = React.useState("");
     const [connectList, setConnectList] = React.useState([]);
     const theme = useTheme();
-
     const dispatch = useDispatch();
     const refresh = useSelector(state => state.refresh.refresh);
     const myName = useSelector(state => state.myName.myName);
@@ -39,21 +38,21 @@ const ProfileScreen= () => {
     const myFaculty = useSelector(state => state.myFaculty.myFaculty);
     const myYear = useSelector(state => state.myYear.myYear);
     const myAvatar = useSelector(state => state.myAvatar.myAvatar);
-
     const reduxRefreshFalse = () => {dispatch(setRefreshFalse());};
     const currUser = auth.currentUser;
     const userDoc = doc(db, 'Users/' + currUser.uid);
-
+    
     useEffect(() => {
         getDoc(userDoc).then(result => {
             setEmailField(result.get('email'));
             setIdField(result.get('id'));
         })
+
+        //Checking for non-existent connects
         const collectionPendingConnectsRef = collection(db, 'Users/' + currUser.uid + '/PendingConnects');
-        
         const arr = [];
         const qSnapshot = getDocs(collectionPendingConnectsRef);
-        console.log("Got qsnapshot");
+        
 
         qSnapshot.then(snapshot => {
             let curr = 0;
@@ -72,6 +71,30 @@ const ProfileScreen= () => {
                 });
             }
         });
+
+        //Checking for non-existent friends
+        const collectionFriendsRef = collection(db, 'Users/' + currUser.uid + '/Friends');
+        const qSnapshot2 = getDocs(collectionFriendsRef);
+        qSnapshot2.then(snapshot => {
+            let curr = 0;
+            for (const document of snapshot.docs) {
+                const nonID = document.get('id');
+                getDoc(doc(db, 'Users/' + document.get('id'))).then(userDocument => {
+                    if (userDocument.exists()) {
+                        curr += 1;
+                    } else {
+                        deleteDoc(doc(db, 'Users/' + currUser.uid + '/Friends/' + nonID)).then(() => {
+                            console.log(nonID + " has been removed from friends list");
+                        })
+                        curr += 1;
+                    }
+                    if (curr == snapshot.docs.length) {
+                        console.log("Non-existent Friends cleared");
+                    }
+                });
+            }
+        });
+
         reduxRefreshFalse();
     }, [refresh]);
 
@@ -164,9 +187,7 @@ const ProfileScreen= () => {
                     <Text category='h5'>Details</Text>
                 </Layout>
                 <Card disabled='true' status='primary' style={styles.card} header={accountHeader}>
-                    <Text>
-                    Account ID: {idField}
-                    </Text>
+                    <CardText leftText='Account ID' rightText={idField}/>
                     <CardText leftText='Email' rightText={emailField}/>
                     <CardText leftText='Account Verified' rightText={`${currUser.emailVerified}`}/>   
                 </Card>
@@ -181,6 +202,13 @@ const ProfileScreen= () => {
                 </Layout>
                 <Layout level='1' style={styles.container}>
                 {connectList.length == 0 ? <DisplayNoConnects/> : <DisplayConnectList/>}
+                </Layout>
+                <Layout style={styles.container} level='1'>
+                    <Card style={styles.bottomCard}>
+                    <Button onPress={() => navigation.navigate('Friends')}>
+                        <Text>Friend list</Text>                
+                    </Button>
+                    </Card>
                 </Layout>
             </ScrollView>
         </KeyboardAvoidingView>
@@ -204,6 +232,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         paddingVertical: 2,
+    },
+    bottomCard: {
+        paddingVertical:-10,
+        width:'95%',
     },
     listText: {
         paddingLeft: 5,

@@ -1,9 +1,10 @@
 import { StyleSheet, Platform } from 'react-native';
 import React from 'react';
-import { Text, Layout, Icon, Card } from '@ui-kitten/components';
+import { Text, Layout, Icon, } from '@ui-kitten/components';
 import { AwaitButton } from "../../components";
 
 const Module = (props) => {
+
     const { data, onDelete } = props;
 
     const renderTrashIcon = (props) => {

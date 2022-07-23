@@ -29,10 +29,12 @@ import {
     Select,
     SelectItem,
     IndexPath,
+    Button,
 } from '@ui-kitten/components';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setLoadingTrue, setLoadingFalse } from '../store/loading';
 import { setRefreshTrue, } from '../store/refresh';
+import { setMyModules } from '../store/myModules';
 
 import nusmods from '../assets/nus_mods.json';
 
@@ -47,23 +49,10 @@ const ModuleScreen = () => {
     const reduxLoadingTrue = () => {dispatch(setLoadingTrue());};
     const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
     const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
-
+    const myModules = useSelector(state => state.myModules.myModules);
+    const reduxSetMyModules = (arr) => {dispatch(setMyModules({input:arr}))};
+    const isDisabled = myModules.length >= 10;
     useEffect(() => {
-        console.log("Module Screen");
-        // fetch('https://api.nusmods.com/v2/2018-2019/moduleList.json')
-        // .then(res => res.json())
-        // .then(data => {
-        //     const modsList = [];
-        //     data.forEach(mod => {
-        //         modsList.push({modCode: mod.moduleCode})
-        //     })
-        //     setNUSMods(modsList)})
-        // .catch(error => console.log('ERROR'));
-
-        // console.log(nusMods);
-
-        // Expensive operation. Consider your app's design on when to invoke this.
-        // Could use Redux to help on first application load.
         const moduleQuery = query(collection(db, 'Users/' + currUser + '/Modules'), orderBy("rank"));
         const unsubscribe = onSnapshot(moduleQuery, (snapshot) => {
             const modules = [];     
@@ -71,6 +60,7 @@ const ModuleScreen = () => {
                 modules.push({ id: doc.id, ...doc.data() });
             });
             setModuleList([...modules]);
+            reduxSetMyModules([...modules]);
         });
         return unsubscribe;
     }, []);
@@ -155,20 +145,26 @@ const ModuleScreen = () => {
         )
         const fsValue = item.rank
         return (
-        <Layout {...props} style={styles.moduleEntry}>
-            <Select
-                label={<Text>Rank</Text>}
-                size='small'
-                style={styles.select}
-                placeholder='Default'
-                value={fsValue}
-                selectedIndex={selectedIndex}
-                onSelect={indexP => {
-                    const newIndex = data[indexP.row];
-                    setSelectedIndex(indexP);
-                    updateDoc(modRef, {rank: newIndex})
-                    }}
-                >{data.map(renderOption)}</Select>
+        <Layout level='2' {...props} style={styles.moduleEntry}>
+            <Layout level='2' style={styles.moduleHeader}>
+                <Text category='s1'>Rank:</Text>
+                <Select
+                    size='small'
+                    style={styles.select}
+                    placeholder='Default'
+                    value={fsValue}
+                    selectedIndex={selectedIndex}
+                    onSelect={indexP => {
+                        const newIndex = data[indexP.row];
+                        setSelectedIndex(indexP);
+                        reduxLoadingTrue();
+                        updateDoc(modRef, {rank: newIndex}).then(() => {
+                            reduxLoadingFalse();
+                            reduxRefreshTrue();
+                        })
+                        }}
+                    >{data.map(renderOption)}</Select>
+            </Layout>
             <Module data={item} key={index} onDelete={onDeleteHandler}/>
         </Layout>
         );
@@ -193,6 +189,7 @@ const ModuleScreen = () => {
                     alignItems:'center', marginVertical:10}}>                          
                         <Layout style={{width:'85%', justifyContent:'center'}}>
                             <Autocomplete
+                            disabled={isDisabled}
                             placeholder={INPUT_PLACEHOLDER}
                             value={module}
                             onSelect={onSelect}
@@ -210,6 +207,7 @@ const ModuleScreen = () => {
                         </Layout>
                         <Layout level='1' style={{width:'15%'}}>
                             <AwaitButton 
+                            disabled={isDisabled}
                             awaitFunction={onSubmitHandler} 
                             style={styles.button} 
                             accessoryLeft={<Icon name='plus-outline' pack='eva'/>}
@@ -284,10 +282,16 @@ const styles = StyleSheet.create({
         textAlignVertical: 'center',
     },
     moduleEntry: {
+        flexDirection:'column',
+    },
+    moduleHeader: {
         flexDirection:'row',
+        marginLeft: 20,
+        alignItems:'center',
+        marginTop: 5,
     },
     select: {
-        width: '19%',
+        width: '22%',
         marginLeft: 10,
         marginTop: 5,
     },

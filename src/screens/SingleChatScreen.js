@@ -11,29 +11,25 @@ import {
     Card,
     Spinner,
 } from '@ui-kitten/components';
-import { Dimensions, KeyboardAvoidingView, SafeAreaView, View, ScrollView} from "react-native";
+import { Dimensions, KeyboardAvoidingView, SafeAreaView, View, Platform} from "react-native";
 import { LogoutButton, AwaitButton, SpinnerView, MessageItem } from '../components';
 import { auth, db } from '../firebase';
 import {
     doc,
-    getDoc,
+
     collection,
-    getDocs,
+
     addDoc,
     onSnapshot,
     query, 
     orderBy,
-    FieldValue,
+
     serverTimestamp,
     updateDoc,
 } from 'firebase/firestore';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import {  useIsFocused } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
-import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
-import { TextInput } from 'react-native-gesture-handler';
-import { keyboardProps } from 'react-native-web/dist/cjs/modules/forwardedProps';
-import { initializeAuth } from 'firebase/auth';
+
 
 const SingleChatScreen= ({navigation, route}) => {
     const idField = route.params.userID;
@@ -92,6 +88,7 @@ const SingleChatScreen= ({navigation, route}) => {
 
     return (
         <SafeAreaView style={styles.container}>
+            <KeyboardAvoidingView keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 0} behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
             <TopNavigation 
                 title={name}
                 alignment='start'
@@ -128,6 +125,7 @@ const SingleChatScreen= ({navigation, route}) => {
                     accessoryLeft={<Icon name='paper-plane-outline' pack='eva'/>}
                     />
             </View>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     )
 }

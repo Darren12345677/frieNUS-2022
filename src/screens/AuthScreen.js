@@ -117,6 +117,8 @@ const AuthScreen = () => {
                     errorAlert(errorMessage, "Wrong password");
                 } else if (errorCode == "auth/user-not-found") {
                     errorAlert(errorMessage, "User does not exist");
+                } else if (errorCode == "auth/network-request-failed") { 
+                    errorAlert(errorMessage, "Our server is experiencing some interruptions. Please try again later");
                 } else {
                     errorAlert(errorCode, errorMessage);
                 };

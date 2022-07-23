@@ -41,6 +41,10 @@ export const myModulesSlice = createSlice({
         clearModules: (state) => {
             state.myModules = [];
         },
+
+        setMyModules: (state, action) => {
+            state.myModules = action.payload.input;
+        }
     }
 });
 
@@ -50,5 +54,6 @@ export const {
     clearModules,
     deleteModule,
     swapModules,
+    setMyModules,
 } = myModulesSlice.actions;
 export default myModulesSlice.reducer;

@@ -47,10 +47,6 @@ const ChatScreen = () => {
 
     const navigation = useNavigation();
 
-    const navToSearch = (item) => {
-        navigation.navigate('Search');
-    }
-
     const NoFriendDisplay = () => (
         <Layout style={styles.noFriendDisplay}>
             <Text category='s1' status='info'>
@@ -75,9 +71,6 @@ const ChatScreen = () => {
         />
     )
 
-    const searchIcon = () => (
-        <Icon name='corner-down-right-outline' fill='white' style={styles.searchIcon}></Icon>
-    )
 
     return (
         <SafeAreaView style={{flex:1}}>

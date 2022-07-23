@@ -11,3 +11,4 @@ export { default as MessageItem } from './chat/MessageItem';
 export { default as ChatItem } from './chat/ChatItem';
 export { default as FriendItem } from './friend/FriendItem';
 export { default as NotifItem } from './notification/NotifItem';
+export { default as ProfileEntry } from './search/ProfileEntry';
