@@ -11,7 +11,7 @@ import {
     Card,
     Modal,
 } from '@ui-kitten/components';
-import { KeyboardAvoidingView, SafeAreaView, StyleSheet, View} from "react-native";
+import { KeyboardAvoidingView, SafeAreaView, StyleSheet, View, Image} from "react-native";
 import { LogoutButton, ImprovedAlert, AwaitButton } from '../../components';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { auth, db } from '../../firebase';
@@ -31,6 +31,7 @@ import { setRefreshFalse, } from '../../store/refresh';
 const FriendItem = ({item}) => {
     const [userItem, setUserItem] = React.useState(item.id);
     const [userDisplay, setUserDisplay] = React.useState(item.id);
+    const [avatar, setAvatar] = React.useState(null);
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -40,6 +41,7 @@ const FriendItem = ({item}) => {
                 if (result.get('name') != 'Not selected') {
                     setUserDisplay(result.get('name'));
                 }
+                setAvatar(result.get('avatar'));
             })
         }
         setCurrUser();
@@ -87,7 +89,10 @@ const FriendItem = ({item}) => {
         <Layout>
         <Card onPress = {() => {navToUser(userItem)}} status='basic' appearance='outline' 
             style={styles.rect} footer={Footer}>
-            <Text category='s1' appearance='default'>{userDisplay}</Text>
+            <View style={{flexDirection:'row'}}>
+            <Image style={styles.image} source={{ uri: avatar }}/>
+            <Text category='s1' appearance='default' style={{flex: 1, flexWrap: 'wrap'}}>{userDisplay}</Text>
+            </View>
         </Card>
         {/* <Modal 
         visible={visible}
@@ -157,4 +162,13 @@ const styles = StyleSheet.create({
     footerControl: {
         marginHorizontal: 2,
     },
+    image: {
+        backgroundColor: 'grey',
+        height: 30,
+        aspectRatio: 1,
+        borderRadius: 15,
+        marginRight: 16, 
+        justifyContent: 'center', 
+        alignItems:'center',
+    }
 })
