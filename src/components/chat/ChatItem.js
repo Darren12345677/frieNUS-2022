@@ -26,7 +26,7 @@ import myAvatar from '../../store/myAvatar';
 const ChatItem = ({item}) => {
     const started = item.lastUpdate != null;
     const [userName, setUserName] = React.useState(item.id);
-    const [avatar, setAvatar] = React.useState('');
+    const [avatar, setAvatar] = React.useState(null);
     useEffect(() => {
         const userDoc = doc(db, 'Users/' + item.id);
         const setCurrUser = () => {

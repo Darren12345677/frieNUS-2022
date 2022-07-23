@@ -54,11 +54,11 @@ const ChatScreen = () => {
     const NoFriendDisplay = () => (
         <Layout style={styles.noFriendDisplay}>
             <Text category='s1' status='info'>
-                You can only chat with friends
+                Start a chat with your friends!
             </Text>
-            <Button accessoryRight={searchIcon} style={styles.searchButton} onPress={navToSearch} category='p2' status='info'>
+            {/* <Button accessoryRight={searchIcon} style={styles.searchButton} onPress={navToSearch} category='p2' status='info'>
                 Make friends by connecting with other users
-            </Button>
+            </Button> */}
         </Layout>
     )
 
@@ -90,14 +90,18 @@ const ChatScreen = () => {
                 style={{height:'8%'}}
                 />
                 <Divider/>
+                <Card style={styles.bottomCard}>
+                    <Button onPress={() => navigation.navigate('Friends')}
+                    appearance='outline'
+                    size='small'
+                    status='basic'
+                    accessoryRight={<Icon name='person-done-outline' pack='eva'/>}>
+                    Friends            
+                    </Button>
+                    </Card>
                 <Layout style={styles.listContainer}>
                 {friendList.length == 0 ? <NoFriendDisplay/> : <ChatListDisplay/>}
                 </Layout>
-                    <Card style={styles.bottomCard}>
-                    <Button onPress={() => navigation.navigate('Friends')}>
-                        <Text>Friends</Text>                
-                    </Button>
-                    </Card>
             </KeyboardAvoidingView>
         </SafeAreaView>
     )

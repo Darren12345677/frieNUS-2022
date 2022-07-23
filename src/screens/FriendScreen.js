@@ -35,10 +35,6 @@ const FriendScreen = () => {
     const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
     const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
 
-    const successfulDisconnectAlert = () => {
-        ImprovedAlert("Successful disconnect", "Disconnected from friend");
-    }
-
     useEffect(() => {
         // let isActive = true;
         //     const currUserFriends = collection(db, 'Users/' + auth.currentUser.uid + '/Friends');
@@ -72,12 +68,7 @@ const FriendScreen = () => {
         return unsubscribe;
     }, [refresh]);
 
-    const disconnectHandler = async (idField) => {
-        setVisible(false);
-        await deleteDoc(doc(db, "Users/" + idField + "/Friends/" + auth.currentUser.uid))
-        await deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/Friends/' + idField))
-        successfulDisconnectAlert();
-    }
+    const navigation = useNavigation();
 
     const navToSearch = (item) => {
         navigation.navigate('Search');

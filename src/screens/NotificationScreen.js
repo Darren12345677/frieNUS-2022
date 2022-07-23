@@ -12,7 +12,7 @@ import {
 } from '@ui-kitten/components';
 import {  useNavigation, useIsFocused } from '@react-navigation/native';
 import { KeyboardAvoidingView, SafeAreaView, View} from "react-native";
-import { LogoutButton, NotificationEntry } from '../components';
+import { LogoutButton, NotifItem } from '../components';
 import { auth, db } from '../firebase';
 import {
     doc,
@@ -29,7 +29,6 @@ const NotificationScreen = () => {
     const [notifList, setNotifList] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const navigation = useNavigation();
-    const [userItem, setUserItem] = React.useState("");
 
     useEffect(() => {
         const connectNotifQuery = query(collection(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif'));
@@ -42,35 +41,6 @@ const NotificationScreen = () => {
         });
         return unsubscribe;
     }, []);
-
-    const successfulAcceptAlert = () => {
-        ImprovedAlert("Successful Accept", "Added new friend!");
-    }
-
-
-    const successfulDeclineAlert = () => {
-        ImprovedAlert("Successful Decline", "Declined connect request");
-    }
-
-    const acceptHandler = async (idField) => {
-        setVisible(false)
-        await setDoc(doc(db, 'Users/'+ auth.currentUser.uid + '/Friends/' + idField), {
-            id: idField,
-        })
-        await setDoc(doc(db, 'Users/'+ idField + '/Friends/' + auth.currentUser.uid), {
-            id: auth.currentUser.uid,
-        })
-        await deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid))
-        await deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField))
-        successfulAcceptAlert();
-    }
-
-    const declineHandler = async (idField) => {
-        setVisible(false)
-        await (deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid)));
-        await (deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField)));
-        successfulDeclineAlert();
-    }
 
     const optionsHeader = (props) => (
         <View {...props}>
@@ -102,15 +72,12 @@ const NotificationScreen = () => {
                 data={notifList}
                 renderItem={({ item }) => {
                     return (        
-                    <Button onPress={() => {setVisible(true) 
-                    setUserItem(item.id)}} status='primary' appearance='outline' style={styles.rect}>
-                    <Text status='primary'>User: {item.id}</Text>
-                </Button>);
+                    <NotifItem item = {item} />);
                 }}
                 keyExtractor={(item) => item.id}
                 ItemSeparatorComponent={Divider}
                 /> : <NoNotifDisplay/>}
-                <Modal 
+                {/* <Modal 
                 visible={visible}
                 onBackdropPress={() => setVisible(false)}>
                 <Card disabled={true} header={optionsHeader}>
@@ -132,7 +99,7 @@ const NotificationScreen = () => {
                     Dismiss
                 </Button>
                 </Card>
-            </Modal>
+            </Modal> */}
             </Layout>
         </KeyboardAvoidingView>
         </SafeAreaView>

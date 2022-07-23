@@ -22,16 +22,14 @@ import {
     onSnapshot,
     query, 
     getDoc,
+    setDoc
 } from 'firebase/firestore';
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setLoadingTrue, setLoadingFalse } from '../../store/loading';
-import { setRefreshFalse, } from '../../store/refresh';
 
-const FriendItem = ({item}) => {
+const NotifItem = ({item}) => {
+    const navigation = useNavigation();
     const [userItem, setUserItem] = React.useState(item.id);
     const [userDisplay, setUserDisplay] = React.useState(item.id);
-    const navigation = useNavigation();
 
     useEffect(() => {
         const userDoc = doc(db, 'Users/' + item.id);
@@ -45,72 +43,66 @@ const FriendItem = ({item}) => {
         setCurrUser();
     }, [])
 
-    const successfulDisconnectAlert = () => {
-        ImprovedAlert("Successful disconnect", "Disconnected from friend");
+    const successfulAcceptAlert = () => {
+        ImprovedAlert("Successful Accept", "Added new friend!");
     }
 
-    const disconnectHandler = async (idField) => {
-        await deleteDoc(doc(db, "Users/" + idField + "/Friends/" + auth.currentUser.uid))
-        await deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/Friends/' + idField))
-        successfulDisconnectAlert();
+
+    const successfulDeclineAlert = () => {
+        ImprovedAlert("Successful Decline", "Declined connect request");
     }
-    
-    const navToChat = (item) => {
-        navigation.navigate('Messages', {userID: item, displayName:userDisplay});
+
+    const acceptHandler = async (idField) => {
+        await setDoc(doc(db, 'Users/'+ auth.currentUser.uid + '/Friends/' + idField), {
+            id: idField,
+        })
+        await setDoc(doc(db, 'Users/'+ idField + '/Friends/' + auth.currentUser.uid), {
+            id: auth.currentUser.uid,
+        })
+        await deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid))
+        await deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField))
+        successfulAcceptAlert();
     }
-    
-    const navToUser = (item) => {
-        navigation.navigate('User Profile', {userID: item});
+
+    const declineHandler = async (idField) => {
+        await (deleteDoc(doc(db, "Users/" + idField + "/PendingConnects/" + auth.currentUser.uid)));
+        await (deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + idField)));
+        successfulDeclineAlert();
     }
 
     const Footer = (props) => (
         <View {...props} style={[props.style, styles.footerContainer]}>
-        <Button onPress = {() => {navToChat(item.id)}}
+       <AwaitButton awaitFunction={()=>acceptHandler(userItem)}
         style={styles.footerControl}
-        status='basic'
+        status='success'
         size='small'
-        accessoryRight={<Icon name='message-circle-outline' pack='eva'/>}>
-        Chat
-        </Button>
-        <AwaitButton awaitFunction={() => disconnectHandler(item.id)}
+        accessoryRight={<Icon name='checkmark-outline' pack='eva'/>}>
+        Accept
+        </AwaitButton>
+        <AwaitButton awaitFunction={()=>declineHandler(userItem)}
         style={styles.footerControl}
         size='small'
         status='danger'
-        accessoryRight={<Icon name='close-circle-outline' pack='eva'/>}>
-        Remove
+        accessoryRight={<Icon name='close-outline' pack='eva'/>}>
+        Decline
         </AwaitButton>
         </View>
       );
 
-
-    return (
+    return (        
         <Layout>
-        <Card onPress = {() => {navToUser(userItem)}} status='basic' appearance='outline' 
+        <Card onPress = {() => {
+            console.log(userItem);
+            navigation.navigate('User Profile', {userID: userItem})
+            }} status='basic' appearance='outline' 
             style={styles.rect} footer={Footer}>
             <Text category='s1' appearance='default'>{userDisplay}</Text>
         </Card>
-        {/* <Modal 
-        visible={visible}
-        onBackdropPress={() => setVisible(false)}>
-            <Card disabled={true} status='info' style={[styles.popup]}>
-                <Button 
-                onPress = {() => {navToChat(userItem)}}>Chat
-                </Button>
-                <Divider/>
-                <Button 
-                onPress = {() => {navToUser(userItem)}}>View Profile
-                </Button>
-                <Divider></Divider>
-                <AwaitButton awaitFunction={() => disconnectHandler(userItem)} children={"Disconnect"}/>
-                <Divider/>
-                <Button onPress={() => setVisible(false)}>Dismiss</Button>
-            </Card>
-        </Modal> */}
         </Layout>
-    )
+        )
 }
 
-export default FriendItem;
+export default NotifItem;
 
 const styles = StyleSheet.create({
     rect: {
