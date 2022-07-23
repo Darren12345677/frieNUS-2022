@@ -15,15 +15,17 @@ import {
     onSnapshot,
     query,
     collection,
-    getDocs
+    getDocs,
+    collectionGroup,
+    where,
 } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import React, { useState, useEffect } from "react";
-import { Keyboard, KeyboardAvoidingView, SafeAreaView, StyleSheet, View,} from "react-native";
-import { SearchBar } from "react-native-elements";
+import { Keyboard, KeyboardAvoidingView, SafeAreaView, StyleSheet, } from "react-native";
+
 import { LogoutButton, AwaitButton } from '../components';
-import { useFocusEffect, useNavigation, useIsFocused } from '@react-navigation/native';
-import { isSignInWithEmailLink } from 'firebase/auth';
+import {  useNavigation, useIsFocused } from '@react-navigation/native';
+
 import { useSelector, useDispatch } from 'react-redux';
 import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
 
@@ -47,12 +49,30 @@ const SearchScreen = () => {
         users.then(res => {
             const userList = [];
             res.forEach(doc => {
+                const modulesRef = collection(db, 'Users/' + doc.id + '/Modules');
+                const modules = query(modulesRef, where('modCode', 'in', ['CS1010', 'CS1010R', 'ACC1002']));
+                const querySnapshot = getDocs(modules);
+                querySnapshot.then(res => {
+                    res.forEach(module => {
+                        console.log(module.id);
+                        console.log(doc.id);
+                    })
+                })
+
                 userList.push({ id: doc.id, ...doc.data()});
             })
             setUsersArr([...userList]);
             setAutoArr([...userList]);
             setCurrArr([...userList]);
         })
+
+        // const modules = query(collectionGroup(db, 'Modules'), where('modCode', '==', 'CS1010'));
+        // const querySnapshot = getDocs(modules);
+        // querySnapshot.then(res => {
+        //     res.forEach(doc => {
+        //         console.log(doc.id);
+        //     });
+        // });
 
         // const userQuery = query(collection(db, 'Users'));
         // const TT = onSnapshot(userQuery, (snapshot) => {

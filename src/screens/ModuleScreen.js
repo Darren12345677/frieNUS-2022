@@ -12,8 +12,9 @@ import {
     collection,
     doc,
     deleteDoc,
+    orderBy,
+    updateDoc,
 } from 'firebase/firestore';
-
 import { auth, db } from '../firebase';
 import { Module, LogoutButton, ImprovedAlert, AwaitButton } from '../components';
 import { 
@@ -22,15 +23,17 @@ import {
     TopNavigation, 
     List, 
     Icon,
-    Input,
     Text,
     Autocomplete,
     AutocompleteItem,
-    Button,
+    Select,
+    SelectItem,
+    IndexPath,
 } from '@ui-kitten/components';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setLoadingTrue, setLoadingFalse } from '../store/loading';
 import { setRefreshTrue, } from '../store/refresh';
+
 import nusmods from '../assets/nus_mods.json';
 
 const INPUT_PLACEHOLDER = 'Add your module codes here';
@@ -39,10 +42,8 @@ const ModuleScreen = () => {
     const [module, setModule] = useState('');
     const [moduleList, setModuleList] = useState([]);
     const [autoArr, setAutoArr] = useState([]);
-
     const currUser = auth.currentUser.uid;
     const dispatch = useDispatch();
-    const refresh = useSelector(state => state.refresh.refresh);
     const reduxLoadingTrue = () => {dispatch(setLoadingTrue());};
     const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
     const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
@@ -63,7 +64,7 @@ const ModuleScreen = () => {
 
         // Expensive operation. Consider your app's design on when to invoke this.
         // Could use Redux to help on first application load.
-        const moduleQuery = query(collection(db, 'Users/' + currUser + '/Modules'));
+        const moduleQuery = query(collection(db, 'Users/' + currUser + '/Modules'), orderBy("rank"));
         const unsubscribe = onSnapshot(moduleQuery, (snapshot) => {
             const modules = [];     
             snapshot.forEach((doc) => {
@@ -96,7 +97,8 @@ const ModuleScreen = () => {
             const moduleRef = await addDoc(collection(db, 'Users/' + currUser + '/Modules'), {
                 modCode: module,
                 desc: data[0].title,
-                semesters: semesterStr
+                semesters: semesterStr,
+                rank: 1,
             });
             showRes('Successfully added module!');
         } catch (err) {
@@ -142,6 +144,36 @@ const ModuleScreen = () => {
       />
     );
 
+    const data = [1,2,3,4,5,6,7,8,9,10];
+
+    const ModuleEntry = (props) => {
+        const {item, index} = {...props};
+        const [selectedIndex, setSelectedIndex] = React.useState(new IndexPath(0));
+        const modRef = doc(db, 'Users/' + currUser + '/Modules/' + item.id);
+        const renderOption = (title) => (
+            <SelectItem title={title}/>
+        )
+        const fsValue = item.rank
+        return (
+        <Layout {...props} style={styles.moduleEntry}>
+            <Select
+                label={<Text>Rank</Text>}
+                size='small'
+                style={styles.select}
+                placeholder='Default'
+                value={fsValue}
+                selectedIndex={selectedIndex}
+                onSelect={indexP => {
+                    const newIndex = data[indexP.row];
+                    setSelectedIndex(indexP);
+                    updateDoc(modRef, {rank: newIndex})
+                    }}
+                >{data.map(renderOption)}</Select>
+            <Module data={item} key={index} onDelete={onDeleteHandler}/>
+        </Layout>
+        );
+    }                            
+
     return (
         <SafeAreaView style={{flex:1}}>
             <KeyboardAvoidingView
@@ -158,8 +190,8 @@ const ModuleScreen = () => {
                 <Divider/>
                 <Layout level='1' style={{flex: 1, flexDirection:"column"}}>
                     <Layout level='1' style={{marginHorizontal:10, flexDirection:'row', justifyContent:'flex-start', 
-                    alignItems:'center', marginVertical:10}}>
-                        <Layout style={{width:'85%', justifyContent:'center'}}>    
+                    alignItems:'center', marginVertical:10}}>                          
+                        <Layout style={{width:'85%', justifyContent:'center'}}>
                             <Autocomplete
                             placeholder={INPUT_PLACEHOLDER}
                             value={module}
@@ -170,7 +202,6 @@ const ModuleScreen = () => {
                             accessoryRight={module.length != 0 ? <Icon name='close-outline' onPress={() => {
                                 console.log('Pressed');
                                 setModule("");
-                                // setAutoArr(nusmods);
                                 Keyboard.dismiss();
                             }}/> : null}
                             onBlur={() => setAutoArr(nusmods)}
@@ -191,16 +222,11 @@ const ModuleScreen = () => {
                     {moduleList.length != 0 
                     ? <List
                         data={moduleList}
-                        renderItem={({ item, index }) => (
-                            <Module
-                                data={item}
-                                key={index}
-                                onDelete={onDeleteHandler}
-                            />
-                        )}
                         style={styles.list}
                         showsVerticalScrollIndicator={false}
-                        /> 
+                        renderItem={({ item, index }) => (
+                            <ModuleEntry item={item} index={index}/>
+                        )}/>
                     : 
                     <Layout level='1' style={{flex:1, alignItems:'center', justifyContent:'center'}}>
                     <Text category='p1' status='info' style={[styles.noModulesText]}> You have not added any modules yet</Text>
@@ -241,6 +267,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 2,
         elevation: 5,
+        color:"black",
     },
     button: {
         flex: 0.05,
@@ -256,13 +283,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         textAlignVertical: 'center',
     },
+    moduleEntry: {
+        flexDirection:'row',
+    },
+    select: {
+        width: '19%',
+        marginLeft: 10,
+        marginTop: 5,
+    },
 });
-
-
-{/* <Input
-    onChangeText={setModule}
-    value={module}
-    placeholder={INPUT_PLACEHOLDER}
-    style={styles.moduleInput}
-    status='basic'
-/> */}

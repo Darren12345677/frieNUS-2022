@@ -9,6 +9,7 @@ import myFacultyReducer from './myFaculty';
 import myCourseReducer from './myCourse';
 import myYearReducer from './myYear';
 import myAvatarReducer from './myAvatar';
+import myModulesReducer from './myModules';
 
 export const store = configureStore({
     reducer: {
@@ -20,5 +21,6 @@ export const store = configureStore({
         myCourse: myCourseReducer,
         myYear: myYearReducer,
         myAvatar: myAvatarReducer,
+        myModules: myModulesReducer,
     },
 });
