@@ -62,12 +62,12 @@ const AppNavigator = () => {
 
     return (
         <>
-        {loading ? <SpinnerView dimWidth={windowWidth} dimHeight={windowHeight}/> : null}
         <View style={{flex: 1, zIndex: -1}}>
             <NavigationContainer>
                 {isAuth ? <TabNavigator /> : <MainNavigator />}
             </NavigationContainer>
         </View>
+        {loading ? <SpinnerView dimWidth={windowWidth} dimHeight={windowHeight}/> : null}
         </>
     );
 };
