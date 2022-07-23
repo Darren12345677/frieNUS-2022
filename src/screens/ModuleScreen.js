@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     select: {
-        width: '22%',
+        width: '25%',
         marginLeft: 10,
         marginTop: 5,
     },

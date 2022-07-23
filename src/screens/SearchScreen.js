@@ -106,7 +106,7 @@ const SearchScreen = () => {
         </Layout>
         <Layout level='1' style={styles.recommendContainer}>
         <Layout level='4' style={[styles.ribbon, styles.recommendRibbon]}>
-            <Text appearance='hint' category='h6' style={styles.ribbonText}>Suggestions</Text>
+            <Text appearance='hint' category='s1' style={styles.ribbonText}>Suggestions</Text>
             <Popover visible={visible} anchor={renderHelpIcon} onBackdropPress={() => setVisible(false)}>
                 <Layout style={styles.helpPopup}>
                     <Text style={styles.helpText}>
