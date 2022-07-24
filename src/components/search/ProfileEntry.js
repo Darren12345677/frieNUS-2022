@@ -13,14 +13,14 @@ const ProfileEntry = ({item}) => {
     const navigation = useNavigation();
 
     return (
-    <Card disabled={true} style={styles.card}>
+    <Card onPress = {() => navigation.navigate('User Profile', {userID: item.id})} style={styles.card}>
     <Layout level='1' style={styles.container}>
     <Icon name='person' fill='cornflowerblue' style={[styles.icon, styles.profileIcon]}/>
     <Layout style={styles.textContainer}>
         <Text category='s1' style={styles.displayText}>User ID:</Text>
         <Text category='c1' style={styles.displayText}>"{item.id}"</Text>
     </Layout>
-    <Icon name='navigation-2' onPress = {() => navigation.navigate('User Profile', {userID: item.id})} style={styles.navIcon} fill='orange'/>
+    <Icon name='navigation-2' style={styles.navIcon} fill='orange'/>
     {/* <Button 
     status='basic'
     onPress = {() => navigation.navigate('User Profile', 

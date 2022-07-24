@@ -186,21 +186,21 @@ const UserProfileScreen= ({navigation, route}) => {
                     <Text>{year}</Text>
                 </Card>
             </Layout>
+            <Card status='info' style={styles.card} header={<Header headerText={'Display Name'}/>}>
+                    <Text>{isFriend ? displayNameField : "You need to be friends with this user"}</Text>
+            </Card>
             <Layout style={styles.topContainer} level='1'>
                 <Card status='info' style={styles.card} header={<Header headerText={'Email'}/>}>
                     <Text>{isFriend ? emailField : "You need to be friends with this user"}</Text>
-                    <Text>Account verified: {verified}</Text>
-                </Card>
-                <Card status='info' style={styles.card} header={<Header headerText={'Display Name'}/>}>
-                    <Text>{isFriend ? displayNameField : "You need to be friends with this user"}</Text>
+                    <Text>Account verified: {`${verified}`}</Text>
                 </Card>
             </Layout>
             <Layout style={styles.topContainer} level='1'>
                 <Card status='info' style={styles.card} header={<Header headerText={'Course'}/>}>
-                    <Text>{faculty}</Text>
+                    <Text>{course}</Text>
                 </Card>
                 <Card status='info' style={styles.card} header={<Header headerText={'Faculty'}/>}>
-                    <Text>{course}</Text>
+                    <Text>{faculty}</Text>
                 </Card>
             </Layout>
             {/* <Card status='info' style={styles.card} header={pendingReqHeader}>

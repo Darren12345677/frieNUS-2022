@@ -43,6 +43,10 @@ const AccountSettingsScreen = () => {
         ImprovedAlert("Verification Email Sent", "Sent email for verification");
     };
 
+    const loginAlert = () => {
+        ImprovedAlert("need relogin", "Please login again after verification");
+    };
+
     const passwordAlert = () => {
         ImprovedAlert("Password Reset Email Sent", "Sent email for password reset");
     };
@@ -56,6 +60,7 @@ const AccountSettingsScreen = () => {
             alreadyVerifiedAlert();
         } else {
         await sendEmailVerification(auth.currentUser).catch(err => {console.log(err)});
+        loginAlert();
         emailAlert();
         }
     }
@@ -78,6 +83,8 @@ const AccountSettingsScreen = () => {
             console.log(err);
             if (err.code == "auth/wrong-password") {
                 ImprovedAlert("Wrong password entered for reauth", "Wrong password");
+            } else if (err.code == "auth/internal-error") {
+                ImprovedAlert("Internal error empty password", "Password cannot be empty");
             } else {
                 ImprovedAlert(err.message, err.code);
             };

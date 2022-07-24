@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: THEME,
         borderRadius: 4,
-        width: '80%',
+        width: '90%',
         height: 40,
         paddingHorizontal: 8,
         marginBottom: 10
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderWidth: 2,
         borderRadius: 4,
-        width: '80%',
+        width: '90%',
         height: 40,
         paddingHorizontal: 8,
         marginBottom: 10
