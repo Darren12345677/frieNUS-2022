@@ -101,7 +101,7 @@ const ProfileScreen= () => {
         });
 
         reduxRefreshFalse();
-    }, [refresh]);
+    }, [refresh, ]);
 
     const navigation = useNavigation();
 
@@ -138,7 +138,7 @@ const ProfileScreen= () => {
         return (
         <Layout style={styles.cardContent}>
         <Text category='s1'>{leftText}: </Text>
-        <Text category='p1'>{rightText}</Text>
+        <Text category='p1' style={{flex:1}}>{rightText}</Text>
         </Layout>
     );};
 

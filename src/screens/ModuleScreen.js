@@ -73,7 +73,8 @@ const ModuleScreen = () => {
         if (module.length === 0) {
             showRes('Module description cannot be empty!');
             return;
-        } else if (nusmods.filter(item => filter(item, module)).length === 0) {
+        } else if (nusmods.filter(item => filter(item, module)).length === 0 ||
+        !nusmods.map(result => result.moduleCode).includes(module)) {
             showRes('Invalid Module Code!');
             return;
         } 
