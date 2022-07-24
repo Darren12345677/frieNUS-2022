@@ -170,6 +170,7 @@ const AuthScreen = () => {
                 "course": "Not selected",
                 "year": 1,
                 "avatar": DEFAULT_AVATAR,
+                "verified": false,
             }
         ).then(res => {
             reduxSetMyName("Not selected");

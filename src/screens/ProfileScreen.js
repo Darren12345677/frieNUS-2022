@@ -20,6 +20,7 @@ import {
     collection,
     getDocs,
     deleteDoc,
+    updateDoc,
 } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
@@ -47,6 +48,10 @@ const ProfileScreen= () => {
             setEmailField(result.get('email'));
             setIdField(result.get('id'));
         })
+
+        if (currUser.emailVerified) {
+            updateDoc(userDoc, {"verified": true})
+        }
 
         //Checking for non-existent connects
         const collectionPendingConnectsRef = collection(db, 'Users/' + currUser.uid + '/PendingConnects');

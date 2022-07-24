@@ -54,6 +54,7 @@ const UserProfileScreen= ({navigation, route}) => {
     const [friends, setFriends] = React.useState("");
     const [isConnected, setConnected] = React.useState("false");
     const [isFriend, setIsFriend] = React.useState("false");
+    const [verified, setVerified] = React.useState("false")
     // const [isLoading, setIsLoading] = React.useState(false);
     const windowHeight = Dimensions.get('window').height;
     const windowWidth = Dimensions.get('window').width;
@@ -76,6 +77,7 @@ const UserProfileScreen= ({navigation, route}) => {
             setYear(result.get('year'));
             setAvatar(result.get('avatar'));
             setFaculty(result.get('faculty'));
+            setVerified(result.get("verified"))
         })
         const collectionPendingConnectsRef = collection(db, 'Users/' + idField + '/PendingConnects');
         const colRef = collection(db, 'Users/' + idField + '/Modules');
@@ -187,6 +189,7 @@ const UserProfileScreen= ({navigation, route}) => {
             <Layout style={styles.topContainer} level='1'>
                 <Card status='info' style={styles.card} header={<Header headerText={'Email'}/>}>
                     <Text>{isFriend ? emailField : "You need to be friends with this user"}</Text>
+                    <Text>Account verified: {verified}</Text>
                 </Card>
                 <Card status='info' style={styles.card} header={<Header headerText={'Display Name'}/>}>
                     <Text>{isFriend ? displayNameField : "You need to be friends with this user"}</Text>
@@ -200,14 +203,14 @@ const UserProfileScreen= ({navigation, route}) => {
                     <Text>{course}</Text>
                 </Card>
             </Layout>
-            <Card status='info' style={styles.card} header={pendingReqHeader}>
+            {/* <Card status='info' style={styles.card} header={pendingReqHeader}>
                 <Text>{connectListStr}</Text>
-            </Card>
+            </Card> */}
             <Card status='info' style={styles.card} header={moduleListHeader}>
                 <Text>{modules}</Text>
             </Card>
             <Card status='info' style={styles.card} header={friendListHeader}>
-                <Text>{friends}</Text>
+                <Text>{isFriend ? friends : "You need to be friends with this user"}</Text>
             </Card>
             </ScrollView>
         </Layout>
