@@ -1,9 +1,10 @@
 import { StyleSheet, Platform } from 'react-native';
 import React from 'react';
-import { Text, Layout, Button, Icon } from '@ui-kitten/components';
-
+import { Text, Layout, Icon, } from '@ui-kitten/components';
+import { AwaitButton } from "../../components";
 
 const Module = (props) => {
+
     const { data, onDelete } = props;
 
     const renderTrashIcon = (props) => {
@@ -11,21 +12,48 @@ const Module = (props) => {
     }
 
     const DeleteIcon = (props) => (
-        <Button 
-          onPress={() => onDelete(data.id)} 
-          accessoryLeft={renderTrashIcon} 
-          size='medium'
-          appearance='ghost'
-          status='basic'
-          style={{paddingTop:0, paddingBottom:10, paddingRight:5}}>
-        </Button>
+        <AwaitButton 
+        awaitFunction={() => onDelete(data.id)}
+        accessoryRight={renderTrashIcon} 
+        size='medium'
+        appearance='ghost'
+        status='basic'
+        style={{paddingTop:0, paddingBottom:10, paddingRight:5}}/>
     );
+
+    const headerText = (props) => {
+        return (
+        <>
+        <Text {...props} category='s1' style={[styles.modCodeText, {lineHeight: Platform.OS === 'ios' ? 30 : 20}]}>
+        {data.modCode}
+        </Text>
+        <Text status='primary' category='label' style={[styles.modSemText, {lineHeight: Platform.OS === 'ios' ? 15 : 10}]}>
+        Sem: {data.semesters}
+        </Text>
+        </>
+        );
+    }
+
+    const semText = (props) => {
+        return (
+        <Text status='primary' category='label' style={[styles.modSemText, {lineHeight: Platform.OS === 'ios' ? 15 : 10}]}>
+        Sem: {data.semesters}
+        </Text>);
+    }
 
     return (
         <Layout style={[styles.container, styles.containerShadow]}>
             <Layout style = {[styles.header]} />
-            <Layout level='2' style = {[styles.contents]}>
-                <Text style={[styles.taskText, {lineHeight: Platform.OS === 'ios' ? 30 : 20}]}>
+            <Layout level='1' style = {[styles.contents]}>
+                <Layout level='1' style={[styles.leftBox]}>
+                <Text {...props} category='s1' style={[styles.modCodeText, {lineHeight: Platform.OS === 'ios' ? 30 : 20}]}>
+                {data.modCode}
+                </Text>
+                <Text status='primary' category='label' style={[styles.modSemText, {lineHeight: Platform.OS === 'ios' ? 15 : 10}]}>
+                Sem: {data.semesters}
+                </Text>
+                </Layout>
+                <Text category='p1' style={[styles.modDescText, {lineHeight: Platform.OS === 'ios' ? 30 : 20}]}>
                     {data.desc}
                 </Text>
                 <DeleteIcon />
@@ -39,10 +67,9 @@ export default Module;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'aliceblue',
         flexDirection: 'column',
         marginHorizontal: 14,
-        marginVertical: 10,
+        marginVertical: 5,
         alignItems: 'center',
         borderRadius: 4,
     },
@@ -51,12 +78,13 @@ const styles = StyleSheet.create({
         backgroundColor: "darkorange",
         width: "100%",
         height: 3,
+        fontSize:5,
     },
     contents: {
         flex: 1,
         flexDirection: 'row',
         paddingHorizontal: 6,
-        paddingTop: 5,
+        paddingVertical: 10,
     },
     containerShadow: {
         shadowColor: '#171717',
@@ -65,9 +93,26 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
         elevation: 5,
     },
-    taskText: {
+    leftBox: {
+        flex: 2,
+        flexDirection: 'column',
+    },
+    modCodeText: {
         fontWeight: 'bold',
         flex: 1,
+        flexDirection: 'row',
+        fontFamily: 'Arial',
+        textAlign:'left',
+        fontSize:12, 
+    },
+    modSemText: {
+        flex: 1,
+        textAlign:'left',
+        marginBottom: 5,
+        fontSize:10,
+    },
+    modDescText: {
+        flex: 5,
         flexWrap: 'wrap',
         flexDirection: 'row',
         fontFamily: 'Arial',

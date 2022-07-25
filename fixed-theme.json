@@ -8,33 +8,47 @@
   "text-active-color": "$color-primary-active",
 
   "background-basic-color-1": "$color-basic-100",
-  "background-basic-color-2": "$color-basic-300",
-  "background-basic-color-3": "$color-basic-500",
-  "background-basic-color-4": "$color-basic-700",
+  "background-basic-color-2": "$color-basic-200",
+  "background-basic-color-3": "$color-basic-300",
+  "background-basic-color-4": "$color-basic-400",
+  "border-basic-color-1": "$color-basic-300",
+  "border-basic-color-2": "$color-basic-400",
+  "border-basic-color-3": "$color-basic-500",
+  "border-basic-color-4": "$color-basic-600",
+  "border-basic-color-5": "$color-basic-700",
+  "color-basic-transparent-100": "rgba(203, 238, 253, 0.08)",
+  "color-basic-transparent-200": "rgba(203, 238, 253, 0.16)",
+  "color-basic-transparent-300": "rgba(203, 238, 253, 0.24)",
+  "color-basic-transparent-400": "rgba(203, 238, 253, 0.32)",
+  "color-basic-transparent-500": "rgba(203, 238, 253, 0.40)",
+  "color-basic-transparent-600": "rgba(203, 238, 253, 0.48)",
 
-  "border-basic-color-1": "$color-basic-100",
-  "border-basic-color-2": "$color-basic-200",
-  "border-basic-color-3": "$color-basic-300",
-  "border-basic-color-4": "$color-basic-400",
-  "border-basic-color-5": "$color-basic-500",
-  "color-basic-transparent-100": "rgba(99, 188, 247, 0.08)",
-  "color-basic-transparent-200": "rgba(99, 188, 247, 0.16)",
-  "color-basic-transparent-300": "rgba(99, 188, 247, 0.24)",
-  "color-basic-transparent-400": "rgba(99, 188, 247, 0.32)",
-  "color-basic-transparent-500": "rgba(99, 188, 247, 0.40)",
-  "color-basic-transparent-600": "rgba(99, 188, 247, 0.48)",
+  //rgba(99, 188, 247, 1)
+  //rgba(203, 238, 253, 1)
 
-  "color-basic-100": "#EAFCFE",
-  "color-basic-200": "#E0F9FE",
-  "color-basic-300": "#D8F5FD",
-  "color-basic-400": "#CBEEFD",
-  "color-basic-500": "#97D9FC",
-  "color-basic-600": "#63BCF7",
-  "color-basic-700": "#3C9FF0",
-  "color-basic-800": "#0073E6",
-  "color-basic-900": "#0042A5",
-  "color-basic-1000": "#002E85",
-  "color-basic-1100": "#00216E",
+  // "color-basic-100": "#EAFCFE",
+  // "color-basic-200": "#E0F9FE",
+  // "color-basic-300": "#D8F5FD",
+  // "color-basic-400": "#CBEEFD",
+  // "color-basic-500": "#97D9FC",
+  // "color-basic-600": "#63BCF7",
+  // "color-basic-700": "#3C9FF0",
+  // "color-basic-800": "#0073E6",
+  // "color-basic-900": "#0042A5",
+  // "color-basic-1000": "#002E85",
+  // "color-basic-1100": "#00216E",
+
+  "color-basic-100": "#F4FEFE",
+  "color-basic-200": "#EAFCFE",
+  "color-basic-300": "#E0F9FE",
+  "color-basic-400": "#D8F5FD",
+  "color-basic-500": "#CBEEFD",
+  "color-basic-600": "#94C0D9",
+  "color-basic-700": "#6693B6",
+  "color-basic-800": "#406992",
+  "color-basic-900": "#264A79",
+  "color-basic-1000": "#203D69",
+  "color-basic-1100": "#132A57",
 
 
 
@@ -68,15 +82,9 @@
   "color-primary-800": "#931A0A",
   "color-primary-900": "#7A0C06",
 
-  // "color-primary-100": "#FEFCFB",
-  // "color-primary-200": "#FEF9F7",
-  // "color-primary-300": "#FDF4F3",
-  // "color-primary-400": "#FBF0EF",
-  // "color-primary-500": "#FAEAEB",
-  // "color-primary-600": "#D7ABB1",
-  // "color-primary-700": "#B37584",
-  // "color-primary-800": "#904A61",
-  // "color-primary-900": "#772C4C",
+  
+
+
 
 
 

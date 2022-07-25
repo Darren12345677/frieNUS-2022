@@ -5,84 +5,56 @@ import {
     TopNavigation, 
     List, 
     Icon,
-    Text,
+    Card, 
+    Modal,
+    Text, 
+    Button, 
 } from '@ui-kitten/components';
-import { KeyboardAvoidingView, SafeAreaView,} from "react-native";
-import { LogoutButton, UserResult } from '../components';
+import {  useNavigation, useIsFocused } from '@react-navigation/native';
+import { KeyboardAvoidingView, SafeAreaView, View} from "react-native";
+import { LogoutButton, NotifItem } from '../components';
 import { auth, db } from '../firebase';
 import {
     doc,
-    getDoc,
     collection,
-    getDocs,
-} from 'firebase/firestore';
-import { useFocusEffect } from '@react-navigation/native';
-import { StyleSheet } from 'react-native';
+    query, 
+    onSnapshot,
+    deleteDoc,
+    setDoc,
+} from 'firebase/firestore';import { StyleSheet } from 'react-native';
 import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
+import { ImprovedAlert, AwaitButton } from '../components';
 
 const NotificationScreen = () => {
-    const [notifListStr, setNotifListStr] = React.useState([]);
-    // const [refresh, setRefresh] = React.useState([]);
-
-    const dispatch = useDispatch();
-    const refresh = useSelector(state => state.refresh.refresh);
-    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
-    const reduxRefreshFalse = () => {dispatch(setRefreshFalse());};
+    const [notifList, setNotifList] = React.useState([]);
+    const [visible, setVisible] = React.useState(false);
+    const navigation = useNavigation();
 
     useEffect(() => {
-        console.log("Notification Screen");
-        let isActive = true;
-        const collectionConnectNotifRef = collection(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/')
-        const getNotifications = async () => {
-            try {
-                const notifList = [];
-                const qSnapshot = getDocs(collectionConnectNotifRef);
-                await((await qSnapshot)).forEach((doc) => {
-                    notifList.push(doc.get('id'));
-                })
-                if (isActive) {
-                    setNotifListStr([...notifList]);
-                }
-            } catch (e) {
-                console.log(e);
-            }
-        }
-        getNotifications();
-        return () => {
-            // console.log("Callback");
-            isActive = false;
-            reduxRefreshFalse();
-        }
-    }, [refresh]);
+        const connectNotifQuery = query(collection(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif'));
+        const unsubscribe = onSnapshot(connectNotifQuery, (snapshot) => {
+            const connectNotif = [];     
+            snapshot.forEach((doc) => {
+                connectNotif.push({ id: doc.id, ...doc.data() });
+            });
+            setNotifList([...connectNotif]);
+        });
+        return unsubscribe;
+    }, []);
 
-    // useFocusEffect(
-    //     React.useCallback(() => {
-    //         let isActive = true;
-    //         const collectionConnectNotifRef = collection(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/')
-    //         const getNotifications = async () => {
-    //             try {
-    //                 const notifList = [];
-    //                 const qSnapshot = getDocs(collectionConnectNotifRef);
-    //                 await((await qSnapshot)).forEach((doc) => {
-    //                     notifList.push(doc.get('id'));
-    //                 })
-    //                 if (isActive) {
-    //                     setNotifListStr([...notifList]);
-    //                 }
-    //             } catch (e) {
-    //                 console.log(e);
-    //             }
-    //         }
-    //         getNotifications();
-    //         return () => {
-    //             console.log("Callback");
-    //             isActive = false;
-    //             reduxLoadingFalse();
-    //         }
-    //     }, [isLoading])
-    // );
+    const optionsHeader = (props) => (
+        <View {...props}>
+            <Text category='h6'>Options</Text>
+        </View>
+    );
+
+    const NoNotifDisplay = () => (
+        <Layout style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+            <Text category='p1' status='info' style={[styles.noNotifText]}>
+                You do not have any notifications yet
+            </Text>
+        </Layout>
+    );
 
     return (
         <SafeAreaView style={{flex:1}}>
@@ -96,20 +68,38 @@ const NotificationScreen = () => {
             />
             <Divider/>
             <Layout style={styles.listContainer}>
-                <List
-                data={notifListStr}
+                {notifList.length != 0 ? <List
+                data={notifList}
                 renderItem={({ item }) => {
-                    return (
-                        <UserResult 
-                        keyId={item.id} 
-                        userFields={item} 
-                        // setter={setRefresh}
-                        />
-                        )
+                    return (        
+                    <NotifItem item = {item} />);
                 }}
                 keyExtractor={(item) => item.id}
                 ItemSeparatorComponent={Divider}
-                />
+                /> : <NoNotifDisplay/>}
+                {/* <Modal 
+                visible={visible}
+                onBackdropPress={() => setVisible(false)}>
+                <Card disabled={true} header={optionsHeader}>
+                <Text>{userItem}</Text>
+                <Button 
+                onPress = {() => {
+                    console.log(userItem);
+                    navigation.navigate('User Profile', {userID: userItem}),
+                    setVisible(false);
+                    }}>
+                <Text>View Profile</Text>
+                </Button>
+                <Divider></Divider>
+                <AwaitButton awaitFunction={()=>acceptHandler(userItem)} children={"Accept"}/>
+                <Divider></Divider>
+                <AwaitButton awaitFunction={()=>declineHandler(userItem)} children={"Decline"}/>
+                <Divider></Divider>
+                <Button onPress={() => setVisible(false)}>
+                    Dismiss
+                </Button>
+                </Card>
+            </Modal> */}
             </Layout>
         </KeyboardAvoidingView>
         </SafeAreaView>
@@ -119,15 +109,13 @@ const NotificationScreen = () => {
 export default NotificationScreen;
 
 const styles = StyleSheet.create({
-    singleLineText: {
-        textAlign: 'center',
-    },
-    manyLineText: {
-        textAlign: 'left',
-    },
     listContainer: {
-        backgroundColor:'red',
+        // backgroundColor:'red',
         flex: 1,
         width:'100%',
+    }, 
+    noNotifText: {
+        textAlign: 'center',
+        textAlignVertical: 'center',
     }
 })

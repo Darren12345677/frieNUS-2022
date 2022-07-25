@@ -8,10 +8,11 @@ import {
     View,
     Image,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
+    sendEmailVerification,
 } from 'firebase/auth';
 
 import {
@@ -19,61 +20,64 @@ import {
     setDoc, 
     addDoc,
     collection,
+    getDoc,
 } from 'firebase/firestore';
 
-import { AuthTextInput, AuthPressable } from '../components';
+import { AuthTextInput, AuthPressable, ImprovedAlert } from '../components';
 import { db, auth } from '../firebase';
-
-import { Text, Icon, Divider, Layout, TopNavigation } from '@ui-kitten/components';
+import { Text, Icon, Divider, Layout, TopNavigation, Button } from '@ui-kitten/components';
 import * as data from '../../app.json'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setLoadingTrue, setLoadingFalse } from '../store/loading';
 import { setRefreshTrue, } from '../store/refresh';
+import { setMyName } from '../store/myName';
+import { setMyCourse } from '../store/myCourse';
+import { setMyFaculty } from '../store/myFaculty';
+import { setMyYear } from '../store/myYear';
+import { setMyAvatar } from '../store/myAvatar';
+
+const DEFAULT_AVATAR = "https://reactjs.org/logo-og.png";
 
 const AuthScreen = () => {
-    
     const version = data.expo.version;
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    // const [name, setName] = useState("");
+    // const [course, setCourse] = useState("");
+    // const [faculty, setFaculty] = useState("");
+    // const [year, setYear] = useState(1);
+    const myName = useSelector(state => state.myName.myName);
     const dispatch = useDispatch();
     const reduxLoadingTrue = () => {dispatch(setLoadingTrue());};
     const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
     const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
+    const reduxSetMyName = (name) => {dispatch(setMyName({input: name})); };
+    const reduxSetMyCourse = (course) => {dispatch(setMyCourse({input: course}));};
+    const reduxSetMyFaculty = (faculty) => {dispatch(setMyFaculty({input: faculty}));};
+    const reduxSetMyYear = (year) => {dispatch(setMyYear({input: year}));};
+    const reduxSetMyAvatar = (avatarLink) => {dispatch(setMyAvatar({input: avatarLink}));};
+
+    // useEffect(() => {
+    //     console.log("name has been set");
+    // }, [setName]);
 
     const successfulLoginAlert = () => {
-        console.log("Successful Login")
-        Alert.alert(
-            "Login successful!",
-            //This empty argument is for the captions. Otherwise app will crash when msg is displayed.
-            "",
-            [{ text:"Dismiss", onPress: () => console.log("Dismissed")} ]
-        )
-    };
-
-    const signUpAlert = () => {
-        console.log("Successful Sign Up")
-        Alert.alert(
-            "Sign up successfully completed!",
-            //This empty argument is for the captions. Otherwise app will crash when msg is displayed.
-            "",
-            [{ text:"Dismiss", onPress: () => console.log("Dismissed")} ]
-        )
+        ImprovedAlert("Successful Login","Login successful!");
     };
 
     const missingFieldsAlert = (type) => {
-        console.log("Missing Fields for " + type)
-        Alert.alert(
-            "Missing fields for " + type + ", please try again!",
-            //This empty argument is for the captions. Otherwise app will crash when msg is displayed.
-            "",
-            [{ text:"Dismiss", onPress: () => console.log("Dismissed")}]
-        )
+        ImprovedAlert("Missing Fields for " + type, "Missing fields for " + type + ", please try again!");
+    };
+
+    const signUpAlert = () => {
+        ImprovedAlert("Successful Sign Up", "Account created!");
     };
 
     const errorAlert = (errorCode, errorMsg) => {
-        Alert.alert(errorCode, errorMsg, 
-        [{ text:"Dismiss", onPress: () => console.log("Dismissed")}])
+        console.log("This is the error code: " + errorCode);
+        console.log("This is the error msg: " + errorMsg);
+        ImprovedAlert("Encountered an error", errorMsg);
     }
 
     const loginHandler = async () => {
@@ -89,12 +93,35 @@ const AuthScreen = () => {
                 // console.log(user);
                 restoreForm();
                 successfulLoginAlert();
+                //redux actions to set state
+                getDoc(doc(db, 'Users/' + auth.currentUser.uid)).then(res => {
+                    const newName = res.get('name');
+                    const newFac = res.get('faculty');
+                    const newCourse = res.get('course');
+                    const newYear = res.get('year');
+                    const newAvatar = res.get('avatar');
+                    reduxSetMyName(newName);
+                    reduxSetMyFaculty(newFac);
+                    reduxSetMyCourse(newCourse);
+                    reduxSetMyYear(newYear);
+                    reduxSetMyAvatar(newAvatar);
+                })
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-                console.error('[loginHandler]', errorCode, errorMessage);
-                errorAlert(errorCode, errorMessage);
+                // console.error('[loginHandler]', errorCode, errorMessage);
+                if (errorCode == "auth/invalid-email") {
+                    errorAlert(errorMessage, "Invalid email");
+                } else if (errorCode == "auth/wrong-password") {
+                    errorAlert(errorMessage, "Wrong password");
+                } else if (errorCode == "auth/user-not-found") {
+                    errorAlert(errorMessage, "User does not exist");
+                } else if (errorCode == "auth/network-request-failed") { 
+                    errorAlert(errorMessage, "Our server is experiencing some interruptions. Please try again later");
+                } else {
+                    errorAlert(errorCode, errorMessage);
+                };
             });
         reduxRefreshTrue();
         reduxLoadingFalse();
@@ -114,12 +141,19 @@ const AuthScreen = () => {
                 restoreForm();
                 signUpAlert();
                 createUser(user);
+                //redux actions to set state
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-                console.error('[signUpHandler]', errorCode, errorMessage);
-                errorAlert(errorCode, errorMessage);
+                // console.error('[signUpHandler]', errorCode, errorMessage);
+                if (errorCode == "auth/invalid-email") {
+                    errorAlert(errorMessage, "Invalid email");
+                } else if (errorCode == "auth/email-already-in-use") {
+                    errorAlert(errorMessage, "User already exists")
+                } else {
+                    errorAlert(errorCode, errorMessage);
+                };
             });
         reduxRefreshTrue();
         reduxLoadingFalse();
@@ -129,11 +163,25 @@ const AuthScreen = () => {
         setDoc(doc(db, 'Users', user.uid), 
             //JSON.parse(JSON.stringify(user))
             {
-                "displayName" : user.uid,
                 "id" : user.uid, 
                 "email" : user.email,
+                "name" : "Not selected",
+                "faculty": "Not selected",
+                "course": "Not selected",
+                "year": 1,
+                "avatar": DEFAULT_AVATAR,
+                "verified": false,
             }
-        )
+        ).then(res => {
+            reduxSetMyName("Not selected");
+            reduxSetMyFaculty("Not selected");
+            reduxSetMyCourse("Not selected");
+            reduxSetMyYear(1);
+            reduxSetMyAvatar(DEFAULT_AVATAR);
+            console.log("New user made");
+        }).catch(err => {
+            console.log("Error in createUser function")
+        })
     }
 
     const restoreForm = () => {
@@ -156,7 +204,6 @@ const AuthScreen = () => {
                 </Layout>
                 <Layout style={[styles.content]}>
                 <Image source={require("../assets/frienus.png")} style={{height:'20%', width:'30%', marginBottom:'2.5%', marginTop:'-5%', resizeMode:'cover'}}/>
-                {/* <View style={{flex:10}}> */}
                     <Text status='basic' category='h4' style={[styles.authText]}>
                         {isLogin ? 'Login to frieNUS' : 'Create an account on frieNUS'}
                     </Text>
@@ -183,7 +230,6 @@ const AuthScreen = () => {
                         iconLeft={isLogin ? <Icon name='plus'/> : <Icon name='unlock'/>}
                     />
                     <Text style = {styles.version} appearance='hint'>Version {version}</Text>
-                {/* </View> */}
                 </Layout>
             </KeyboardAvoidingView>
         </SafeAreaView>

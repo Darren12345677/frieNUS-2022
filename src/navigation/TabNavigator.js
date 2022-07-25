@@ -11,6 +11,9 @@ import {
     NotificationScreen,
     ChatScreen, 
     FriendScreen,
+    SingleChatScreen,
+    ProfileSettingsScreen,
+    AccountSettingsScreen,
 } from '../screens';
 import { auth, db } from '../firebase';
 import { useSelector, useDispatch } from 'react-redux';
@@ -30,18 +33,13 @@ const TabNavigator = () => {
             //Makes screen lag
             // reduxRefreshTrue();
             return navigation.navigate(state.routeNames[index])}}>
-        <BottomNavigationTab title='Profile' icon={<Icon name='people-outline'/>} />
-        <BottomNavigationTab title='Search' icon={<Icon name='search-outline'/>} />
-        <BottomNavigationTab title='Modules' icon={<Icon name='book-outline'/>} />
-        <BottomNavigationTab title='Notifications' icon={<Icon name='bell-outline'/>} />
+        <BottomNavigationTab  icon={<Icon name='people-outline'/>} />
+        <BottomNavigationTab  icon={<Icon name='search-outline'/>} />
+        <BottomNavigationTab  icon={<Icon name='book-outline'/>} />
+        <BottomNavigationTab  icon={<Icon name='bell-outline'/>} />
         <BottomNavigationTab 
         // onPress doesn't work for some reason
         // onPressIn={() => console.log("Hello")}
-        title={evaProps => 
-        <>
-            <Text {...evaProps}>Chat</Text>
-        </>
-        }
         icon={<Icon name='message-circle-outline'/>}/>
     </BottomNavigation>
     );
@@ -55,11 +53,11 @@ const TabNavigator = () => {
             <Screen name='Module List' component= {ModuleScreen}/>
             <Screen name='Notification' component= {NotificationScreen}/>
             <Screen name='Chat' component= {ChatScreen}/>
-            <Screen 
-            name='User Profile' 
-            component= {UserProfileScreen}
-            />
+            <Screen name='User Profile' component= {UserProfileScreen}/>
             <Screen name='Friends' component= {FriendScreen}/>
+            <Screen name='Messages' component= {SingleChatScreen}/>
+            <Screen name='Profile Settings' component= {ProfileSettingsScreen}/>
+            <Screen name='Account Settings' component= {AccountSettingsScreen}/>
         </Navigator>
     );
 }

@@ -1,114 +1,167 @@
-import React, {useCallback} from 'react'
+import React from 'react';
 import { 
     Divider, 
     Layout, 
     TopNavigation, 
     Icon,
     Button,
-    Input,
+    Avatar,
     Text,
     Card,
+    List,
+    useTheme,
 } from '@ui-kitten/components';
-import { Alert, KeyboardAvoidingView, SafeAreaView, StyleSheet, View, Keyboard} from "react-native";
-import { LogoutButton, UserResult, ConnectButton } from '../components';
+import { KeyboardAvoidingView, SafeAreaView, StyleSheet, ScrollView} from "react-native";
+import { LogoutButton, AwaitButton } from '../components';
 import { auth, db } from '../firebase';
 import {
     doc,
     getDoc,
     collection,
     getDocs,
-    setDoc,
+    deleteDoc,
     updateDoc,
 } from 'firebase/firestore';
-import { useNavigation, useFocusEffect, } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
-import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
-
+import { setRefreshFalse } from '../store/refresh';
+import { useEffect } from 'react';
 
 const ProfileScreen= () => {
-    const [displayNameField, setDisplayNameField] = React.useState("");
     const [emailField, setEmailField] = React.useState("");
     const [idField, setIdField] = React.useState("");
-    const [connectListStr, setConnectListStr] = React.useState("");
-    const [displayNameInput, setDisplayNameInput] = React.useState("");
-
+    const [connectList, setConnectList] = React.useState([]);
+    const theme = useTheme();
     const dispatch = useDispatch();
     const refresh = useSelector(state => state.refresh.refresh);
-    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
+    const myName = useSelector(state => state.myName.myName);
+    const myCourse = useSelector(state => state.myCourse.myCourse);
+    const myFaculty = useSelector(state => state.myFaculty.myFaculty);
+    const myYear = useSelector(state => state.myYear.myYear);
+    const myAvatar = useSelector(state => state.myAvatar.myAvatar);
     const reduxRefreshFalse = () => {dispatch(setRefreshFalse());};
-
-    useFocusEffect(React.useCallback(() => {
-        console.log("Profile Screen");
-        const currUser = auth.currentUser;
-        const userDoc = doc(db, 'Users/' + currUser.uid);
+    const currUser = auth.currentUser;
+    const userDoc = doc(db, 'Users/' + currUser.uid);
+    
+    useEffect(() => {
         getDoc(userDoc).then(result => {
-            // console.log("This is the currentUser id: " + currUser.uid);
-            setDisplayNameField(result.get('displayName'));
             setEmailField(result.get('email'));
             setIdField(result.get('id'));
         })
-        const collectionPendingConnectsRef = collection(db, 'Users/' + currUser.uid + '/PendingConnects');
-        const loadConnected =  async () => {
-            const connectList = [];
-            const qSnapshot = getDocs(collectionPendingConnectsRef);
-            (await qSnapshot).forEach((doc) => {
-                connectList.push(doc.get('id'));
-            })
-            setConnectListStr(connectList.toString());
-        };
-        loadConnected();
-        reduxRefreshFalse();
-    }, [refresh]));
 
-    const emptyAlert = () => {
-        Alert.alert(
-            "Display name cannot be empty!",
-            "",
-            [{ text:"Dismiss", onPress: () => console.log("Dismissed")}]
-        )
-    };
-
-    const displayNameAlert = () => {
-        Alert.alert(
-            "Display name set!",
-            "",
-            [{ text:"Dismiss", onPress: () => console.log("Dismissed")}]
-        )
-    };
-
-    const displayNameHandler = async () => {
-        const currUser = auth.currentUser;
-        const userDoc = doc(db, 'Users/' + currUser.uid);
-        if (displayNameInput.length == 0) {
-            emptyAlert();
-        } else {
-            updateDoc(userDoc, {
-                "displayName" : displayNameInput,
-            })
-            setDisplayNameInput('');
-            Keyboard.dismiss();
-            displayNameAlert();
+        if (currUser.emailVerified) {
+            updateDoc(userDoc, {"verified": true})
         }
-    }
+
+        //Checking for non-existent connects
+        const collectionPendingConnectsRef = collection(db, 'Users/' + currUser.uid + '/PendingConnects');
+        // const arr = [];
+        const qSnapshot = getDocs(collectionPendingConnectsRef);
+        
+
+        qSnapshot.then(snapshot => {
+            const arr = [];
+            let curr = 0;
+            for (const document of snapshot.docs) {
+                getDoc(doc(db, 'Users/' + document.get('id'))).then(userDocument => {
+                    if (userDocument.exists()) {
+                        arr.push({id: document.get('id')});
+                        curr += 1;
+                    } else {
+                        deleteDoc(doc(db, 'Users/' + currUser.uid + '/PendingConnects/' + document.get('id')));
+                        curr += 1;
+                    }
+                    if (curr == snapshot.docs.length) {
+                        setConnectList([...arr]);
+                    }
+                });
+            }
+        });
+
+        //Checking for non-existent friends
+        const collectionFriendsRef = collection(db, 'Users/' + currUser.uid + '/Friends');
+        const qSnapshot2 = getDocs(collectionFriendsRef);
+        qSnapshot2.then(snapshot => {
+            let curr = 0;
+            for (const document of snapshot.docs) {
+                const nonID = document.get('id');
+                getDoc(doc(db, 'Users/' + document.get('id'))).then(userDocument => {
+                    if (userDocument.exists()) {
+                        curr += 1;
+                    } else {
+                        deleteDoc(doc(db, 'Users/' + currUser.uid + '/Friends/' + nonID)).then(() => {
+                            console.log(nonID + " has been removed from friends list");
+                        })
+                        curr += 1;
+                    }
+                    if (curr == snapshot.docs.length) {
+                        console.log("Non-existent Friends cleared");
+                    }
+                });
+            }
+        });
+
+        reduxRefreshFalse();
+    }, [refresh]);
 
     const navigation = useNavigation();
 
-    const idHeader = (props) => (
-        <View {...props}>
-          <Text category='h6'>User ID</Text>
-        </View>
+    const SettingsIcon = (props) => (
+        <Icon {...props} name='settings'/>
+      );
+      
+    const accountHeader = (props) => (
+        <Layout {...props} style={styles.headerText}>
+        <Text category='h6'>Account Details</Text>
+        <Button 
+        status='basic' 
+        style={{backgroundColor:theme['background-basic-color-1']}} 
+        accessoryLeft={<SettingsIcon/>}
+        onPress={() => navigation.navigate('Account Settings')}    
+        />
+    </Layout>
       );
 
-    const emailHeader = (props) => (
-    <View {...props}>
-        <Text category='h6'>Email</Text>
-    </View>
+    const profileHeader = (props) => (
+    <Layout {...props} style={styles.headerText}>
+        <Text category='h6'>Profile Details</Text>
+        <Button 
+        status='basic' 
+        style={{backgroundColor:theme['background-basic-color-1']}} 
+        accessoryLeft={<SettingsIcon/>}
+        onPress={() => navigation.navigate('Profile Settings')}    
+        />
+    </Layout>
     );
 
-    const pendingReqHeader = (props) => (
-        <View {...props}>
-            <Text category='h6'>Pending Connects</Text>
-        </View>
+    const CardText = (props) => {
+        const {leftText, rightText} = {...props}
+        return (
+        <Layout style={styles.cardContent}>
+        <Text category='s1'>{leftText}: </Text>
+        <Text category='p1' style={{flex:1}}>{rightText}</Text>
+        </Layout>
+    );};
+
+    const refreshHandler = async () => {
+        await getDoc(userDoc);
+        console.log("Refreshed");
+    }
+
+    const DisplayNoConnects = () => (
+        <Text style={styles.noConnects}>You have no pending connects yet</Text>
+    );
+
+    const DisplayConnectList = () => (
+        <List style={[styles.list, {backgroundColor:theme['background-basic-color-1']}]} data={connectList} renderItem={
+            ({item}) => {
+                return (
+                <Layout level='1' style={[styles.listTextContainer, {borderColor:theme['border-basic-color-3']}]}>
+                <Text category='p1' style={styles.listText}>User ID: {item.id}</Text>
+                {/* <Text category='label' style={styles.listText}>Name: {item.id}</Text> */}
+                </Layout>
+                )}} 
+        />
     );
 
     return (
@@ -122,39 +175,48 @@ const ProfileScreen= () => {
                 style={{height:'8%'}}
             />
             <Divider/>
-            <>
-                <Layout style={styles.topContainer} level='1'>
-                    <Input
-                        style={styles.displayNameInput}
-                        placeholder={"Set your display name here"}
-                        onChangeText={setDisplayNameInput}></Input>
-                    <Button 
-                        style={styles.displayNameButton}
-                        onPress={displayNameHandler}
-                        >Save Changes</Button>
+            <ScrollView>
+                <Layout style={styles.topContainer}>
+                    <Avatar defaultSource={require('../assets/image-outline.png')} shape='round' source={{uri: myAvatar}} style={styles.image}/>
+                    <Text style={styles.topText} category='h5' status='primary'
+                    children={
+`Welcome back, 
+    ${myName}`}/>
+                    <AwaitButton 
+                    appearance='ghost'
+                    status='basic'
+                    style={styles.refresh} 
+                    accessoryLeft={<Icon style={styles.refreshIcon} name='refresh-outline'/>} 
+                    awaitFunction={refreshHandler}/>
                 </Layout>
-                <Layout style={styles.topContainer} level='1'>
-                <Card status='primary' style={styles.card} header = {idHeader}>
-                    <Text>{idField}</Text>
-                </Card>
-
-                <Card status='primary' style={styles.card} header = {emailHeader}>
-                    <Text>{emailField}</Text>
-                </Card>
-
+                <Layout style={styles.ribbon} level='4'>
+                    <Text category='h5'>Details</Text>
                 </Layout>
-                <Card status='primary' style={styles.card} header = {pendingReqHeader}>
-                    <Text>{connectListStr}</Text>
+                <Card disabled='true' status='primary' style={styles.card} header={accountHeader}>
+                    <CardText leftText='Account ID' rightText={idField}/>
+                    <CardText leftText='Email' rightText={emailField}/>
+                    <CardText leftText='Account Verified' rightText={`${currUser.emailVerified}`}/>   
                 </Card>
-
+                <Card disabled='true' status='primary' style={styles.card} header={profileHeader}>
+                    <CardText leftText='Display name' rightText={myName}/>
+                    <CardText leftText='Faculty' rightText={myFaculty}/>
+                    <CardText leftText='Course' rightText={myCourse}/>
+                    <CardText leftText='Year' rightText={myYear}/>                          
+                </Card>
+                <Layout style={styles.ribbon} level='4'>
+                    <Text style={styles.ribbonText} category='h5'>Your pending connects</Text>
+                </Layout>
+                <Layout level='1' style={styles.container}>
+                {connectList.length == 0 ? <DisplayNoConnects/> : <DisplayConnectList/>}
+                </Layout>
                 <Layout style={styles.container} level='1'>
-                <Card style={styles.card}>
-                <Button onPress={() => navigation.navigate('Friends')}>
-                <Text>Friend list</Text>                
-                </Button>
-                </Card>
+                    <Card style={styles.bottomCard}>
+                    <Button onPress={() => navigation.navigate('Friends')}>
+                        <Text>Friend list</Text>                
+                    </Button>
+                    </Card>
                 </Layout>
-            </>
+            </ScrollView>
         </KeyboardAvoidingView>
         </SafeAreaView>
     )
@@ -163,18 +225,67 @@ const ProfileScreen= () => {
 export default ProfileScreen;
 
 const styles = StyleSheet.create({
-    topContainer: {
+    headerText: {
+        flexDirection: 'row',
+        alignItems:'center',
+        paddingLeft: 20,
+        justifyContent: 'space-between',
+        marginBottom: -5,
+    },
+    listTextContainer: {
+        marginLeft:10,
+        marginVertical: 2,
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingVertical: 2,
+    },
+    bottomCard: {
+        paddingVertical:-10,
+        width:'95%',
+    },
+    listText: {
+        paddingLeft: 5,
+    },
+    ribbon: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        shadowColor: '#171717',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 5,
+        marginVertical:5,
+    },
+    inputContainer: {
         backgroundColor:'white',
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
+    topContainer: {
+        backgroundColor:'white',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems:'center',
+        paddingLeft:20,
+        paddingVertical:20,
+    },
+    topText: {
+        marginLeft:10,
+    },
     card: {
-        flex: 1,
-        margin: 2,
+        marginVertical: 2,
+        marginHorizontal: 10,
+    },
+    list: {
+        marginVertical: 10,
+        marginHorizontal: 5,
+        paddingVertical: 10,
     },
     container: {
+        marginVertical: 2,
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent:'center',
     },
     footerContainer: {
         flexDirection: 'row',
@@ -183,11 +294,17 @@ const styles = StyleSheet.create({
     footerControl: {
         marginHorizontal: 2,
     },
-    displayNameInput: {
-        width:'55%',
-        margin: 5,
+    cardContent: {
+        flexDirection: 'row',
     },
-    displayNameButton: {
-        margin: 5,
-    }
+    image: {
+        width:75,
+        height:75,
+    },
+    noConnects: {
+        paddingVertical:40,  
+    },
+    refresh: {
+        marginLeft:20,
+    },
   });

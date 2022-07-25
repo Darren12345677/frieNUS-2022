@@ -1,27 +1,18 @@
-import { Alert, StyleSheet } from 'react-native';
 import React from 'react';
-import { Text, Button, Card, Layout, Modal, Divider } from '@ui-kitten/components';
 import {
     setDoc,
     getDoc,
     doc,
     deleteDoc,
 } from 'firebase/firestore';
+import { ImprovedAlert, AwaitButton } from '../../components';
 import { auth, db } from '../../firebase';
-import { useDispatch } from 'react-redux';
-import { setLoadingTrue, setLoadingFalse } from '../../store/loading';
-import { setRefreshTrue, } from '../../store/refresh';
+
 
 const ConnectButton = ({isConnected, isYourself, isFriend, userId}) => {
-    // console.log(isConnected);
     const authUserSnapshot = getDoc(doc(db, "Users/" + auth.currentUser.uid));
     const currUserSnapshot = getDoc(doc(db, "Users/" + userId + "/PendingConnects/" + auth.currentUser.uid));
     const currUserFriendsSnapshot = getDoc(doc(db, "Users/" + userId + "/Friends/" + auth.currentUser.uid));
-    
-    const dispatch = useDispatch();
-    const reduxLoadingTrue = () => {dispatch(setLoadingTrue());};
-    const reduxLoadingFalse = () => {dispatch(setLoadingFalse());};
-    const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
 
     const displayTitle = () => {
         if (isFriend) {
@@ -48,40 +39,24 @@ const ConnectButton = ({isConnected, isYourself, isFriend, userId}) => {
     }
 
     const successfulConnectAlert = () => {
-        console.log("Successful Connect");
-        Alert.alert(
-            "Successful Connect",
-            "",
-            [{text:"Dismiss", onPress: () => console.log("Dismissed")}]
-        )
-    }
-    
-    const connectHandler = async () => {
-        reduxLoadingTrue();
-        authUserSnapshot.then(result => {
-            const authUserDisplayName = result.get("displayName");
-            const displayStr = authUserDisplayName === userId ? "yourself" : userId;
-            // console.log("You connected with " + displayStr);
-            // console.log(auth.currentUser.uid);
-            setDoc(doc(db, 'Users/' + auth.currentUser.uid + '/PendingConnects/' + userId), 
-            {
-                id: userId,
-            }).then(res => {
-                checkFriends();
-                setTimeout(() => {
-                    reduxRefreshTrue();
-                    reduxLoadingFalse();
-                    successfulConnectAlert();
-                }, 1000);
-            })
-        })
+        ImprovedAlert("Successful Connect", "Successful Connect");
+    };
+
+    const connecter = async () => {
+        const ss = await authUserSnapshot;
+        const authUserDisplayName = ss.get("displayName");
+        const displayStr = authUserDisplayName === userId ? "yourself" : userId;
+        await setDoc(doc(db, 'Users/' + auth.currentUser.uid + '/PendingConnects/' + userId), 
+        {id: userId,})
+        await checkFriends();
+        successfulConnectAlert();
+        // console.log("Friends checked");
     }
 
     const checkFriends = async () => {
         //When connectHandler runs, authUser adds currUser into its PendingConnects,
         //so now we only need to check if authUser is in currUser's PendingConnects!
         //Check if authUser is in currUser's PendingConnects
-
         currUserSnapshot.then(result => {
             if (result.exists()) {
                 setDoc(doc(db, 'Users/'+ auth.currentUser.uid + '/Friends/' + userId), {
@@ -93,7 +68,6 @@ const ConnectButton = ({isConnected, isYourself, isFriend, userId}) => {
                 deleteDoc(doc(db, "Users/" + userId + "/PendingConnects/" + auth.currentUser.uid))
                 deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/PendingConnects/' + userId))
                 deleteDoc(doc(db, 'Users/' + auth.currentUser.uid + '/ConnectNotif/' + userId))
-                // console.log("We have found friends!");
             } else  {
                 currUserFriendsSnapshot.then(result => {
                     if (result.exists()) {
@@ -103,14 +77,19 @@ const ConnectButton = ({isConnected, isYourself, isFriend, userId}) => {
                         {
                             id: auth.currentUser.uid,
                         })
-                        // console.log("These 2 are not friends :(");
                     }
                 })
             }
         })
     }
 
-    return (<Button disabled={shouldDisable()} onPress={connectHandler}>{displayTitle()}</Button>);
+    return (
+        <AwaitButton 
+            disabled={shouldDisable()} 
+            children={displayTitle()} 
+            awaitFunction={connecter}
+        ></AwaitButton>
+    );
 };
 
 export default ConnectButton;

@@ -1,26 +1,24 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { 
     Divider, 
     Layout, 
     TopNavigation, 
-    List, 
     Icon,
-    Button,
-    Input,
     Text,
     Card,
-    Spinner,
+    Avatar,
 } from '@ui-kitten/components';
 import { Dimensions, KeyboardAvoidingView, SafeAreaView, View, ScrollView} from "react-native";
-import { LogoutButton, ConnectButton, SpinnerView } from '../components';
+import { LogoutButton, ConnectButton } from '../components';
 import { auth, db } from '../firebase';
 import {
     doc,
     getDoc,
     collection,
     getDocs,
+    query,
+    orderBy,
 } from 'firebase/firestore';
-import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRefreshTrue, setRefreshFalse } from '../store/refresh';
@@ -36,18 +34,27 @@ const UserProfileScreen= ({navigation, route}) => {
     }
 
     const seeFriend = async () => {
-        getDoc(doc(db, "Users/" + idField + "/Friends/" + auth.currentUser.uid)).then(res => {
-            res.exists() ? setIsFriend(true) : setIsFriend(false);
-        })
+        if (idField == auth.currentUser.uid) {
+            setIsFriend(true);
+        } else {
+            getDoc(doc(db, "Users/" + idField + "/Friends/" + auth.currentUser.uid)).then(res => {
+                res.exists() ? setIsFriend(true) : setIsFriend(false);
+            })
+        }
     }
 
     const [displayNameField, setDisplayNameField] = React.useState("");
     const [emailField, setEmailField] = React.useState("");
+    const [faculty, setFaculty] = React.useState("");
+    const [year, setYear] = React.useState(5);
+    const [course, setCourse] = React.useState("");
+    const [avatar, setAvatar] = React.useState("");
     const [connectListStr, setConnectListStr] = React.useState("");
     const [modules, setModules] = React.useState("");
     const [friends, setFriends] = React.useState("");
     const [isConnected, setConnected] = React.useState("false");
     const [isFriend, setIsFriend] = React.useState("false");
+    const [verified, setVerified] = React.useState("false")
     // const [isLoading, setIsLoading] = React.useState(false);
     const windowHeight = Dimensions.get('window').height;
     const windowWidth = Dimensions.get('window').width;
@@ -56,16 +63,25 @@ const UserProfileScreen= ({navigation, route}) => {
     const reduxRefreshTrue = () => {dispatch(setRefreshTrue());};
     const reduxRefreshFalse = () => {dispatch(setRefreshFalse());};
 
-    seeConnected();
-    seeFriend();
+    // seeConnected();
+    // seeFriend();
 
-    useFocusEffect(React.useCallback(() => {
+    useEffect(() => {
+        seeConnected();
+        seeFriend();
         const userDoc = doc(db, 'Users/' + idField);
         getDoc(userDoc).then(result => {
-            setDisplayNameField(result.get('displayName'));
+            setDisplayNameField(result.get('name'));
             setEmailField(result.get('email'));
+            setCourse(result.get('course'));
+            setYear(result.get('year'));
+            setAvatar(result.get('avatar'));
+            setFaculty(result.get('faculty'));
+            setVerified(result.get("verified"))
         })
         const collectionPendingConnectsRef = collection(db, 'Users/' + idField + '/PendingConnects');
+        const colRef = collection(db, 'Users/' + idField + '/Modules');
+        const friendsRef = collection(db, 'Users/' + idField + '/Friends');
         const getPendingConnects =  async () => {
             const connectList = [];
             const qSnapshot = getDocs(collectionPendingConnectsRef);
@@ -80,11 +96,11 @@ const UserProfileScreen= ({navigation, route}) => {
             }
         };
 
-        const colRef = collection(db, 'Users/' + idField + '/Modules');
         const getModules = async () => {
+            const q = query(colRef, orderBy("rank"));
             const modsList = [];
-            await (await getDocs(colRef)).forEach((doc) => {
-                const moduleCode = doc.get('desc');
+            await (await getDocs(q)).forEach((doc) => {
+                const moduleCode = doc.get('modCode');
                 modsList.push(moduleCode);
             })
             
@@ -95,7 +111,7 @@ const UserProfileScreen= ({navigation, route}) => {
             }
         }
 
-        const friendsRef = collection(db, 'Users/' + idField + '/Friends');
+        
         const getFriends = async () => {
             const friendList = [];
             await (await getDocs(friendsRef)).forEach((doc => {
@@ -112,20 +128,16 @@ const UserProfileScreen= ({navigation, route}) => {
         getModules();
         getPendingConnects();
         getFriends();
-    }, [refresh]));
+        reduxRefreshFalse();
+    }, [refresh, idField]);
 
-
-    const idHeader = (props) => (
+    const Header = (props) => {
+        const {headerText} = {...props}
+        return (
         <View {...props}>
-          <Text category='h6'>User ID</Text>
-        </View>
-      );
-
-    const emailHeader = (props) => (
-    <View {...props}>
-        <Text category='h6'>Email</Text>
-    </View>
-    );
+          <Text category='h6'>{headerText}</Text>
+        </View>);
+    };
     
     const pendingReqHeader = (props) => (
         <View {...props}>
@@ -149,7 +161,7 @@ const UserProfileScreen= ({navigation, route}) => {
         <SafeAreaView style={{flex:1}}>
         <KeyboardAvoidingView style={{flex:1}}>
             <TopNavigation 
-                title='Explore'
+                title={<Text category='h1' style={[styles.singleLineText]}>{isYourself ? "This is your public profile" : "Explore"}</Text>}
                 alignment='start'
                 accessoryLeft={<Icon name='frienus' pack='customAssets' style={{marginLeft:5, height:60, width:60}} />}
                 accessoryRight={LogoutButton}
@@ -157,33 +169,48 @@ const UserProfileScreen= ({navigation, route}) => {
             />
             <Divider/>
         <>
-        <Layout>
-            <Layout>
-                <Text category='h1' style={[styles.singleLineText]}>{isYourself ? "This is your public profile" : "Searched Profile"}</Text>
-            </Layout>
+        <Layout style={{flex:1}}>
             <Divider/>
             <ScrollView>
+            <Avatar defaultSource={require('../assets/image-outline.png')} shape='round' source={{uri: avatar}} style={styles.image}/>
             <Layout style={styles.container} level='1'>
                 <Card style={styles.card}>
                 <ConnectButton isFriend={isFriend} isConnected={isConnected} isYourself={isYourself} userId={idField}/>
                 </Card>
             </Layout>
             <Layout style={styles.topContainer} level='1'>
-                <Card status='info' style={styles.card} header={idHeader}>
+                <Card status='info' style={styles.card} header={<Header headerText={'User ID'}/>}>
                     <Text>{idField}</Text>
                 </Card>
-                <Card status='info' style={styles.card} header={emailHeader}>
-                    <Text>{emailField}</Text>
+                <Card status='info' style={styles.card} header={<Header headerText={'Year'}/>}>
+                    <Text>{year}</Text>
                 </Card>
             </Layout>
-            <Card status='info' style={styles.card} header={pendingReqHeader}>
-                <Text>{connectListStr}</Text>
+            <Card status='info' style={styles.card} header={<Header headerText={'Display Name'}/>}>
+                    <Text>{isFriend ? displayNameField : "You need to be friends with this user"}</Text>
             </Card>
+            <Layout style={styles.topContainer} level='1'>
+                <Card status='info' style={styles.card} header={<Header headerText={'Email'}/>}>
+                    <Text>{isFriend ? emailField : "You need to be friends with this user"}</Text>
+                    <Text>Account verified: {`${verified}`}</Text>
+                </Card>
+            </Layout>
+            <Layout style={styles.topContainer} level='1'>
+                <Card status='info' style={styles.card} header={<Header headerText={'Course'}/>}>
+                    <Text>{course}</Text>
+                </Card>
+                <Card status='info' style={styles.card} header={<Header headerText={'Faculty'}/>}>
+                    <Text>{faculty}</Text>
+                </Card>
+            </Layout>
+            {/* <Card status='info' style={styles.card} header={pendingReqHeader}>
+                <Text>{connectListStr}</Text>
+            </Card> */}
             <Card status='info' style={styles.card} header={moduleListHeader}>
                 <Text>{modules}</Text>
             </Card>
             <Card status='info' style={styles.card} header={friendListHeader}>
-                <Text>{friends}</Text>
+                <Text>{isFriend ? friends : "You need to be friends with this user"}</Text>
             </Card>
             </ScrollView>
         </Layout>
@@ -198,6 +225,7 @@ export default UserProfileScreen;
 const styles = StyleSheet.create({
     singleLineText: {
         textAlign: 'center',
+        marginVertical: 5,
     },
     manyLineText: {
         textAlign: 'left',
@@ -223,5 +251,11 @@ const styles = StyleSheet.create({
     },
     list: {
         overflow: 'scroll',
+    },
+    image: {
+        alignSelf:'center',
+        width:75,
+        height:75,
+        marginBottom:10,
     },
 })
