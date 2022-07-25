@@ -55,11 +55,12 @@ const ProfileScreen= () => {
 
         //Checking for non-existent connects
         const collectionPendingConnectsRef = collection(db, 'Users/' + currUser.uid + '/PendingConnects');
-        const arr = [];
+        // const arr = [];
         const qSnapshot = getDocs(collectionPendingConnectsRef);
         
 
         qSnapshot.then(snapshot => {
+            const arr = [];
             let curr = 0;
             for (const document of snapshot.docs) {
                 getDoc(doc(db, 'Users/' + document.get('id'))).then(userDocument => {
@@ -101,7 +102,7 @@ const ProfileScreen= () => {
         });
 
         reduxRefreshFalse();
-    }, [refresh, ]);
+    }, [refresh]);
 
     const navigation = useNavigation();
 
