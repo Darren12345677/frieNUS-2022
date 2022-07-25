@@ -76,6 +76,7 @@ const SearchScreen = () => {
     const onSelect = (index) => {
         setValue(usersArr[index].id);
         setCurrArr(usersArr.filter(item => filter(item, usersArr[index].id)));
+        setAutoArr(usersArr.filter(item => filter(item, usersArr[index].id)));
         Keyboard.dismiss();
         // setIsSearch(false)
     };
@@ -107,7 +108,7 @@ const SearchScreen = () => {
         <Layout level='1' style={styles.recommendContainer}>
         <Layout level='4' style={[styles.ribbon, styles.recommendRibbon]}>
             <Text appearance='hint' category='s1' style={styles.ribbonText}>Suggestions</Text>
-            <Popover visible={visible} anchor={renderHelpIcon} onBackdropPress={() => setVisible(false)}>
+            <Popover style={{height:'125%'}}visible={visible} anchor={renderHelpIcon} onBackdropPress={() => setVisible(false)}>
                 <Layout style={styles.helpPopup}>
                     <Text style={styles.helpText}>
                     Suggestions are displayed in descending order based on module similarity and ranking.
@@ -204,6 +205,7 @@ const SearchScreen = () => {
         accessoryRight={value.length != 0 ? <Icon name='close-outline' onPress={() => {
             setValue("");
             setCurrArr(usersArr);
+            setAutoArr(usersArr);
             Keyboard.dismiss();
             }}/> : null}
         
@@ -231,7 +233,30 @@ const SearchScreen = () => {
                 />
                 <Layout level='1' style={{flex: 1, alignItems:'center', justifyContent:'flex-start', flexDirection:"column"}}>
                     <Layout level='1' style={{paddingTop:10, width:'95%'}}>
-                        <Searchbar/>
+                    <Autocomplete
+                    status={value.length==0 ? 'basic' : 'primary'}
+                    placeholder='Tap here to search for users'
+                    value={value}
+                    onSelect={onSelect}
+                    onChangeText={onChangeText}
+                    accessoryLeft={<Icon name='search-outline'/>}
+                    accessoryRight={value.length != 0 ? <Icon name='close-outline' onPress={() => {
+                        setValue("");
+                        setCurrArr(usersArr);
+                        setAutoArr(usersArr);
+                        Keyboard.dismiss();
+                        }}/> : null}
+                    
+                    onBlur={() => {
+                        console.log("blur");
+                        setCurrArr(usersArr.filter(item => filter(item, value)));
+                        setIsSearch(false)}}
+                    placement='bottom'
+                    // onPressIn={() => {setIsSearch(true);}}
+                    style={[styles.AC]}
+                    >
+                    {autoArr.map(renderOption)}
+                </Autocomplete>
                     </Layout> 
                     {isSearch 
                     ? <Layout level='1' style={{flex:1}}/> : <DisplayRest/>
