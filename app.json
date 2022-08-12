@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "frieNUS",
+    "owner": "frienus_orbital",
     "slug": "orbital-frienus",
     "description": "Welcome to frieNUS!",
     "version": "1.0.8",
